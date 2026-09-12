@@ -4,16 +4,16 @@
 
 ## 使用方式
 
-直接開啟 `dist/index.html` 即可使用。請保留 `dist/assets` 資料夾；勾選進度會保存在瀏覽器的 localStorage。
+直接開啟 `index.html` 即可使用。請保留 `assets` 資料夾；勾選進度會保存在瀏覽器的 localStorage。
 
 ## 放到 GitHub Pages
 
 1. 建立 GitHub Repository。
-2. 把 `dist/index.html` 上傳到 Repository 根目錄並改放為根目錄的 `index.html`，或保留 `dist` 後用 GitHub Actions 發佈。
+2. 把壓縮檔中的 `index.html`、`assets` 和 `README.md` 上傳到 Repository 根目錄。
 3. 在 Repository 的 Settings → Pages，將 Source 設為 `Deploy from a branch`。
 4. 選擇 `main` 與 `/ (root)` 後儲存。
 
-最簡單的做法是將 `dist` 裡的 `index.html` 與 `assets` 一起放到 Repository 根目錄。
+最簡單的做法是解壓縮後，把全部內容一起放到 Repository 根目錄。
 
 ## 資料說明
 
@@ -22,5 +22,9 @@
 - 副本、小怪、FATE 與理符以參考巴哈攻略中的中文名稱為主，並保留英文原名、地區與 X/Y 座標供核對。
 - 支援依副本、FATE、討伐、理符、單張地圖或整本書批次完成／取消完成。
 - 每本書的討伐＋理符地圖依巴哈攻略原文順序排列；選書首頁會分項顯示尚缺數量，整本完成時會以綠色完成卡標示。
+- 首頁以九本天書為主；左側「16副本」抽屜以四欄線性路線顯示四大任務、主體副本、配合天書與交付關卡。
+- 側欄副本會與推薦搭配的天書副本雙向同步；同一副本若之後還會出現在其他天書，會以淡色標籤提示但不會誤勾。
+- 同輪副本完成後會醒目顯示「現在先繳交」；四大任務共保留 10 次獨立交付紀錄。
+- FATE 卡片會醒目顯示所在地圖，並可直接跳到下方同地圖的討伐／理符區；長頁面右下提供「回到頂端」按鈕。
 
 本專案為非官方玩家工具，FINAL FANTASY XIV 相關名稱與商標屬 SQUARE ENIX CO., LTD. 所有。
