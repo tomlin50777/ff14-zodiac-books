@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#100f0d">
+  <meta name="description" content="FF14 九宮幻卡攻略模擬器：玩家操作幻卡王，電腦使用新手牌組依 55 種局面攻略出牌，方便直接照抄。">
+  <title>幻卡王模擬器｜FF14 攻略百科</title>
+  <link rel="stylesheet" href="assets/encyclopedia.css">
+  <link rel="stylesheet" href="assets/triple-triad/triple-triad.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="shell nav" aria-label="主要導覽">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">✦</span><span class="brand-copy"><b>FF14 攻略百科</b><span>PLAYER GUIDE ARCHIVE</span></span></a>
+      <div class="nav-links"><a class="nav-link" href="index.html">百科首頁</a><a class="nav-link" href="zodiac.html">古武攻略</a><a class="nav-link active" href="gold-saucer.html">金碟遊樂場</a></div>
+    </nav>
+  </header>
+
+  <main class="shell triad-page">
+    <nav class="crumb" aria-label="麵包屑"><a href="index.html">攻略百科</a><span>/</span><a href="gold-saucer.html">金碟遊樂場</a><span>/</span><b>幻卡王模擬器</b></nav>
+    <section class="triad-hero">
+      <div><div class="eyebrow">Triple Triad · King Elmer III</div><h1>幻卡王模擬器</h1><p>你使用幻卡王完整 7 種可能卡面模擬 NPC 回應，電腦操作玩家的新手五張牌。攻略方先攻時，電腦會依「先手 95% 勝率打法＋55 種局面」自動出牌，並排除原表紅色敗局，讓你直接照著棋盤抄到遊戲內。</p></div>
+      <div class="rule-badges"><span>3 × 3 棋盤</span><span>加算</span><span>連攜</span><span>55 局面攻略</span></div>
+    </section>
+
+    <section class="match-toolbar" aria-label="對局控制">
+      <div><strong id="matchMode">請選擇誰先攻</strong><span id="branchLabel">55 種局面中已排除 4 條紅色敗局</span></div>
+      <div class="toolbar-actions"><button class="triad-button primary" id="computerFirst" type="button">攻略方先攻</button><button class="triad-button" id="npcFirst" type="button">NPC 先攻</button></div>
+    </section>
+
+    <section class="match-grid">
+      <aside class="player-panel computer-panel">
+        <div class="side-title"><span class="side-dot blue"></span><div><b>攻略電腦</b><small>操作玩家的新手牌組</small></div><strong id="blueScore">5</strong></div>
+        <div class="computer-hand" id="computerHand" aria-label="攻略電腦的正面手牌"></div>
+        <div class="turn-note" id="turnNote">請先選擇誰先攻</div>
+        <div class="match-log" id="matchLog" aria-live="polite"></div>
+      </aside>
+
+      <section class="board-panel" aria-label="九宮幻卡棋盤">
+        <div class="board-head"><span>格子編號：上排 1 2 3、中排 4 5 6、下排 7 8 9</span><b id="turnCount">第 0 手</b></div>
+        <div class="triad-board" id="triadBoard" aria-label="3 乘 3 幻卡棋盤"></div>
+        <div class="result-banner" id="resultBanner" role="status"></div>
+      </section>
+
+      <aside class="advisor-panel">
+        <div class="advisor-kicker">電腦出牌紀錄</div>
+        <div class="advisor-card" id="advisorCard"><span class="advisor-step" id="advisorStep">尚未開始</span><strong id="advisorMove">請先選擇誰先攻</strong><p id="advisorReason">攻略方先攻時，電腦會依你操作的 NPC 出牌選擇對應攻略分支。</p></div>
+        <div class="branch-progress"><span>目前符合的安全分支</span><strong id="branchCount">51 安全 / 55</strong><div><i id="branchBar"></i></div></div>
+        <button class="triad-button full" id="showHint" type="button">顯示電腦出牌</button>
+        <div class="stats"><span>攻略方戰績</span><b id="matchStats">0 勝 · 0 和 · 0 敗</b><button id="clearStats" type="button">清除</button></div>
+      </aside>
+    </section>
+
+    <section class="hand-section">
+      <div class="hand-head"><div><span class="side-dot red"></span><b>你操作：幻卡王 7 種可能卡面</b><strong class="hand-score" id="redScore">5</strong></div><span>模擬操作盤：卡面可重複選擇，再點棋盤位置</span></div>
+      <div class="player-hand" id="playerHand"></div>
+    </section>
+
+    <section class="guide-explain">
+      <div><div class="eyebrow">How it works</div><h2>模擬規則</h2></div>
+      <div class="explain-grid">
+        <article><b>一般翻牌</b><p>新放入的牌，接觸邊數字大於相鄰敵牌時即可翻牌。</p></article>
+        <article><b>加算</b><p>新牌與至少兩張相鄰牌的兩側數字總和相同時，會同時翻轉其中的敵牌。</p></article>
+        <article><b>連攜</b><p>因加算翻面的牌會再用一般規則向外翻牌，可能一次改變整個局面。</p></article>
+        <article><b>照抄攻略</b><p>你可用完整 7 種卡面模擬幻卡王；電腦只從非紅色分支出牌。若 NPC 走入紅色敗局，會立即改用避敗計算。</p></article>
+      </div>
+    </section>
+
+    <details class="strategy-reference">
+      <summary><span><b>查看 55 種局面原始出牌表</b><small>攻略原表與模擬器相同：1、2、3 在最上排</small></span><span>展開 ▾</span></summary>
+      <div class="strategy-image-wrap"><img src="assets/triple-triad/strategy-55.svg" alt="九宮幻卡 55 種局面出牌表"></div>
+      <p>表格依先前提供的 17173 攻略圖片重繪；第 9、13、37、39 列的紅色結局視為敗局，模擬器不會採用其後續出牌。攻略落點直接採用由左至右、由上至下的 1–9，沒有轉置；命中紅色敗局或表格無法決定時，會切換為避敗／即時計算。</p>
+    </details>
+
+    <footer class="triad-sources">對手牌組與數值核對：ARR Triple Triad；出牌分支參考先前整理的 17173「55 種局面出牌表」。此模擬器用於練習，遊戲內 NPC 行為仍可能因版本或隨機決策產生差異。</footer>
+  </main>
+
+  <script src="assets/triple-triad/triple-triad.js"></script>
+</body>
+</html>
