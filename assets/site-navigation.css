@@ -1,0 +1,111 @@
+/* Shared two-level navigation. Both levels scroll with the page, leaving
+   each guide's working controls free to stick to the viewport when needed. */
+body>.site-header.shared-site-header {
+  position:relative; top:auto; z-index:30; height:auto; min-height:0;
+  border-bottom:1px solid var(--theme-line); background:var(--theme-header);
+  backdrop-filter:blur(12px);
+}
+body>.site-header.shared-site-header>.site-primary-nav {
+  display:grid; grid-template-columns:minmax(190px,1fr) auto auto;
+  align-items:center; gap:16px; height:auto; min-height:64px; padding:8px 0;
+  font-family:system-ui,-apple-system,"Microsoft JhengHei",sans-serif;
+}
+.shared-site-header .brand {
+  grid-column:1; grid-row:1; display:flex; align-items:center; gap:11px;
+  min-width:0; color:var(--theme-ink); text-decoration:none;
+}
+.shared-site-header .brand-mark {
+  display:grid; place-items:center; flex:0 0 34px; width:34px; height:38px;
+  font-size:20px; line-height:1;
+}
+.shared-site-header .brand-copy {display:block; min-width:0;}
+.shared-site-header .brand-copy b {
+  display:block; color:var(--theme-ink); font-size:17px; line-height:1.5; letter-spacing:.08em;
+}
+.shared-site-header .brand-copy span {
+  display:block; margin:0; color:var(--theme-muted);
+  font:9px/1.4 system-ui,sans-serif; letter-spacing:.13em;
+}
+.shared-site-header .nav-links {
+  grid-column:2; grid-row:1; display:flex; flex-wrap:nowrap; align-items:center;
+  justify-content:flex-start; gap:5px; width:auto; margin:0; min-width:0; overflow:visible;
+}
+.shared-site-header .nav-link {
+  display:flex; align-items:center; justify-content:center; min-height:40px;
+  padding:8px 12px; border:1px solid transparent; border-radius:999px;
+  color:var(--theme-muted); text-decoration:none; white-space:nowrap;
+  font:700 13px/1.4 system-ui,-apple-system,"Microsoft JhengHei",sans-serif;
+}
+.shared-site-header .nav-link:hover,.shared-site-header .nav-link.active {
+  border-color:var(--theme-line); color:var(--theme-ink); background:var(--theme-glow);
+}
+.shared-site-header .theme-picker {grid-column:3; grid-row:1; margin:0; order:0;}
+.shared-site-header .theme-trigger {min-height:38px; padding:8px 11px;}
+.shared-site-header .theme-trigger-label {display:inline;}
+.shared-site-header .theme-menu {z-index:40;}
+body .section-nav {
+  position:static; top:auto; z-index:auto; margin:0;
+  border-top:0; border-bottom:1px solid var(--theme-line);
+  background:var(--theme-surface); color:var(--theme-ink);
+}
+body .section-nav>.section-nav-inner {
+  display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap;
+  gap:8px; height:auto; min-height:52px; margin-inline:auto; padding:5px 0;
+  border:0;
+}
+.section-nav .section-nav-label {
+  flex:0 0 auto; padding-right:18px; margin-right:4px;
+  border-right:1px solid var(--theme-line); color:var(--theme-muted);
+  font:700 13px/1.5 system-ui,-apple-system,"Microsoft JhengHei",sans-serif;
+}
+body .section-nav .section-link {
+  display:inline-flex; align-items:center; justify-content:center; flex-direction:row;
+  gap:8px; min-height:40px; padding:8px 12px; margin:0;
+  border:1px solid transparent; border-radius:8px; background:transparent;
+  color:var(--theme-muted); text-decoration:none; white-space:nowrap; cursor:pointer;
+  font:700 13px/1.4 system-ui,-apple-system,"Microsoft JhengHei",sans-serif;
+}
+body .section-nav .section-link:hover,body .section-nav .section-link.active {
+  display:inline-flex; border-color:var(--theme-line); background:var(--theme-glow); color:var(--theme-ink);
+}
+body .section-nav .section-link small {color:var(--theme-muted); font:10px/1.4 system-ui,sans-serif;}
+body .zodiac-section-nav .top-actions #clearAll {display:inline-flex;}
+.section-nav .top-actions {display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:8px;}
+body .section-nav .section-action {
+  display:inline-flex; margin-left:8px; border-left:1px solid var(--theme-line);
+  border-radius:0; padding-left:16px; font-weight:500;
+}
+body .section-nav .workspace-title {font-size:19px; line-height:1.5; margin:0 12px 0 0; flex-basis:auto;}
+body .section-nav .workspace-version {margin-left:auto; color:var(--theme-muted); font:11px/1.5 system-ui,sans-serif;}
+.shared-site-header a:focus-visible,.section-nav a:focus-visible,.section-nav button:focus-visible {
+  outline:3px solid var(--theme-accent-2); outline-offset:2px;
+}
+@media(max-width:900px) {
+  body>.site-header.shared-site-header>.site-primary-nav {
+    grid-template-columns:minmax(0,1fr) auto; gap:5px 12px; min-height:0; padding:8px 0;
+  }
+  .shared-site-header .theme-picker {grid-column:2; grid-row:1;}
+  .shared-site-header .nav-links {
+    grid-column:1 / -1; grid-row:2; justify-content:space-between; gap:4px; width:100%;
+  }
+  .shared-site-header .nav-link {flex:1 0 auto; min-height:38px; padding:7px 9px; font-size:12px;}
+  body .section-nav .section-link small {display:none;}
+  body .section-nav .workspace-version {margin-left:0; flex-basis:100%;}
+}
+@media(max-width:560px) {
+  .shared-site-header .brand {gap:9px;}
+  .shared-site-header .brand-mark {flex-basis:29px; width:29px; height:33px;}
+  .shared-site-header .brand-copy b {font-size:15px;}
+  .shared-site-header .brand-copy span {font-size:8px;}
+  .shared-site-header .theme-trigger {min-height:34px; padding:7px 9px;}
+  body .section-nav>.section-nav-inner {gap:5px; min-height:48px; padding:5px 0;}
+  .section-nav .section-nav-label {display:none;}
+  body .section-nav .section-link {min-height:38px; padding:7px 9px; font-size:12px;}
+  .section-nav .top-actions {gap:5px; width:100%;}
+  body .section-nav .section-action {margin-left:auto; padding-left:10px;}
+  body .section-nav .workspace-title {font-size:16px; flex-basis:100%; margin:0;}
+  body .section-nav .workspace-version {font-size:10px;}
+}
+
+/* A dropdown must rise with its header stacking context, above book reading tools. */
+body>.site-header.shared-site-header:has(.theme-trigger[aria-expanded="true"]){z-index:40}

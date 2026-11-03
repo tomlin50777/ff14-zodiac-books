@@ -1,0 +1,255 @@
+/* Scoped to the redesigned voyage workspace; other pages keep v46 styles. */
+html:has(body.voyage-v47){height:auto;overflow:auto}
+body.voyage-v47{display:block;height:auto;min-height:100vh;overflow:visible;font-family:system-ui,-apple-system,"Microsoft JhengHei",sans-serif;--voyage-blue:#235e85;--voyage-gold:#b98526}
+.voyage-v47>main{display:block;overflow:visible;min-height:80vh}
+.voyage-v47 .shell{width:min(1660px,calc(100% - 48px));max-width:none}
+.voyage-v47>.site-header,.voyage-v47>.site-header>.nav{height:auto;min-height:62px}
+.voyage-v47 .sub-book-nav{position:static;background:var(--theme-surface);border-bottom:1px solid var(--theme-line)}
+.voyage-v47 .sub-book-nav>.shell{height:auto;min-height:58px;padding:8px 0;gap:10px;flex-wrap:wrap}
+.voyage-v47 .workspace-title{font-size:21px;letter-spacing:.03em;margin-right:22px}
+.voyage-v47 .sub-book-nav a{font-size:13px;padding:8px 12px}
+.voyage-v47 .workspace-version{font-size:12px;white-space:normal}
+.voyage-v47 .fleet-layout{height:auto;display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;padding:28px 0 50px;align-items:start}
+.voyage-v47 .fleet-sidebar{position:sticky;top:16px;height:auto;max-height:calc(100vh - 32px);overflow:auto;padding:16px 10px;border-radius:12px;background:var(--theme-surface);border:1px solid var(--theme-line);box-shadow:none;display:block}
+.voyage-v47 .fleet-sidebar #workshop-tree{overflow:visible;scrollbar-gutter:auto}
+.voyage-v47 .tree-heading h2{font-size:15px}
+.voyage-v47 .tree-hint{font-size:11px;line-height:1.6}
+.voyage-v47 .tree-ships{margin-left:12px;padding-left:5px}
+.voyage-v47 .tree-ships button{padding:9px 3px;min-height:60px}
+.voyage-v47 .tree-ships .tree-route{font-size:11px;line-height:1.5}
+.voyage-v47 .tree-overview{font-size:12px;margin-top:14px}
+.voyage-v47 .voyage-main{display:block;min-width:0}
+.voyage-v47 .fleet-context{display:flex;flex-wrap:wrap;gap:8px 16px;padding:0 0 12px;min-height:0;font-size:12px;border-bottom:1px solid var(--theme-line)}
+.voyage-v47 .fleet-context>strong{font-size:15px}
+.voyage-v47 .harbor-summary{display:flex;justify-content:space-between;gap:24px;align-items:center;padding:23px 0 20px}
+.voyage-v47 .eyebrow{font:700 10px/1.5 system-ui,sans-serif;letter-spacing:.16em;color:var(--theme-accent)}
+.voyage-v47 .harbor-summary h2{font:600 clamp(24px,2.3vw,34px)/1.35 "Noto Serif TC","Microsoft JhengHei",serif;margin:7px 0}
+.voyage-v47 .harbor-summary p{color:var(--theme-muted);font-size:13px;margin:0;line-height:1.8}
+.voyage-v47 #harbor-status{text-align:right;min-width:160px}
+.voyage-v47 #harbor-status strong{display:block;font-size:30px;font-weight:500;color:var(--theme-accent)}
+.voyage-v47 #harbor-status small{font-size:12px;color:var(--theme-muted)}
+.voyage-v47 #harbor-status>span{font-size:10px;color:var(--theme-muted)}
+.voyage-v47 .slot-milestones{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:10px;margin-bottom:22px;align-items:start}
+.voyage-v47 .milestone-card{text-align:left;border:1px solid var(--theme-line);border-radius:8px;background:var(--theme-surface);padding:12px 15px;display:flex;flex-direction:column;gap:4px;box-shadow:none;color:var(--theme-ink);cursor:pointer}
+.voyage-v47 .milestone-card>span:first-child{font-size:10px;letter-spacing:.09em;color:var(--theme-accent)}
+.voyage-v47 .milestone-card strong{font-size:15px}
+.voyage-v47 .milestone-card small{font-size:11px;line-height:1.6;color:var(--theme-muted)}
+.voyage-v47 .milestone-foot{font-size:10px;color:var(--theme-muted)}
+.voyage-v47 .slot-confirm{font-size:11px;max-width:160px;padding:12px 0;line-height:1.7}
+.voyage-v47 .slot-confirm label{display:block;margin:7px 0}
+.voyage-v47 #chart-room{display:grid;grid-template-columns:minmax(0,1fr) 342px;grid-template-rows:auto auto auto auto;gap:12px 22px;align-items:start;min-height:0}
+.voyage-v47 #chart-room>.section-title-row{display:none}
+.voyage-v47 #chart-room>.chart-quick-help{display:block;grid-column:1;grid-row:1;margin:0;font-size:12px;color:var(--theme-muted);line-height:1.7}
+.voyage-v47 #map-tabs{grid-column:1;grid-row:2;display:flex;gap:4px;flex-wrap:wrap;margin:0;padding:0;overflow:visible}
+.voyage-v47 #map-tabs button{min-height:36px;padding:7px 11px;font-size:12px;border:1px solid var(--theme-line);border-radius:6px}
+.voyage-v47 .chart-toolbar{grid-column:1;grid-row:3;display:block;margin:0}
+.voyage-v47 .chart-toolbar>.route-heading{background:var(--theme-surface);padding:13px 16px;border:1px solid var(--theme-line);border-left:3px solid var(--theme-accent);border-radius:8px}
+.voyage-v47 .active-route{gap:10px}
+.voyage-v47 .active-route>strong{font-size:16px}
+.voyage-v47 .active-route>input{font-size:22px}
+.voyage-v47 #active-route-hint{font-size:11px;white-space:normal;line-height:1.6;margin:7px 0 4px;overflow:visible}
+.voyage-v47 .route-heading .chart-progress p{font-size:11px;white-space:normal;line-height:1.65;overflow:visible}
+.voyage-v47 .chart-workbench{display:contents}
+.voyage-v47 .map-viewport{grid-column:1;grid-row:4;display:block;height:auto;min-height:0;width:100%;container-type:normal;overflow:visible;background:var(--theme-surface-2);border-radius:12px;border:1px solid var(--theme-line);padding:8px;position:sticky;top:14px;box-sizing:border-box}
+.voyage-v47 .map-viewport>.map-frame{width:100%;height:auto;max-height:none;max-width:none;border-radius:7px;overflow:visible}
+.voyage-v47 .map-frame>img{width:100%;height:auto;border-radius:7px;display:block}
+.voyage-v47 .map-node,.voyage-v47 .map-node:disabled{width:9%;min-width:0;max-width:none;height:auto;aspect-ratio:1;font-size:clamp(12px,1.2vw,17px)}
+.voyage-v47 .map-node.rank-short{border-style:dashed!important;border-color:#ffd37a!important}
+.voyage-v47 .map-node.rank-short .node-code::after{content:none}
+/* Keep v46's full-size opaque discs; auxiliary labels live outside the image. */
+.voyage-v47 .map-node.locked:after,.voyage-v47 .map-node.recommended:not(.locked)::after,.voyage-v47 .map-node[data-milestone]::before{content:none}
+.voyage-v47 .node-ship-badges{display:none}
+.voyage-v47 .map-node.milestone-node{box-shadow:inset 0 0 0 3px #e6b75e,0 2px 7px #0009}
+.voyage-v47 .route-path{stroke-width:5;opacity:1;vector-effect:non-scaling-stroke}
+.voyage-v47 .recommended-path{stroke:#e5ad35;stroke-width:6;stroke-dasharray:8 5;opacity:1}
+.voyage-v47 .ship-path-1{stroke:#36e5ff}.voyage-v47 .ship-path-2{stroke:#ffb347}.voyage-v47 .ship-path-3{stroke:#d7a0ff}.voyage-v47 .ship-path-4{stroke:#ff80b5}
+.voyage-v47 .route-order circle{fill:#f5c65a;stroke:#253846;stroke-width:2}.voyage-v47 .route-order text{font:bold 12px system-ui;text-anchor:middle;fill:#172b3a}
+.voyage-v47 .chart-console{grid-column:2;grid-row:1/6;display:flex;flex-direction:column;min-height:0;height:auto;max-height:none;overflow:visible;padding:0;gap:14px;scrollbar-gutter:auto}
+.voyage-v47 .chart-console>section,.voyage-v47 .chart-console>div,.voyage-v47 .chart-console>details{padding:18px;background:var(--theme-surface);border:1px solid var(--theme-line);border-radius:10px;box-shadow:none}
+.voyage-v47 .chart-console>.inline-planner{order:-1;border-top:3px solid var(--theme-accent)}
+.voyage-v47 .panel-heading h2{font-size:19px;line-height:1.5;margin:3px 0 10px;letter-spacing:.02em}
+.voyage-v47 .panel-heading{display:block;padding:0;margin:0}
+.voyage-v47 .muted,.voyage-v47 #planner-ship-summary{color:var(--theme-muted);font-size:11px;line-height:1.75;margin:6px 0 12px}
+.voyage-v47 .field-label{display:block;font-size:11px;font-weight:600;margin:12px 0;line-height:1.6}
+.voyage-v47 select,.voyage-v47 input:not([type=checkbox]){box-sizing:border-box;color:var(--theme-ink);background:var(--theme-surface);border:1px solid var(--theme-line);border-radius:6px;min-height:38px;padding:7px 9px;max-width:100%;font:13px system-ui}
+.voyage-v47 .field-label select,.voyage-v47 .field-label input{display:block;width:100%;margin-top:5px}
+.voyage-v47 .active-route input{background:transparent;border:0;min-height:0;padding:0;font-weight:800}
+.voyage-v47 #next-step{padding:14px;background:var(--theme-surface-2);border-radius:7px;border-left:2px solid var(--theme-accent);margin:14px 0}
+.voyage-v47 #next-step-title{display:block;font-size:15px;line-height:1.6}
+.voyage-v47 #next-step-copy{font-size:12px;line-height:1.85;margin:6px 0 0;color:var(--theme-muted)}
+.voyage-v47 .inline-planner button,.voyage-v47 .sailing-panel button,.voyage-v47 .planner-actions button,.voyage-v47 #clear-voyage{border:1px solid var(--theme-line);border-radius:6px;min-height:38px;padding:8px 10px;background:var(--theme-surface-2);color:var(--theme-ink);font:600 12px/1.45 system-ui;cursor:pointer}
+.voyage-v47 .inline-planner>.primary-action{width:100%;background:#235e85;color:#fff;border-color:#235e85}
+.voyage-v47 #setup-selected-ship{width:100%;margin-top:6px;background:transparent;border:0;color:var(--theme-accent);font-weight:500}
+.voyage-v47 button:disabled{cursor:not-allowed;opacity:.5}
+.voyage-v47 button:focus-visible,.voyage-v47 summary:focus-visible,.voyage-v47 select:focus-visible,.voyage-v47 input:focus-visible{outline:3px solid #dcad45;outline-offset:3px}
+.voyage-v47 #planner-status{font-size:11px;line-height:1.8;margin:9px 0;color:var(--theme-accent)}
+.voyage-v47 .planner-results{display:flex;flex-direction:column;gap:10px;max-height:none;overflow:visible}
+.voyage-v47 .planner-result{padding:13px;border:1px solid var(--theme-line);border-radius:7px;background:var(--theme-surface);box-shadow:none}
+.voyage-v47 .planner-result.previewing{border-color:var(--voyage-gold);box-shadow:inset 3px 0 var(--voyage-gold)}
+.voyage-v47 .planner-result-heading{font-size:10px;display:flex;gap:8px;justify-content:space-between;line-height:1.6}
+.voyage-v47 .planner-result-heading span{color:var(--theme-accent)}
+.voyage-v47 .planner-result h3{font-size:22px;letter-spacing:.04em;margin:8px 0;color:var(--theme-ink)}
+.voyage-v47 .planner-result p{font-size:11px;line-height:1.8;color:var(--theme-muted);margin:8px 0}
+.voyage-v47 .route-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid var(--theme-line);padding:10px 0}
+.voyage-v47 .route-facts span{font-size:10px;color:var(--theme-muted)}
+.voyage-v47 .route-facts b{display:block;font-size:12px;color:var(--theme-ink);margin-top:3px}
+.voyage-v47 .route-facts span:last-child{grid-column:1/-1}
+.voyage-v47 .candidate-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.voyage-v47 .candidate-actions button{width:auto;margin:0;font-size:11px}
+.voyage-v47 .candidate-actions button:last-child{color:#fff;background:#235e85;border-color:#235e85}
+.voyage-v47 .planner-result details,.voyage-v47 .advanced-planner{font-size:11px;line-height:1.7;padding:10px 0 0;border:0;background:none;border-radius:0;margin-top:10px;border-top:1px solid var(--theme-line)}
+.voyage-v47 details>summary{cursor:pointer;font-size:12px;font-weight:600;line-height:1.7}
+.voyage-v47 .planner-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.voyage-v47 .planner-controls label{font-size:11px}.voyage-v47 .planner-controls select{width:100%;font-size:11px}
+.voyage-v47 .planner-strategies{display:flex;gap:4px}.voyage-v47 .planner-strategies button{flex:1;font-size:10px;padding:7px 3px}
+.voyage-v47 .planner-strategies button[aria-pressed=true]{background:var(--theme-glow);border-color:var(--theme-accent)}
+.voyage-v47 #collection-description{font-size:11px;line-height:1.8;color:var(--theme-muted)}
+.voyage-v47 #collection-description b{color:var(--theme-ink)}
+.voyage-v47 #collection-description small{display:block;border-left:2px solid var(--theme-line);padding-left:8px;margin-top:12px}
+.voyage-v47 #collection-description details{padding:9px;background:var(--theme-surface-2);border:0;font-size:11px}
+.voyage-v47 #collection-description a{color:var(--theme-accent);overflow-wrap:anywhere}
+.voyage-v47 .empty-state{font-size:11px;line-height:1.8;color:var(--theme-muted);padding:8px 0}
+.voyage-v47 .chart-console .voyage-editor{order:0}
+.voyage-v47 .voyage-ship-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.voyage-v47 .chart-console .voyage-ship-tabs button{height:44px;min-height:44px;font-size:12px;border-radius:6px}
+.voyage-v47 .voyage-ship-tabs button small{font-size:10px}
+.voyage-v47 .chart-console .voyage-route-list{margin:12px 0;min-height:0;font-size:12px;gap:5px}
+.voyage-v47 .voyage-route-list em{font-style:normal;color:var(--theme-muted);font-size:11px;line-height:1.8}
+.voyage-v47 .voyage-metrics{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.voyage-v47 .voyage-metrics small{font-size:10px}.voyage-v47 .voyage-metrics b{font-size:12px}
+.voyage-v47 #voyage-validation{min-height:0!important;font-size:11px!important;line-height:1.8!important;color:var(--theme-muted)}
+.voyage-v47 .voyage-breakdown{font-size:11px;line-height:1.8!important;padding:12px!important;background:var(--theme-surface-2)!important}
+.voyage-v47 .route-reorder{display:flex;flex-wrap:wrap;gap:5px;flex-basis:100%;font-size:10px;margin-top:7px}
+.voyage-v47 .route-reorder span{display:flex;align-items:center;gap:3px}
+.voyage-v47 .route-reorder button{font-size:11px;min-width:28px;min-height:28px!important;padding:3px!important}
+.voyage-v47 #clear-voyage{width:100%;font-size:11px!important}
+.voyage-v47 .sailing-panel{border-top:1px solid var(--theme-line);padding-top:14px;margin-top:14px;font-size:11px;line-height:1.8}
+.voyage-v47 .sailing-panel h3{font-size:16px;margin:0 0 8px}
+.voyage-v47 .sailing-panel strong{display:block;font-size:13px;color:var(--theme-accent)}
+.voyage-v47 .sailing-panel>button{width:100%;background:#235e85;color:white}
+.voyage-v47 .sailing-panel>small{display:block;color:var(--theme-muted);margin:8px 0}
+.voyage-v47 .sailing-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.voyage-v47 .sailing-actions button{font-size:10px}
+.voyage-v47 .sailing-correction{margin:12px 0;padding:10px!important;border:0!important}
+.voyage-v47 .sailing-correction label{display:block;margin:7px 0}
+.voyage-v47 .sailing-correction input{width:100%;display:block}
+.voyage-v47 .sailing-feedback{color:var(--theme-accent);font-weight:600}
+.voyage-v47 .chart-console .node-inspector{order:1;border-width:1px}
+.voyage-v47 .node-inspector>span{display:none}
+.voyage-v47 .node-inspector h3{font-size:16px;margin-top:12px}
+.voyage-v47 .node-inspector #node-copy,.voyage-v47 #node-voyage-help{min-height:0!important;font-size:11px!important;line-height:1.8!important}
+.voyage-v47 .node-operation h4{font-size:11px!important}
+.voyage-v47 .node-operation button{font-size:11px!important;min-height:38px!important;border-width:1px;padding:8px!important}
+.voyage-v47 #map-feedback{height:auto!important;min-height:0;max-height:none;overflow:visible;font-size:11px!important;line-height:1.8!important;margin:10px 0 0!important}
+.voyage-v47 .chart-console .command-section{display:none}
+.voyage-v47 .route-guide{display:none}
+.voyage-v47 .chart-console .chart-reference{font-size:11px;line-height:1.8}
+.voyage-v47 .chart-console .chart-reference li{font-size:11px}
+.voyage-v47 .chart-actions button{font-size:11px;min-height:36px}
+.voyage-v47 .progress-editor{font-size:11px;line-height:1.8}
+.voyage-v47 .progress-editor select{width:100%}
+.voyage-v47 .progress-editor button{font-size:11px;min-height:38px;width:100%;margin-top:8px}
+.voyage-v47 .storage-warning{padding:12px;border:1px solid #b98526;border-radius:7px;font-size:12px;background:var(--theme-surface)}
+.voyage-v47 [hidden]{display:none!important}
+.voyage-v47>.site-footer{height:auto;min-height:0;padding:16px 0;font-size:11px;line-height:1.6}
+@media(min-width:1600px){.voyage-v47 #chart-room{grid-template-columns:minmax(0,1fr) 370px}.voyage-v47 .fleet-layout{grid-template-columns:210px minmax(0,1fr)}}
+@media(max-width:1200px){.voyage-v47 .shell{width:calc(100% - 32px)}.voyage-v47 .fleet-layout{grid-template-columns:165px minmax(0,1fr);gap:16px}.voyage-v47 #chart-room{grid-template-columns:minmax(0,1fr) 305px;gap:12px 14px}.voyage-v47 .slot-milestones{grid-template-columns:repeat(3,1fr)}.voyage-v47 .slot-confirm{grid-column:1/-1;max-width:none;padding:0}.voyage-v47 .slot-confirm label{display:inline-block;margin-right:15px}.voyage-v47 .milestone-card{padding:10px}.voyage-v47 .harbor-summary h2{font-size:26px}.voyage-v47 #harbor-status{display:none}.voyage-v47 .workspace-title{margin-right:8px}}
+@media(max-width:1000px){.voyage-v47 .fleet-layout{grid-template-columns:1fr;padding-top:18px}.voyage-v47 .fleet-sidebar{position:static;max-height:none;padding:12px;display:block}.voyage-v47 .tree-hint{margin:5px 0}.voyage-v47 .workshop-tree-list{display:flex;flex-wrap:wrap;gap:12px}.voyage-v47 .workshop-tree-branch{flex:1 1 280px}.voyage-v47 .tree-ships{display:grid;grid-template-columns:repeat(4,1fr);padding-left:0;margin-left:0;border:0;gap:5px}.voyage-v47 .tree-ships button{display:block;text-align:center;padding:7px}.voyage-v47 .tree-ships button>em,.voyage-v47 .tree-ship-icon,.voyage-v47 .tree-route{display:none}.voyage-v47 .tree-ships button span b{font-size:12px}.voyage-v47 .tree-ships button span small{font-size:10px}.voyage-v47 .tree-overview{display:inline-block;width:auto;margin:8px 5px 0 0}.voyage-v47 #chart-room{grid-template-columns:minmax(0,1fr) 305px}.voyage-v47 .fleet-context{margin-top:0}.voyage-v47 .chart-console>section,.voyage-v47 .chart-console>div,.voyage-v47 .chart-console>details{padding:14px}}
+@media(max-width:760px){.voyage-v47 .shell{width:calc(100% - 28px)}.voyage-v47 .nav{padding:10px 0}.voyage-v47 .workspace-title{flex-basis:100%;margin:0;font-size:20px}.voyage-v47 .workspace-version{margin-left:0;flex-basis:100%;font-size:11px}.voyage-v47 .harbor-summary{padding:18px 0}.voyage-v47 .harbor-summary h2{font-size:27px}.voyage-v47 .harbor-summary p{font-size:12px}.voyage-v47 .slot-milestones{gap:6px;margin-bottom:18px}.voyage-v47 .milestone-card strong{font-size:12px}.voyage-v47 .milestone-card small{font-size:10px}.voyage-v47 .milestone-card{padding:9px 7px}.voyage-v47 .milestone-foot{display:none}.voyage-v47 #chart-room{display:flex;flex-direction:column;gap:12px}.voyage-v47 #chart-room>*{width:100%;box-sizing:border-box}.voyage-v47 .chart-workbench{display:contents}.voyage-v47 .map-viewport{position:static;order:0;width:100%;padding:5px}.voyage-v47 .map-viewport>.map-frame{width:100%}.voyage-v47 .chart-console{width:100%;display:flex;gap:12px}.voyage-v47 .chart-console>.inline-planner{order:-1}.voyage-v47 .chart-console .voyage-editor{order:0}.voyage-v47 .planner-result h3{font-size:24px}.voyage-v47 .route-facts{grid-template-columns:1fr 1fr 1fr}.voyage-v47 .route-facts span:last-child{grid-column:auto}.voyage-v47 .active-route>input{font-size:20px}.voyage-v47 .active-route>strong{font-size:14px}.voyage-v47 .active-route>button{font-size:10px}.voyage-v47 .node-ship-badge{min-width:18px;font-size:8px;height:13px;line-height:12px}.voyage-v47 .panel-heading h2{font-size:20px}.voyage-v47 .field-label{font-size:12px}.voyage-v47 .inline-planner button{min-height:42px}.voyage-v47 #next-step-copy{font-size:13px}.voyage-v47 .chart-console>section,.voyage-v47 .chart-console>div,.voyage-v47 .chart-console>details{padding:18px}}
+@media(prefers-reduced-motion:reduce){.voyage-v47 *{scroll-behavior:auto!important;transition:none!important}}
+.voyage-v47 .map-key{display:flex;gap:7px 13px;flex-wrap:wrap;padding:12px 8px 5px;color:var(--theme-muted);font-size:10px;line-height:1.5}.voyage-v47 .map-key small{flex-basis:100%;font-size:10px}.voyage-v47 .fleet-status{display:block!important;color:var(--theme-accent);font-size:10px!important;line-height:1.7}.voyage-v47 .fleet-status.return-due{color:#b16b19;font-weight:700}
+.voyage-v47 .mobile-next{display:none}.voyage-v47 #open-progress-editor{width:100%;background:transparent;border:0;color:var(--theme-muted);font-size:11px;margin:0;padding:5px;min-height:30px}.voyage-v47 #route-planner-dialog{scroll-margin-top:16px}
+@media(min-width:761px){.voyage-v47 .map-viewport>.map-frame{max-width:min(100%,calc((100dvh - 100px) * var(--map-aspect,1)));margin-inline:auto}}
+@media(max-width:760px){.voyage-v47 .mobile-next{display:flex;flex-direction:column;gap:6px;background:var(--theme-surface);border-left:3px solid var(--theme-accent);padding:13px;margin-bottom:14px;border-radius:6px;font-size:13px;line-height:1.7}.voyage-v47 .mobile-next a{font-size:11px;color:var(--theme-accent)}}
+.voyage-v47 .ship-badge-1,.voyage-v47 .ship-1 .legend-ship{background:#36e5ff;color:#132333}.voyage-v47 .ship-badge-2,.voyage-v47 .ship-2 .legend-ship{background:#ffb347;color:#132333}.voyage-v47 .ship-badge-3,.voyage-v47 .ship-3 .legend-ship{background:#d7a0ff;color:#132333}.voyage-v47 .ship-badge-4,.voyage-v47 .ship-4 .legend-ship{background:#ff80b5;color:#132333}.voyage-v47 #storage-status:not([hidden]){font-size:12px;line-height:1.7;border-left:3px solid #b98526;background:var(--theme-surface);padding:10px 14px;border-radius:5px}
+.voyage-v47 .collection-build-panel{font-size:11px;line-height:1.8;padding:10px!important;margin:12px 0;background:var(--theme-surface-2)!important}.voyage-v47 .build-suggestion{padding:10px 0;border-top:1px solid var(--theme-line);margin-top:10px}.voyage-v47 .build-suggestion b{font-size:15px}.voyage-v47 .build-suggestion p{font-size:11px;line-height:1.8;margin:7px 0}.voyage-v47 .build-suggestion small{display:block;color:var(--theme-muted);font-size:10px}.voyage-v47 .build-suggestion button{margin-top:9px;width:100%}
+.voyage-v47 .alternative-routes{padding:0!important;border:0!important;background:none!important}.voyage-v47 .alternative-routes>summary{font-size:11px;padding:8px 0;color:var(--theme-accent)}.voyage-v47 .alternative-routes .planner-result{margin:10px 0}.voyage-v47 #next-step-details{padding:8px 0 0!important;border:0!important;background:none!important;font-size:11px;line-height:1.8}.voyage-v47 #next-step-detail-list{padding-left:18px}.voyage-v47 #next-step-detail-list li{margin:7px 0}
+/* Final context layout: a single focused task beside the persistent chart. */
+.voyage-v47 .chart-console>.console-tabs{display:flex;gap:3px;padding:4px;background:var(--theme-surface-2);border-radius:8px;border:1px solid var(--theme-line);order:-2}
+.voyage-v47 .console-tabs button{flex:1;min-width:0;min-height:38px;padding:7px 5px;border:0;border-radius:5px;background:transparent;color:var(--theme-muted);font:600 12px/1.5 system-ui;cursor:pointer}
+.voyage-v47 .console-tabs button[aria-selected=true]{background:var(--theme-surface);color:var(--theme-accent);box-shadow:0 1px 4px #0001}
+.voyage-v47 .chart-console>.console-pane{padding:0;border:0;background:none;display:flex;flex-direction:column;gap:12px}
+.voyage-v47 .console-pane>section,.voyage-v47 .console-pane>div,.voyage-v47 .console-pane>details{padding:17px;background:var(--theme-surface);border:1px solid var(--theme-line);border-radius:9px;box-shadow:none}
+.voyage-v47 .console-pane>.inline-planner{border-top:3px solid var(--theme-accent)}
+.voyage-v47 .setup-tools,.voyage-v47 .collection-search-tools,.voyage-v47 .collection-provenance{padding:7px 0!important;margin:0;border:0!important;background:none!important;font-size:11px;line-height:1.7}
+.voyage-v47 .setup-tools>summary,.voyage-v47 .collection-search-tools>summary,.voyage-v47 .collection-provenance>summary{font-size:11px;color:var(--theme-muted);font-weight:500}
+.voyage-v47 .collection-build-panel{padding:7px 0!important;margin:0;background:none!important;border:0!important}
+.voyage-v47 .collection-build-panel>summary{font-size:11px;color:var(--theme-muted);font-weight:500}
+.voyage-v47 #next-step{margin:10px 0}.voyage-v47 #next-step-copy{font-size:11px;line-height:1.8}
+.voyage-v47 .planner-results{gap:8px}.voyage-v47 .setup-tools{margin-top:6px}.voyage-v47 .inline-planner .advanced-planner{margin-top:12px}
+.voyage-v47 #collection-description>small{font-size:10px;line-height:1.7}
+.voyage-v47 .chart-console .node-inspector #node-copy{margin:7px 0}
+@media(max-width:760px){.voyage-v47 .console-tabs button{min-height:44px;font-size:12px}.voyage-v47 .console-pane>section,.voyage-v47 .console-pane>div,.voyage-v47 .console-pane>details{padding:17px}.voyage-v47 .active-route>input{flex-basis:calc(100% - 85px)}.voyage-v47 .active-route{flex-wrap:wrap}.voyage-v47 .active-route>button{margin-left:0}.voyage-v47 #next-step-copy{font-size:12px}}
+.voyage-v47 #fleet-mobile-toggle{display:none}
+@media(max-width:760px){
+.voyage-v47>.site-header,.voyage-v47>.site-header>.nav{min-height:0;height:auto}
+.voyage-v47>.site-header>.nav{display:grid;grid-template-columns:1fr auto;gap:4px;padding:7px 0}
+.voyage-v47 .brand{grid-column:1;grid-row:1;gap:8px}.voyage-v47 .brand-mark{width:29px;height:33px}.voyage-v47 .brand-copy>b{font-size:15px}.voyage-v47 .brand-copy>span{font-size:8px}
+.voyage-v47 .theme-picker{grid-column:2;grid-row:1;margin:0;order:0}.voyage-v47 .theme-trigger{min-height:30px;padding:6px 8px}
+.voyage-v47 .nav-links{grid-column:1/-1;grid-row:2;order:0;display:flex;justify-content:space-between;gap:4px;flex-basis:auto;overflow-x:auto;margin:0}
+.voyage-v47 .nav-link{font-size:11px;min-height:28px;padding:6px 8px;white-space:nowrap}
+.voyage-v47 .sub-book-nav>.shell{min-height:0;padding:7px 0;gap:4px 12px}
+.voyage-v47 .workspace-title{font-size:16px;flex-basis:auto}.voyage-v47 .sub-book-nav a.active{display:none}.voyage-v47 .sub-book-nav a{padding:4px 6px;font-size:11px}.voyage-v47 .sub-book-nav a small{display:none}.voyage-v47 .workspace-version{font-size:10px}
+.voyage-v47 .fleet-layout{padding-top:12px;gap:12px}.voyage-v47 .fleet-sidebar{padding:8px 12px}.voyage-v47 #fleet-mobile-toggle{display:block;width:100%;padding:6px 0;min-height:32px;text-align:left;background:none;border:0;color:var(--theme-ink);font:600 12px/1.6 system-ui;cursor:pointer}.voyage-v47 .fleet-sidebar.mobile-collapsed>:not(#fleet-mobile-toggle){display:none!important}
+.voyage-v47 .fleet-context,.voyage-v47 .harbor-summary{display:none}.voyage-v47 .mobile-next{margin:0 0 12px;padding:11px 13px;font-size:13px}.voyage-v47 .slot-milestones{margin-bottom:12px}.voyage-v47 .milestone-card{gap:2px;padding:7px 6px}.voyage-v47 .milestone-card>span:first-child{font-size:9px}.voyage-v47 .milestone-card strong{font-size:11px}.voyage-v47 .milestone-card small{font-size:9px;line-height:1.5}
+}
+.voyage-v47>.site-header{position:relative;top:auto}
+/* Working room, not a landing-page hero: put the chart and decision above the fold. */
+.voyage-v47 .harbor-summary{display:none}
+.voyage-v47 .fleet-layout{padding-top:18px}
+.voyage-v47 .fleet-context{padding-bottom:8px;margin-bottom:12px}
+.voyage-v47 .inline-planner #planner-ship-summary{display:none}
+.voyage-v47 .inline-planner .panel-heading h2{font-size:17px;margin:2px 0 9px}
+@media(min-width:761px){.voyage-v47 .slot-milestones{margin-bottom:14px}.voyage-v47 .milestone-card{display:grid;grid-template-columns:62px 1fr;gap:3px 7px;padding:9px 12px}.voyage-v47 .milestone-card>span:first-child{grid-column:1;grid-row:1;align-self:center;font-size:9px}.voyage-v47 .milestone-card strong{grid-column:2;grid-row:1;font-size:13px}.voyage-v47 .milestone-card small{grid-column:1/-1;grid-row:2;font-size:10px}.voyage-v47 .milestone-foot{display:none}.voyage-v47 .chart-quick-help{font-size:11px!important}}
+.voyage-v47 .milestones-toggle{display:none}
+.voyage-v47 #available-summary{display:none}
+.voyage-v47 #chart-room>.chart-quick-help{display:none}
+@media(min-width:761px){
+.voyage-v47 .sub-book-nav>.shell{min-height:44px;padding:4px 0}
+.voyage-v47 .fleet-layout{padding-top:12px}.voyage-v47 .fleet-context{margin-bottom:10px;padding-bottom:6px}
+.voyage-v47 #chart-room{grid-template-rows:auto auto auto;row-gap:10px}
+.voyage-v47 #map-tabs{grid-row:1}.voyage-v47 .chart-toolbar{grid-row:2}.voyage-v47 .map-viewport{grid-row:3}.voyage-v47 .chart-console{grid-row:1/5}
+.voyage-v47 .chart-toolbar>.route-heading{padding:10px 12px}.voyage-v47 #active-route-hint{font-size:11px;margin:3px 0;line-height:1.4}
+}
+@media(max-width:760px){
+.voyage-v47 .milestones-toggle{display:block;width:100%;min-height:34px;text-align:left;background:none;border:0;border-bottom:1px solid var(--theme-line);padding:6px 0;color:var(--theme-ink);font:600 12px/1.5 system-ui;cursor:pointer}
+.voyage-v47 .milestones-group{margin-bottom:12px}.voyage-v47 .milestones-group.mobile-folded #slot-milestones{display:none}.voyage-v47 #slot-milestones{padding-top:10px}
+.voyage-v47 .milestone-card small{font-size:11px}.voyage-v47 .milestone-card strong{font-size:12px}
+.voyage-v47 .active-route{flex-wrap:nowrap;gap:6px}.voyage-v47 .active-route>strong{font-size:13px;padding-right:6px}.voyage-v47 .active-route>input{font-size:16px;flex:1 1 0!important;width:0;min-width:0}.voyage-v47 .active-route>button{font-size:11px;min-height:32px;padding:5px 7px;white-space:nowrap}
+.voyage-v47 #active-route-hint{display:none}.voyage-v47 .route-heading .chart-progress{padding-top:5px;margin-top:5px;gap:3px 8px}.voyage-v47 .route-heading .chart-progress>div:first-child{font-size:11px}.voyage-v47 .route-heading .chart-progress>small{font-size:11px}.voyage-v47 .chart-toolbar>.route-heading{padding:9px 10px}
+.voyage-v47 .map-viewport{scroll-margin-top:10px}
+}
+.voyage-v47 .chart-console{align-items:stretch}
+.voyage-v47 .inline-planner>.panel-heading{display:none}
+.voyage-v47 .planner-result{display:flex;flex-direction:column}
+.voyage-v47 .planner-result-heading{order:0}.voyage-v47 .planner-result>h3{order:1}.voyage-v47 .planner-result>.candidate-actions{order:2}.voyage-v47 .planner-result>.route-facts{order:3;margin-top:10px;padding-bottom:0}.voyage-v47 .planner-result>details{order:4}
+.voyage-v47 .chart-console>.console-tabs{width:100%;box-sizing:border-box}
+.voyage-v47 .console-tabs button{flex:1 1 0;white-space:nowrap}
+
+/* v48 map restoration: the v46 final mobile type size, with no size clamp. */
+@media(max-width:650px){.voyage-v47 .map-node,.voyage-v47 .map-node:disabled{font-size:12px}}
+.voyage-v47 .map-layer-index{display:grid;gap:9px;margin:12px 2px 2px;color:var(--theme-ink);font:12px/1.65 system-ui,sans-serif}
+.voyage-v47 .map-milestone-index{display:flex;flex-wrap:wrap;gap:6px}
+.voyage-v47 .map-milestone-index button{min-height:32px;padding:4px 8px;border:1px solid #b9954c;border-radius:5px;background:var(--theme-surface);color:var(--theme-ink);font:inherit;cursor:pointer}
+.voyage-v47 .map-route-index{display:grid;gap:5px;margin:0;padding:0;list-style:none}
+.voyage-v47 .map-route-index li{padding:4px 8px;border-left:4px solid var(--route-color);background:var(--theme-surface);border-radius:3px;overflow-wrap:anywhere}
+.voyage-v47 .map-route-index strong{font-weight:700;margin-right:9px}
+.voyage-v47 .map-layer-index-note{margin:0;color:var(--theme-muted);font-size:11px}
+
+/* Short milestone meaning remains visible inside the original 9% disc. */
+.voyage-v47 .map-node.milestone-node{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px}
+.voyage-v47 .map-node.milestone-node .node-code{transform:none;line-height:1}
+.voyage-v47 .node-milestone-short{position:static;width:auto;font:700 clamp(8px,.75vw,10px)/1 system-ui,sans-serif;color:#ffe8b0;pointer-events:none;white-space:nowrap}
+.voyage-v47 .map-node.milestone-node.opened .node-code::before{left:auto;right:calc(100% + 2px);top:-4px;width:10px;height:10px;font-size:8px;line-height:10px}
+
+/* v49: visible hard limit and high-contrast route edges. */
+.voyage-v47 .voyage-time-limit{margin:12px 0;padding:12px;border:1px solid var(--theme-line);border-radius:8px;background:var(--theme-surface-2)}
+.voyage-v47 .voyage-time-limit .field-label{display:block;margin:0 0 7px;font-size:13px;font-weight:700}
+.voyage-v47 .voyage-time-limit select{width:100%;min-height:42px;padding:8px 10px;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-surface);color:var(--theme-ink);font:600 14px system-ui}
+.voyage-v47 .voyage-time-limit p{margin:7px 0 0;color:var(--theme-muted);font:12px/1.6 system-ui}
+.voyage-v47 .route-halo{stroke:#112333;stroke-width:9;opacity:.9;filter:none;marker-end:none}
+.voyage-v47 .ship-path{filter:drop-shadow(0 0 2px #ffffffb3)}
+.voyage-v47{--ship-1:#36e5ff;--ship-2:#ffb347;--ship-3:#d7a0ff;--ship-4:#ff80b5}
+.voyage-v47 .voyage-ship-tabs button[aria-pressed="true"]{color:#132333!important}
+
+.voyage-v47 .voyage-ship-tabs button[aria-pressed="true"]::first-line{color:#132333}

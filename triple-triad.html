@@ -8,14 +8,30 @@
   <title>幻卡王模擬器｜FF14 攻略百科</title>
   <link rel="stylesheet" href="assets/encyclopedia.css">
   <link rel="stylesheet" href="assets/triple-triad/triple-triad.css">
+  <link rel="stylesheet" href="assets/themes.css">
+  <script src="assets/theme.js?v=51"></script>
+  <link rel="stylesheet" href="assets/site-navigation.css?v=51">
+  <script src="assets/site-navigation.js?v=50" defer></script>
 </head>
-<body>
-  <header class="site-header">
-    <nav class="shell nav" aria-label="主要導覽">
+<body class="page-book-gold-saucer triad-inner-page">
+  <header class="site-header shared-site-header">
+    <nav class="shell nav site-primary-nav" aria-label="全站導覽">
       <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">✦</span><span class="brand-copy"><b>FF14 攻略百科</b><span>PLAYER GUIDE ARCHIVE</span></span></a>
-      <div class="nav-links"><a class="nav-link" href="index.html">百科首頁</a><a class="nav-link" href="zodiac.html">古武攻略</a><a class="nav-link active" href="gold-saucer.html">金碟遊樂場</a></div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">百科首頁</a>
+        <a class="nav-link" href="zodiac.html">古武攻略</a>
+        <a class="nav-link active" href="gold-saucer.html" aria-current="page">金碟遊樂場</a>
+        <a class="nav-link" href="submersible.html">潛水艇</a>
+      </div>
     </nav>
   </header>
+  <nav class="section-nav" aria-label="金碟遊樂場分頁">
+    <div class="shell section-nav-inner"><span class="section-nav-label">金碟遊樂場</span>
+      <a class="section-link" href="gold-saucer.html">金碟總覽</a>
+      <a class="section-link active" href="triple-triad.html" aria-current="page">九宮幻卡</a>
+      <a class="section-link" href="lord-of-verminion.html">萌寵之王</a>
+    </div>
+  </nav>
 
   <main class="shell triad-page">
     <nav class="crumb" aria-label="麵包屑"><a href="index.html">攻略百科</a><span>/</span><a href="gold-saucer.html">金碟遊樂場</a><span>/</span><b>幻卡王模擬器</b></nav>
@@ -73,7 +89,12 @@
       <p>表格依先前提供的 17173 攻略圖片重繪；第 9、13、37、39 列的紅色結局視為敗局，模擬器不會採用其後續出牌。攻略落點直接採用由左至右、由上至下的 1–9，沒有轉置；命中紅色敗局或表格無法決定時，會切換為避敗／即時計算。</p>
     </details>
 
-    <footer class="triad-sources">對手牌組與數值核對：ARR Triple Triad；出牌分支參考先前整理的 17173「55 種局面出牌表」。此模擬器用於練習，遊戲內 NPC 行為仍可能因版本或隨機決策產生差異。</footer>
+    <section class="page-sources triad-sources" aria-labelledby="triad-sources-title">
+      <div class="page-sources-head"><h2 id="triad-sources-title">資料來源與素材說明</h2><span>最後查核：2026-10-26</span></div>
+      <p class="page-sources-note">素材來源標示更新：2026-11-03。來源說明不代表已取得轉載或使用授權。</p>
+      <ul><li>九宮幻卡一般規則、加算與牌組限制：<a href="https://na.finalfantasyxiv.com/lodestone/playguide/contentsguide/goldsaucer/tripletriad/" target="_blank" rel="noreferrer">官方 Triple Triad 指南</a></li><li>幻卡王牌組、卡面數值與新手牌組打法核對：<a href="https://arrtripletriad.com/en/npc-elmer" target="_blank" rel="noreferrer">ARR Triple Triad－King Elmer III</a></li><li>55 種局面與紅色敗局判定：站長提供的攻略圖片，可追溯至 <a href="https://ff14.17173.com/content/04292024/153818553.shtml" target="_blank" rel="noreferrer">17173〈金碟币不够用？看过来：攻略部分〉</a>。該轉載文章將「55 種姿勢」署名為 lmy8023111（暮子规－摩杜纳）；此處記錄轉載來源及其署名，未確認最初發表處或使用授權。本工具依表格整理向量版、保留 PNG 參考版，並轉錄為模擬器攻略資料。</li><li>12 張卡面中央圖案（7 張 NPC 牌、5 張新手牌）：站長確認上傳參考圖為直接遊戲截圖；過往製作紀錄描述以 4 張上傳卡面作參考，由 GPT 協助擷取、去框及加工。實際加工流程與每張輸出對應的原截圖尚未獨立核實，不能一概標為另行重繪或 AI 原創；亦不主張遊戲角色圖案為本站或站長原創。卡片色彩與數值配置維持模擬器原設定。</li></ul>
+      <p class="page-sources-note">本工具用於照抄練習；NPC 實際出牌仍可能因版本或隨機決策不同。</p>
+    </section>
   </main>
 
   <script src="assets/triple-triad/triple-triad.js"></script>

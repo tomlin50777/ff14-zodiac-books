@@ -4,46 +4,69 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#100f0d">
-  <meta name="description" content="FF14 玩家攻略百科：古武黃道十二文書、星光變石地圖與金碟遊樂場攻略。">
+  <meta name="description" content="FF14 玩家攻略百科：古武黃道十二文書、星光變石地圖、金碟遊樂場與部隊潛水艇攻略。">
   <title>FF14 攻略百科</title>
   <link rel="stylesheet" href="assets/encyclopedia.css">
+  <link rel="stylesheet" href="assets/themes.css">
+  <script src="assets/theme.js?v=51"></script>
+  <link rel="stylesheet" href="assets/site-navigation.css?v=51">
+  <script src="assets/site-navigation.js?v=50" defer></script>
 </head>
-<body>
-  <header class="site-header">
-    <nav class="shell nav" aria-label="主要導覽">
+<body class="archive-home">
+  <header class="site-header shared-site-header">
+    <nav class="shell nav site-primary-nav" aria-label="全站導覽">
       <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">✦</span><span class="brand-copy"><b>FF14 攻略百科</b><span>PLAYER GUIDE ARCHIVE</span></span></a>
       <div class="nav-links">
         <a class="nav-link active" href="index.html" aria-current="page">百科首頁</a>
         <a class="nav-link" href="zodiac.html">古武攻略</a>
         <a class="nav-link" href="gold-saucer.html">金碟遊樂場</a>
+        <a class="nav-link" href="submersible.html">潛水艇</a>
       </div>
     </nav>
   </header>
 
-  <main class="shell">
+  <main class="shell library-home">
     <section class="hero">
-      <div><div class="eyebrow">Final Fantasy XIV · Player Guides</div><h1>FF14 攻略百科</h1><p>把分散的遊戲流程整理成真正能操作的攻略工具。選擇主題後即可進入各自的完整頁面；未來新增的攻略，也會集中在這個入口。</p></div>
-      <aside class="hero-note"><strong>2 個攻略主題</strong>古武工具完整保留，金碟遊樂場建立獨立專區。</aside>
+      <div><div class="eyebrow">The Adventurer's Archive</div><h1>FF14 攻略百科</h1><p>歡迎來到冒險者書庫。每一冊攻略都有自己的封面與氣氛，翻開後則保留清楚、能直接操作的攻略內容。</p></div>
+      <aside class="hero-note"><strong>館藏 3 冊</strong>古武魔導書 · 金碟娛樂誌 · 潛水艇航海日誌</aside>
     </section>
 
     <section aria-labelledby="guide-title">
-      <div class="section-head"><div><div class="eyebrow">Choose a guide</div><h2 id="guide-title">攻略分類</h2></div><p>之後可繼續加入青魔、採集、生產與其他內容</p></div>
+      <div class="section-head"><div><div class="eyebrow">Choose a volume</div><h2 id="guide-title">選一本攻略書</h2></div><p>新的攻略會成為書架上的下一冊館藏</p></div>
       <div class="guide-grid">
-        <a class="guide-card" href="zodiac.html">
-          <span class="card-action">進入攻略 →</span><span class="card-icon" aria-hidden="true">✦</span>
+        <a class="guide-card zodiac-book" href="zodiac.html">
+          <span class="book-pages" aria-hidden="true"></span><span class="book-ribbon" aria-hidden="true"></span><span class="book-volume">VOLUME I · RELIC GRIMOIRE</span>
+          <span class="card-action">翻開本書 →</span><span class="card-icon" aria-hidden="true">✦</span>
           <h3>古武攻略</h3><span class="en">ZODIAC WEAPON</span>
           <p>九本天書、四大任務、副本、FATE、討伐、理符與星光變石神秘地圖，包含瀏覽器進度記錄。</p>
           <span class="tags"><span class="tag">九本天書</span><span class="tag">四大任務</span><span class="tag">神秘地圖</span><span class="tag">進度追蹤</span></span>
           <span class="card-num" aria-hidden="true">01</span>
         </a>
         <a class="guide-card gold-saucer" href="gold-saucer.html">
-          <span class="card-action">進入專區 →</span><span class="card-icon" aria-hidden="true">◆</span>
+          <span class="book-pages" aria-hidden="true"></span><span class="book-ribbon" aria-hidden="true"></span><span class="book-volume">VOLUME II · HOUSE SPECIAL</span>
+          <span class="card-action">翻開本書 →</span><span class="card-icon" aria-hidden="true">◆</span>
           <h3>金碟遊樂場</h3><span class="en">MANDERVILLE GOLD SAUCER</span>
           <p>九宮幻卡提供可直接操作的幻卡王模擬器；萌寵之王用五個步驟與遊戲圖片，帶你完成單人戰。</p>
           <span class="tags"><span class="tag">九宮幻卡</span><span class="tag">萌寵之王</span></span>
           <span class="card-num" aria-hidden="true">02</span>
         </a>
+        <a class="guide-card submersible" href="submersible.html">
+          <span class="book-pages" aria-hidden="true"></span><span class="book-ribbon" aria-hidden="true"></span><span class="book-volume">VOLUME III · WORKSHOP LOG</span>
+          <span class="card-action">翻開本書 →</span><span class="card-icon" aria-hidden="true">⚓</span>
+          <h3>潛水艇</h3><span class="en">FREE COMPANY SUBMERSIBLE</span>
+          <p>從目前等級直接算出下一趟該去哪裡，並整理 1～50 級開圖、零件更換、四艘解鎖與穩定收益方向。</p>
+          <span class="tags"><span class="tag">即時航行建議</span><span class="tag">1～50 開圖</span><span class="tag">零件配置</span></span>
+          <span class="card-num" aria-hidden="true">03</span>
+        </a>
       </div>
+    </section>
+
+    <section class="page-sources" aria-labelledby="home-sources-title">
+      <div class="page-sources-head"><h2 id="home-sources-title">資料來源與素材說明</h2><span>最後查核：2026-10-26</span></div>
+      <p class="page-sources-note">素材來源標示更新：2026-11-03。來源說明不代表已取得轉載或使用授權。</p>
+      <p><strong>本頁性質：</strong>百科入口與館藏介紹由本站整理，不承載獨立攻略數值；古武、金碟與潛水艇的詳細出處分別列在各攻略頁底部。</p>
+      <ul><li>遊戲與各玩法名稱核對：<a href="https://na.finalfantasyxiv.com/lodestone/playguide/" target="_blank" rel="noreferrer">FINAL FANTASY XIV 官方 Play Guide</a></li><li>網站介面、書冊視覺與導覽文字：本工具的互動編排與呈現；不作為外部攻略、遊戲圖像或素材的原創歸屬聲明。</li></ul>
+      <p class="page-sources-note">《FINAL FANTASY XIV》名稱、圖像、地圖、角色與商標權利屬 SQUARE ENIX CO., LTD.；本站為非官方玩家工具。</p>
     </section>
   </main>
 

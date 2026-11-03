@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#14395b">
+  <title>艦隊航海室｜FF14 攻略百科</title>
+  <link rel="stylesheet" href="assets/encyclopedia.css">
+  <link rel="stylesheet" href="assets/submersible.css?v=49">
+  <link rel="stylesheet" href="assets/themes.css">
+  <link rel="stylesheet" href="assets/submersible-v47.css?v=49">
+  <script src="assets/theme.js?v=51" defer></script>
+  <script src="assets/submersible-data.js?v=49" defer></script>
+  <script src="assets/submersible-engine.js?v=49" defer></script>
+  <script src="assets/submersible-state.js?v=49" defer></script>
+  <script src="assets/submersible.js?v=49" defer></script>
+  <script src="assets/submersible-collection.js?v=49" defer></script>
+  <script src="assets/submersible-logbook.js?v=49" defer></script>
+  <script src="assets/submersible-map-ui.js?v=49" defer></script>
+  <script src="assets/submersible-planner.js?v=49" defer></script>
+  <link rel="stylesheet" href="assets/site-navigation.css?v=51">
+  <script src="assets/site-navigation.js?v=50" defer></script>
+</head>
+<body class="page-book-submersible submersible-page fleet-tree-page voyage-v47">
+  <header class="site-header shared-site-header">
+    <nav class="shell nav site-primary-nav" aria-label="全站導覽">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">✦</span><span class="brand-copy"><b>FF14 攻略百科</b><span>PLAYER GUIDE ARCHIVE</span></span></a>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">百科首頁</a>
+        <a class="nav-link" href="zodiac.html">古武攻略</a>
+        <a class="nav-link" href="gold-saucer.html">金碟遊樂場</a>
+        <a class="nav-link active" href="submersible.html" aria-current="page">潛水艇</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <noscript><p class="shell">航海室需要啟用 JavaScript 才能讀取本機艦隊與計算；你的原有資料不會因此被更改。</p></noscript>
+
+    <nav class="sub-book-nav section-nav" aria-label="潛水艇攻略分頁"><div class="shell section-nav-inner"><h1 class="workspace-title">艦隊航海室</h1><a class="section-link active" aria-current="page" href="submersible.html">⚓ 艦隊航海室<small>多工房、四船與海圖</small></a><a class="section-link" href="submersible-manual.html">▤ 潛航手冊<small>零件、能力與收益</small></a><span class="workspace-version">本頁 v52 · 台服 7.25｜潛艇 7.2 · R130</span></div></nav>
+
+    <div class="shell sub-content fleet-layout">
+
+      <aside id="fleet-manager" class="fleet-sidebar" aria-labelledby="fleet-title">
+        <div class="tree-heading"><h2 id="fleet-title">我的工房檔案</h2><button id="add-workshop" type="button" aria-label="新增工房">＋</button></div>
+        <p class="tree-hint">點工房或船隻開啟設定</p>
+        <nav id="workshop-tree" aria-label="工房與船隻"></nav>
+        <button id="show-overview" class="tree-overview" type="button">▦ 全工房總覽</button>
+      </aside>
+      <div class="voyage-main">
+        <div class="fleet-context"><strong id="summary-workshop">主工房</strong><span>主船 <b id="summary-flagship">1 號艇</b></span><span>啟用 <b id="summary-active">1／4</b></span><span id="summary-rank">Rank 3</span></div>
+
+
+      <section class="harbor-summary" aria-label="艦隊狀態"><div><span class="eyebrow">FLEET OPERATIONS / 航海室</span><h2>讓每一趟，都有方向。</h2><p>開船位、探索、收藏與返航，在同一張海圖完成。</p></div><div id="harbor-status" aria-live="polite"></div></section>
+      <div class="mobile-next"><strong id="mobile-next-title">讀取艦隊資料中…</strong><a href="#route-planner-dialog">查看下一步與推薦 ↓</a></div>
+      <div id="slot-milestones" class="slot-milestones" aria-label="船位里程碑"></div>
+      <section id="chart-room" class="chart-section" data-workshop-detail aria-labelledby="chart-title">
+        <div class="section-title-row"><div><div class="eyebrow">Interactive voyage chart</div><h2 id="chart-title">互動航海圖</h2></div><p>節點底色表示開圖狀態；航線和船號另外疊在上層，不會互相混淆。</p></div>
+        <p class="chart-quick-help">先選船，再看下一步。建議與手動航線都不會替你變更遊戲進度。</p>
+        <div id="map-tabs" class="map-tabs" role="tablist" aria-label="海域選擇"></div>
+        <div class="chart-toolbar">
+            <div class="route-heading">
+              <div class="active-route" aria-label="本趟航線">
+                <strong id="active-route-ship">1 號艇</strong>
+                <input id="active-route-order" type="text" readonly aria-label="本趟航線，依左到右順序選點" value="尚未安排" spellcheck="false">
+                <button id="copy-active-route" type="button" disabled>複製</button><button id="focus-voyage-plan" type="button">航次管理</button>
+              </div>
+              <p id="active-route-hint" aria-live="polite">本趟航線 · 先在右側安排航程</p>
+              <div class="chart-progress"><div><span id="map-name">溺沒海</span><b id="map-count">0／30</b></div><div class="progress-track"><i id="map-progress"></i></div><small id="map-range">Rank 1～50</small><p id="available-summary"></p></div>
+            </div>
+
+        </div>
+        <div class="chart-workbench">
+          <div class="map-viewport"><div class="map-frame"><img id="sea-map-image" src="assets/submersible/maps/deep-sea.png" alt="溺沒海航海圖"><svg id="route-overlay" class="route-overlay" aria-hidden="true"></svg><div id="map-hotspots" class="map-hotspots"></div><div id="map-version-lock" class="map-version-lock" hidden><span>台服 7.2</span><strong>此海域尚未開放</strong><small>素材先保留，待台服版本更新後再啟用。</small></div></div><div class="map-key"><span>● 已開啟</span><span>＋ 可爭取開啟</span><span>↑ 等級不足</span><span>灰色 未發現／未實裝</span><small>船號 · 站序；金色虛線是預覽</small></div></div>
+          <aside class="chart-console" aria-label="航程與節點操作" tabindex="0">
+            <section id="route-planner-dialog" class="inline-planner" aria-labelledby="route-planner-title">
+<header class="panel-heading"><span class="eyebrow">01 / NEXT VOYAGE</span><h2 id="route-planner-title">下一趟，往哪裡？</h2></header>
+<p id="planner-ship-summary" class="muted"></p>
+<div id="voyage-ship-tabs" class="voyage-ship-tabs" aria-label="選擇規劃船隻"></div>
+<label class="field-label">這次想做什麼<select id="planner-mode"><option value="auto">讓系統建議下一步</option><option value="unlock">開船位／開圖</option><option value="level">練等</option><option value="gil">NPC 飾物收入</option><option value="item">家具收藏</option><option value="manual">手動排航線</option></select></label>
+<div id="collection-browser" hidden><label class="field-label">收藏目標<select id="collection-target"></select></label><details class="collection-search-tools"><summary>搜尋／篩選其他家具</summary><label class="field-label">找家具（英文名或用途）<input id="collection-search" type="search" placeholder="例如 Ice Box、地毯"></label><label class="field-label">取得方式<select id="collection-kind"><option value="all">全部家具</option><option value="finished">成品直掉</option><option value="material">素材再製作</option></select></label><p id="collection-results-status" class="muted"></p></details><details class="collection-provenance"><summary>取得方式、配方與來源</summary><div id="collection-description"></div></details><details class="collection-build-panel"><summary>配裝不足？試算最少換件</summary><p>只用目前船等級、已開且版本可用的來源試算；不假設你持有任何替換部件。</p><button id="suggest-collection-build" type="button">計算這艘船的配裝參考</button><div id="collection-build-results"></div></details></div>
+<div id="next-step" aria-live="polite"><strong id="next-step-title">讀取艦隊資料中…</strong><p id="next-step-copy"></p><details id="next-step-details" hidden><summary>查看各船缺項與來源限制</summary><ul id="next-step-detail-list"></ul></details></div>
+<button id="open-route-planner" class="primary-action" type="button">查看建議航線</button>
+<details class="setup-tools"><summary>船隻設定與補登進度</summary><button id="setup-selected-ship" type="button">設定這艘船的等級與配裝</button><button id="open-progress-editor" type="button">已有開圖？補登遊戲進度</button></details>
+<div class="voyage-time-limit"><label class="field-label" for="planner-hours">單趟時間上限</label><select id="planner-hours" aria-describedby="planner-hours-help"><option value="0">不限</option><option value="24">24 小時內</option><option value="36">36 小時內</option><option value="48">48 小時內</option><option value="72">72 小時內</option></select><p id="planner-hours-help">只推薦在此時間內返航的航線；變更後自動重算，依工房保存。</p></div>
+<div id="planner-strategies" class="planner-strategies"><button type="button" data-planner-strategy="outcome" aria-pressed="true">成果優先</button><button type="button" data-planner-strategy="efficiency" aria-pressed="false">效率優先</button><button type="button" data-planner-strategy="time" aria-pressed="false">省時優先</button></div><p id="planner-strategy-help" class="muted"></p>
+<p id="planner-status" role="status" aria-live="polite"></p><div id="planner-results" class="planner-results"></div>
+<details class="advanced-planner"><summary>收船作息與比較範圍</summary>
+<label class="field-label">可收船的間隔（偏好）<select id="planner-cadence"><option value="24">每 24 小時</option><option value="12">每 12 小時</option><option value="36">每 36 小時</option><option value="48">每 48 小時</option><option value="0">返航即收</option></select></label>
+<p class="muted">有效週期＝航時向上對齊此間隔；這是作息假設，不是遊戲實際返航時間。</p>
+<div class="planner-controls"><label>比較範圍<select id="planner-scope"><option value="all">全部已開海域</option><option value="current">目前海圖</option></select></label></div>
+
+<button id="compare-routes" type="button">重新比較完整航線</button><p class="muted">開圖數是可能發現的目標數，不是成功率。NPC 模式僅比較成熟樣本涵蓋的社群毛值，不代表全遊戲最高收益。探查不加成開圖率。</p></details>
+</section>
+<div id="voyage-editor" class="voyage-editor">
+              <header class="panel-heading"><span class="eyebrow">02 / YOUR PLAN</span><h2>本趟計畫</h2></header>
+              
+              <div id="voyage-route-list" class="voyage-route-list"><em>尚未安排航程</em></div>
+              <div id="voyage-metrics" class="voyage-metrics" aria-live="polite"></div>
+              <div class="planner-actions"><button id="optimize-voyage" type="button">重排最短時間</button></div>
+              <details class="voyage-breakdown"><summary>船隻能力與計算明細</summary><div id="voyage-breakdown"></div></details>
+              <p id="voyage-validation"></p>
+              <button id="clear-voyage" type="button">清除這艘船的航程</button>
+            </div>
+        <details class="chart-legend-panel"><summary id="legend-title">海圖圖例與航線顯示</summary>
+          <div class="status-legend">
+            <div class="legend-item"><i class="legend-node opened">✓</i><span><b>已開啟</b><small>可安排前往</small></span></div>
+            <div class="legend-item"><i class="legend-node available">＋</i><span><b>可開啟</b><small>去前置站開圖</small></span></div>
+            <button class="legend-item route-toggle recommended" type="button" data-layer-toggle="recommended" aria-pressed="true"><i class="legend-line"></i><span><b>計算推薦</b><small>最近套用的推薦線</small></span></button>
+            <button class="legend-item route-toggle ship-1" type="button" data-layer-toggle="ship-0" aria-pressed="true"><i class="legend-ship">1</i><span><b>1 號艇</b><small id="legend-ship-1">目前航程</small></span></button>
+            <button class="legend-item route-toggle ship-2" type="button" data-layer-toggle="ship-1" aria-pressed="true"><i class="legend-ship">2</i><span><b>2 號艇</b><small id="legend-ship-2">目前航程</small></span></button>
+            <button class="legend-item route-toggle ship-3" type="button" data-layer-toggle="ship-2" aria-pressed="true"><i class="legend-ship">3</i><span><b>3 號艇</b><small id="legend-ship-3">目前航程</small></span></button>
+            <button class="legend-item route-toggle ship-4" type="button" data-layer-toggle="ship-3" aria-pressed="true"><i class="legend-ship">4</i><span><b>4 號艇</b><small id="legend-ship-4">目前航程</small></span></button>
+            <div class="legend-item"><i class="legend-node locked">×</i><span><b>未開啟</b><small>前置尚未開</small></span></div>
+          </div>
+        </details>
+
+            <details class="node-inspector" open><summary>地點與開圖登記</summary>
+              <span>② 點海圖選地點，在這裡操作</span>
+              <h3 id="node-title">請先點選海圖節點</h3>
+              <p id="node-copy">點選只查看，不會變更資料。</p>
+              <div class="node-operation"><h4>開圖登記 · 此工房共用</h4><button id="node-register" type="button" disabled>登記為已開啟</button></div>
+              <div class="node-operation"><h4>安排航程 · 目前選擇的船</h4><button id="node-action" type="button" disabled>請先選擇節點</button><p id="node-voyage-help"></p></div>
+              <p id="map-feedback" role="status" aria-live="polite"></p>
+            </details>
+            <details id="progress-editor" class="progress-editor">
+              <summary>已有進度？快速補登</summary><p>選遊戲中已發現的地點，一次補登它與必要前置節點（含前一海域），不會把其他支線全部開啟。</p>
+              <label><span>已發現的節點</span><select id="route-progress-select"></select></label>
+              <button id="complete-route" type="button">補登此地點與必要前置</button>
+            </details>
+            <div class="route-guide"><span>開圖參考主線 · 非計算結果</span><div id="route-chips"></div><p id="route-next">先從 B 開始。</p></div>
+            <div class="chart-actions"><button id="reset-map" type="button">清除本海圖的開圖登記</button></div>
+      <details class="command-section" data-workshop-detail><summary><span>現在該做什麼</span><small>查看主船建議與配置</small></summary><div class="command-head"><div><span class="command-kicker">FLAGSHIP ORDERS</span><h2 id="command-title">現在該做什麼</h2></div><span id="command-ship" class="command-ship">主工房 · 1 號艇 · Rank 3</span></div><div class="command-body"><div class="command-main"><span>下一步</span><h3 id="command-action">維持 1111，先用目前可選地點升級</h3><p id="command-copy">3 級時 C、D 即使顯示在遊戲內，也可能因最低等級不足而無法選取；這不是故障。</p></div><div class="command-build"><span>入門配置參考 · 非目前配裝</span><strong id="command-build">1111</strong><small id="command-build-copy">1=鯊魚；四碼依序為船體、船尾、船首、艦橋</small><button id="apply-build" type="button">填入主船設定（待儲存）</button></div><div class="command-target"><span>最近目標</span><strong id="command-target">Rank 7</strong><small id="command-target-copy">繼續探索溺沒海 B，準備前往 E</small></div></div></details>
+<details class="chart-reference"><summary>版本範圍與資料來源</summary>
+      <section class="version-note" data-workshop-detail><strong>為什麼北洋不能點？</strong><p>台服 7.2 的潛水艇上限為 130 級，目前只開放到南蒼茫洋 M。南蒼茫洋 N～T 與北洋先顯示成灰色鎖定狀態。</p><a href="submersible-manual.html#version-72">查看 7.2 版本範圍 →</a></section>
+      <section class="page-sources" aria-labelledby="fleet-sources-title">
+        <div class="page-sources-head"><h2 id="fleet-sources-title">資料來源與素材說明</h2><span>最後查核：2026-11-01</span></div>
+      <p class="page-sources-note">素材來源標示更新：2026-11-03。來源說明不代表已取得轉載或使用授權。</p>
+        <ul><li>版本範圍：<a href="https://www.ffxiv.com.tw/web/special/patchnote_log/patch_7.2_notes.html" target="_blank" rel="noreferrer">台服官方 7.2 筆記</a>。台服整體 7.25、潛艇 7.2／Rank 130；國際整體 7.57、潛艇 7.5／Rank 145 僅為版本對照，不套用台服計算。</li><li>NPC 飾物均值與性能門檻：<a href="https://docs.google.com/spreadsheets/d/1eiuGRrQTjJ5n4ogybKOBxJRT7EiJLlX93fge-Z8MmD4/edit" target="_blank" rel="noreferrer">Elena／Infi 社群原始表</a>及<a href="https://docs.google.com/spreadsheets/d/1aOhMH-XrWBIV93Veo3Wo0zz38z-tqk6QWO_4xzu5ZMg/edit" target="_blank" rel="noreferrer">Polar 路線比較</a>。非官方保證，非台服抽樣；家具收藏不換算價格。</li><li>計算資料：<a href="https://github.com/xivapi/ffxiv-datamining/tree/70f3e90d13c379b15e6b4f26befa95a62db04379/csv" target="_blank" rel="noreferrer">XIVAPI 7.2 快照</a>（SubmarinePart／Rank／Exploration）；公式交叉核對：<a href="https://github.com/Infiziert90/SubmarineTracker/blob/04c54d770f815cd416bbade1ac5b178b551a32b5/SubmarineTracker/SubExplPretty.cs" target="_blank" rel="noreferrer">SubmarineTracker</a>。</li><li>海域節點、開圖關係與解鎖路線：<a href="https://submarine.girin.dev/en/unlock/" target="_blank" rel="noreferrer">FFXIV Submarine Info－Unlock Map</a></li><li>潛水艇航行、等級與能力機制核對：<a href="https://ffxiv.consolegameswiki.com/wiki/Subaquatic_Voyages" target="_blank" rel="noreferrer">FFXIV Community Wiki－Subaquatic Voyages</a></li><li>七張航海圖底圖：由站長提供，站長確認來源為 <a href="https://ff14.huijiwiki.com/wiki/%E9%83%A8%E9%98%9F%E6%BD%9C%E6%B0%B4%E8%89%87" target="_blank" rel="noreferrer">灰機 Wiki〈部队潜水艇〉</a>。目前未完成各圖原始檔案頁、作者及授權的逐張核對；本工具僅疊加互動節點、路線與船號圖層，不將機制資料來源當作海圖影像來源證明。</li><li>多工房、四船管理、8 種標記與瀏覽器進度：本工具提供的互動功能，與海圖影像來源分開標示。</li><li>第 34 版節點前置與最低等級核對（來源含後續版本，本工具保留台服 7.2 限制）：<a href="https://submarine.girin.dev/en/map/deep-sea-site/" target="_blank" rel="noreferrer">溺沒海</a>、<a href="https://submarine.girin.dev/en/map/sea-of-ash/" target="_blank" rel="noreferrer">灰海</a>、<a href="https://submarine.girin.dev/en/map/sea-of-jade/" target="_blank" rel="noreferrer">翠浪海</a>、<a href="https://submarine.girin.dev/en/map/sirensong-sea/" target="_blank" rel="noreferrer">妖歌海</a>、<a href="https://submarine.girin.dev/en/map/lilac-sea/" target="_blank" rel="noreferrer">紫礁海</a>、<a href="https://submarine.girin.dev/en/map/south-indigo-deep/" target="_blank" rel="noreferrer">南蒼茫洋</a>。</li></ul>
+        <p class="page-sources-note">台服版本範圍與中文譯名若有差異，以台服遊戲內顯示為準。</p>
+      </section>
+</details>
+          </aside>
+        </div>
+      </section>
+
+
+
+      </div>
+    </div>
+  </main>
+
+  <dialog id="workshop-dialog" class="fleet-dialog" aria-labelledby="workshop-dialog-title">
+    <form id="workshop-form">
+      <header class="dialog-heading"><div><span>WORKSHOP SETTINGS</span><h2 id="workshop-dialog-title">工房設定</h2></div><button type="button" data-close-dialog="workshop-dialog" aria-label="關閉工房設定">×</button></header>
+      <p class="dialog-intro">此工房的四艘船、開圖與航程各自獨立保存。</p>
+      <label>工房名稱<input id="workshop-name" type="text" maxlength="24" required></label>
+      <label>帳號／角色備註<input id="workshop-note" type="text" maxlength="40" placeholder="例如：主帳號、個人部隊 A"></label>
+      <label>識別色<select id="workshop-color"><option value="blue">航海藍</option><option value="green">森綠</option><option value="purple">水晶紫</option><option value="red">酒紅</option><option value="gold">金砂</option></select></label>
+      <p id="workshop-dialog-message" class="dialog-message" role="status"></p>
+      <footer class="dialog-actions"><button id="delete-workshop" class="danger-button" type="button">刪除工房</button><span></span><button type="button" data-close-dialog="workshop-dialog">取消</button><button class="save-button" type="submit">儲存工房</button></footer>
+    </form>
+  </dialog>
+  <dialog id="ship-dialog" class="fleet-dialog" aria-labelledby="ship-dialog-title">
+    <form id="ship-form">
+      <header class="dialog-heading"><div><span>SUBMERSIBLE SETTINGS</span><h2 id="ship-dialog-title">船隻設定</h2></div><button type="button" data-close-dialog="ship-dialog" aria-label="關閉船隻設定">×</button></header>
+      <label class="dialog-check"><input id="ship-enabled" type="checkbox">啟用此船</label>
+      <div class="dialog-field-row"><label>等級<input id="ship-rank" type="number" min="1" max="130" required></label><label>數字零件<input id="ship-build" type="text" inputmode="numeric" minlength="4" maxlength="4" pattern="[1-5]{4}" title="請輸入四碼數字，每碼介於 1～5" required></label></div>
+      <p class="dialog-intro">四碼依序為船體、船尾、船首、艦橋；1 鯊魚、2 甲鱟、3 鬚鯨、4 腔棘魚、5 希爾德拉。</p>
+      <fieldset class="modified-parts"><legend>改裝零件（哪一部位是「改」就勾哪個）</legend>
+<label><input id="ship-modified-0" type="checkbox">船體改</label><label><input id="ship-modified-1" type="checkbox">船尾改</label><label><input id="ship-modified-2" type="checkbox">船首改</label><label><input id="ship-modified-3" type="checkbox">艦橋改</label></fieldset>
+      <p id="ship-stats-preview" class="ship-stats-preview" aria-live="polite"></p>
+      <button id="ship-recommend" type="button">試填未改參考（需自行備齊）</button><p class="dialog-intro">參考不等於通用最佳配裝。R85 以上的 3124／WSUC 主要用作 OJ 飾物基準，不保證符合高階家具探查門檻；試填會將四部位改型取消，儲存前請核對。</p>
+      <label>目前目標<select id="ship-goal"><option value="auto">系統下一步</option><option value="unlock">開船位／開圖</option><option value="level">練等</option><option value="gil">NPC 飾物收入</option><option value="item">家具收藏</option><option value="manual">手動排航線</option></select></label>
+      <label class="dialog-check"><input id="ship-flagship" type="checkbox">設為主船（需啟用）</label>
+      <p id="ship-dialog-message" class="dialog-message" role="status">儲存後才會更新船隻資料；取消不會變更設定。</p>
+      <footer class="dialog-actions"><span></span><button type="button" data-close-dialog="ship-dialog">取消</button><button class="save-button" type="submit">儲存船隻</button></footer>
+    </form>
+  </dialog>
+  <dialog id="overview-dialog" class="fleet-dialog overview-dialog" aria-labelledby="overview-title">
+    <header class="dialog-heading"><h2 id="overview-title">全工房總覽</h2><button type="button" data-close-dialog="overview-dialog" aria-label="關閉總覽">×</button></header>
+    <div id="workshop-overview-grid" class="workshop-overview-grid"></div>
+  </dialog>
+
+  <footer class="site-footer"><div class="shell">非官方玩家攻略工具；FINAL FANTASY XIV 相關權利屬 SQUARE ENIX CO., LTD.。</div></footer>
+</body>
+</html>
