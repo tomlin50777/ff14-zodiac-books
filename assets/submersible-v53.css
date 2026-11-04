@@ -1,0 +1,22 @@
+/* Exploration is a separate badge; discovery keeps its existing color. */
+.voyage-v47 .map-node.opened .node-code::before{content:none}
+.voyage-v47 .node-explored-badge{position:absolute;right:-5%;top:-8%;display:grid;place-items:center;width:30%;aspect-ratio:1;min-width:15px;min-height:15px;border:2px solid #fff;border-radius:50%;background:#124f40;color:#fff;font:900 clamp(10px,1vw,15px)/1 system-ui,sans-serif;box-shadow:0 1px 4px #0008;pointer-events:none}
+.legend-node.explored{background:#124f40;color:#fff;border:2px solid #baf4dc}
+.explored-summary{font:700 11px/1.6 system-ui,sans-serif;color:var(--theme-ink)}
+.explored-operation small{display:block;margin-top:8px;font-size:11px;line-height:1.65;color:var(--theme-muted)}
+#node-explored-status{margin:6px 0;font-size:12px;line-height:1.6}
+.explored-operation button+button,#node-required{margin-top:8px}
+.explored-dialog{box-sizing:border-box;width:min(620px,calc(100% - 28px));max-height:85dvh;overflow:auto;padding:24px;border:1px solid var(--theme-line);border-radius:14px;background:var(--theme-surface);color:var(--theme-ink)}
+.explored-dialog::backdrop{background:#071421a6}
+.explored-dialog h2{font-size:21px;margin:0 0 8px}.explored-dialog p{line-height:1.7;font-size:13px}.explored-dialog-context{color:var(--theme-muted);margin-top:0}
+.explored-dialog fieldset{min-width:0;border:1px solid var(--theme-line);border-radius:9px;margin:14px 0;padding:12px}.explored-dialog legend{padding:0 6px;font-size:12px;font-weight:700}
+.explored-modes{display:flex;gap:12px;flex-wrap:wrap}.explored-modes label{display:flex;align-items:center;gap:6px;margin:0;font-size:13px}
+.explored-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.explored-grid label,.collect-stop-list label{display:flex;gap:8px;align-items:flex-start;margin:0;padding:8px;border:1px solid var(--theme-line);border-radius:7px;cursor:pointer}.explored-grid b,.explored-grid small{display:block}.explored-grid small{font-size:10px;line-height:1.45;color:var(--theme-muted);margin-top:4px}
+.explored-dialog input[type="checkbox"],.explored-dialog input[type="radio"],.collect-stop-list input{flex:none;width:18px;height:18px;min-height:18px;padding:0;margin:1px 0;accent-color:#24734f}
+.explored-selection-actions,.explored-dialog-actions{display:flex;gap:8px;flex-wrap:wrap}.explored-dialog button{padding:10px 12px;border:1px solid var(--theme-line);border-radius:8px;background:var(--theme-surface-2);color:var(--theme-ink);font:700 12px/1.5 system-ui,sans-serif;cursor:pointer}.explored-dialog button:disabled{opacity:.45;cursor:not-allowed}.explored-dialog-actions{justify-content:flex-end;margin-top:18px}.explored-dialog .primary-action{background:#245f7a;color:#fff}.explored-preview{border-left:3px solid #24734f;padding:10px 12px;background:var(--theme-surface-2);font-size:13px;line-height:1.7}.explored-dialog-error{color:#b64a38}
+.sailing-collect{margin-top:14px;padding:12px;border:1px solid var(--theme-line);border-radius:10px;background:var(--theme-surface-2)}.sailing-collect h4{margin:0 0 8px}.sailing-collect p{font-size:12px;line-height:1.65}.collect-stop-list{display:flex;flex-wrap:wrap;gap:8px;border:0;padding:0;margin:10px 0}.collect-stop-list legend{font-size:12px;margin-bottom:8px}.collect-stop-list label{background:var(--theme-surface);font-size:12px}.collect-preview{font-weight:700}.sailing-collect .sailing-actions{display:flex;flex-wrap:wrap;gap:8px}.sailing-collect button{margin:0}
+@media(max-width:560px){.explored-dialog{padding:18px}.explored-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.explored-dialog-actions button{flex:1}.explored-modes{flex-direction:column}}
+/* Override generic fleet form spacing for compact choice cards. */
+#explored-dialog .explored-modes label{margin:0;min-height:40px}
+#explored-dialog .explored-grid label{margin:0;min-height:44px}
+#explored-dialog input[type="checkbox"],#explored-dialog input[type="radio"],.collect-stop-list input[type="checkbox"]{height:18px;min-height:18px;width:18px;min-width:18px;padding:0}

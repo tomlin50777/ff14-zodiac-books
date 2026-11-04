@@ -9,15 +9,21 @@
   <link rel="stylesheet" href="assets/submersible.css?v=49">
   <link rel="stylesheet" href="assets/themes.css">
   <link rel="stylesheet" href="assets/submersible-v47.css?v=49">
+  <link rel="stylesheet" href="assets/submersible-v53.css?v=53">
+  <link rel="stylesheet" href="assets/submersible-required.css?v=53">
+  <link rel="stylesheet" href="assets/submersible-return.css?v=54">
+  <link rel="stylesheet" href="assets/submersible-parts.css?v=55">
   <script src="assets/theme.js?v=51" defer></script>
   <script src="assets/submersible-data.js?v=49" defer></script>
-  <script src="assets/submersible-engine.js?v=49" defer></script>
-  <script src="assets/submersible-state.js?v=49" defer></script>
-  <script src="assets/submersible.js?v=49" defer></script>
+  <script src="assets/submersible-engine.js?v=53" defer></script>
+  <script src="assets/submersible-state.js?v=53" defer></script>
+  <script src="assets/submersible-parts.js?v=54" defer></script>
+  <script src="assets/submersible.js?v=54" defer></script>
   <script src="assets/submersible-collection.js?v=49" defer></script>
-  <script src="assets/submersible-logbook.js?v=49" defer></script>
+  <script src="assets/submersible-explored.js?v=53" defer></script>
+  <script src="assets/submersible-logbook.js?v=54" defer></script>
   <script src="assets/submersible-map-ui.js?v=49" defer></script>
-  <script src="assets/submersible-planner.js?v=49" defer></script>
+  <script src="assets/submersible-planner.js?v=54" defer></script>
   <link rel="stylesheet" href="assets/site-navigation.css?v=51">
   <script src="assets/site-navigation.js?v=50" defer></script>
 </head>
@@ -37,7 +43,7 @@
   <main>
     <noscript><p class="shell">航海室需要啟用 JavaScript 才能讀取本機艦隊與計算；你的原有資料不會因此被更改。</p></noscript>
 
-    <nav class="sub-book-nav section-nav" aria-label="潛水艇攻略分頁"><div class="shell section-nav-inner"><h1 class="workspace-title">艦隊航海室</h1><a class="section-link active" aria-current="page" href="submersible.html">⚓ 艦隊航海室<small>多工房、四船與海圖</small></a><a class="section-link" href="submersible-manual.html">▤ 潛航手冊<small>零件、能力與收益</small></a><span class="workspace-version">本頁 v52 · 台服 7.25｜潛艇 7.2 · R130</span></div></nav>
+    <nav class="sub-book-nav section-nav" aria-label="潛水艇攻略分頁"><div class="shell section-nav-inner"><h1 class="workspace-title">艦隊航海室</h1><a class="section-link active" aria-current="page" href="submersible.html">⚓ 艦隊航海室<small>多工房、四船與海圖</small></a><a class="section-link" href="submersible-manual.html">▤ 潛航手冊<small>零件、能力與收益</small></a><span class="workspace-version">本頁 v55 · 台服 7.25｜潛艇 7.2 · R130</span></div></nav>
 
     <div class="shell sub-content fleet-layout">
 
@@ -52,11 +58,11 @@
 
 
       <section class="harbor-summary" aria-label="艦隊狀態"><div><span class="eyebrow">FLEET OPERATIONS / 航海室</span><h2>讓每一趟，都有方向。</h2><p>開船位、探索、收藏與返航，在同一張海圖完成。</p></div><div id="harbor-status" aria-live="polite"></div></section>
-      <div class="mobile-next"><strong id="mobile-next-title">讀取艦隊資料中…</strong><a href="#route-planner-dialog">查看下一步與推薦 ↓</a></div>
+      <div class="mobile-next"><strong id="mobile-next-title">讀取艦隊資料中…</strong><a href="#route-planner-dialog">查看系統推薦 ↓</a></div>
       <div id="slot-milestones" class="slot-milestones" aria-label="船位里程碑"></div>
       <section id="chart-room" class="chart-section" data-workshop-detail aria-labelledby="chart-title">
         <div class="section-title-row"><div><div class="eyebrow">Interactive voyage chart</div><h2 id="chart-title">互動航海圖</h2></div><p>節點底色表示開圖狀態；航線和船號另外疊在上層，不會互相混淆。</p></div>
-        <p class="chart-quick-help">先選船，再看下一步。建議與手動航線都不會替你變更遊戲進度。</p>
+        <p class="chart-quick-help">先選船，再看系統推薦。建議與手動航線都不會替你變更遊戲進度。</p>
         <div id="map-tabs" class="map-tabs" role="tablist" aria-label="海域選擇"></div>
         <div class="chart-toolbar">
             <div class="route-heading">
@@ -77,7 +83,7 @@
 <header class="panel-heading"><span class="eyebrow">01 / NEXT VOYAGE</span><h2 id="route-planner-title">下一趟，往哪裡？</h2></header>
 <p id="planner-ship-summary" class="muted"></p>
 <div id="voyage-ship-tabs" class="voyage-ship-tabs" aria-label="選擇規劃船隻"></div>
-<label class="field-label">這次想做什麼<select id="planner-mode"><option value="auto">讓系統建議下一步</option><option value="unlock">開船位／開圖</option><option value="level">練等</option><option value="gil">NPC 飾物收入</option><option value="item">家具收藏</option><option value="manual">手動排航線</option></select></label>
+<label class="field-label">這次想做什麼<select id="planner-mode"><option value="auto">系統推薦</option><option value="unlock">開船位／開圖</option><option value="level">練等</option><option value="gil">NPC 飾物收入</option><option value="item">家具收藏</option><option value="explore">指定地點探索</option><option value="manual">手動排航線</option></select></label>
 <div id="collection-browser" hidden><label class="field-label">收藏目標<select id="collection-target"></select></label><details class="collection-search-tools"><summary>搜尋／篩選其他家具</summary><label class="field-label">找家具（英文名或用途）<input id="collection-search" type="search" placeholder="例如 Ice Box、地毯"></label><label class="field-label">取得方式<select id="collection-kind"><option value="all">全部家具</option><option value="finished">成品直掉</option><option value="material">素材再製作</option></select></label><p id="collection-results-status" class="muted"></p></details><details class="collection-provenance"><summary>取得方式、配方與來源</summary><div id="collection-description"></div></details><details class="collection-build-panel"><summary>配裝不足？試算最少換件</summary><p>只用目前船等級、已開且版本可用的來源試算；不假設你持有任何替換部件。</p><button id="suggest-collection-build" type="button">計算這艘船的配裝參考</button><div id="collection-build-results"></div></details></div>
 <div id="next-step" aria-live="polite"><strong id="next-step-title">讀取艦隊資料中…</strong><p id="next-step-copy"></p><details id="next-step-details" hidden><summary>查看各船缺項與來源限制</summary><ul id="next-step-detail-list"></ul></details></div>
 <button id="open-route-planner" class="primary-action" type="button">查看建議航線</button>
@@ -130,7 +136,7 @@
             </details>
             <div class="route-guide"><span>開圖參考主線 · 非計算結果</span><div id="route-chips"></div><p id="route-next">先從 B 開始。</p></div>
             <div class="chart-actions"><button id="reset-map" type="button">清除本海圖的開圖登記</button></div>
-      <details class="command-section" data-workshop-detail><summary><span>現在該做什麼</span><small>查看主船建議與配置</small></summary><div class="command-head"><div><span class="command-kicker">FLAGSHIP ORDERS</span><h2 id="command-title">現在該做什麼</h2></div><span id="command-ship" class="command-ship">主工房 · 1 號艇 · Rank 3</span></div><div class="command-body"><div class="command-main"><span>下一步</span><h3 id="command-action">維持 1111，先用目前可選地點升級</h3><p id="command-copy">3 級時 C、D 即使顯示在遊戲內，也可能因最低等級不足而無法選取；這不是故障。</p></div><div class="command-build"><span>入門配置參考 · 非目前配裝</span><strong id="command-build">1111</strong><small id="command-build-copy">1=鯊魚；四碼依序為船體、船尾、船首、艦橋</small><button id="apply-build" type="button">填入主船設定（待儲存）</button></div><div class="command-target"><span>最近目標</span><strong id="command-target">Rank 7</strong><small id="command-target-copy">繼續探索溺沒海 B，準備前往 E</small></div></div></details>
+      <details class="command-section" data-workshop-detail><summary><span>現在該做什麼</span><small>查看主船建議與配置</small></summary><div class="command-head"><div><span class="command-kicker">FLAGSHIP ORDERS</span><h2 id="command-title">現在該做什麼</h2></div><span id="command-ship" class="command-ship">主工房 · 1 號艇 · Rank 3</span></div><div class="command-body"><div class="command-main"><span>系統推薦</span><h3 id="command-action">維持 1111，先用目前可選地點升級</h3><p id="command-copy">3 級時 C、D 即使顯示在遊戲內，也可能因最低等級不足而無法選取；這不是故障。</p></div><div class="command-build"><span>入門配置參考 · 非目前配裝</span><strong id="command-build">1111</strong><small id="command-build-copy">1=鯊魚；四碼依序為船體、船尾、船首、艦橋</small><button id="apply-build" type="button">填入主船設定（待儲存）</button></div><div class="command-target"><span>最近目標</span><strong id="command-target">Rank 7</strong><small id="command-target-copy">繼續探索溺沒海 B，準備前往 E</small></div></div></details>
 <details class="chart-reference"><summary>版本範圍與資料來源</summary>
       <section class="version-note" data-workshop-detail><strong>為什麼北洋不能點？</strong><p>台服 7.2 的潛水艇上限為 130 級，目前只開放到南蒼茫洋 M。南蒼茫洋 N～T 與北洋先顯示成灰色鎖定狀態。</p><a href="submersible-manual.html#version-72">查看 7.2 版本範圍 →</a></section>
       <section class="page-sources" aria-labelledby="fleet-sources-title">
@@ -164,15 +170,33 @@
   <dialog id="ship-dialog" class="fleet-dialog" aria-labelledby="ship-dialog-title">
     <form id="ship-form">
       <header class="dialog-heading"><div><span>SUBMERSIBLE SETTINGS</span><h2 id="ship-dialog-title">船隻設定</h2></div><button type="button" data-close-dialog="ship-dialog" aria-label="關閉船隻設定">×</button></header>
-      <label class="dialog-check"><input id="ship-enabled" type="checkbox">啟用此船</label>
-      <div class="dialog-field-row"><label>等級<input id="ship-rank" type="number" min="1" max="130" required></label><label>數字零件<input id="ship-build" type="text" inputmode="numeric" minlength="4" maxlength="4" pattern="[1-5]{4}" title="請輸入四碼數字，每碼介於 1～5" required></label></div>
-      <p class="dialog-intro">四碼依序為船體、船尾、船首、艦橋；1 鯊魚、2 甲鱟、3 鬚鯨、4 腔棘魚、5 希爾德拉。</p>
+      <section class="ship-recommend-row" aria-label="推薦組合"><strong>推薦組合</strong><button id="ship-recommend" type="button">試填未改參考（需自行備齊）</button><span class="ship-recommend-warning">試填會取消四部位改型；儲存才生效。</span><details class="ship-recommend-note"><summary>適用範圍與改型提醒</summary><p class="dialog-intro">參考不等於通用最佳配裝。R85 以上的 3124／WSUC 主要用作 OJ 飾物基準，不保證符合高階家具探查門檻；試填會將四部位改型取消，儲存前請核對。</p></details></section>
+      <div class="ship-basics">      <label class="dialog-check"><input id="ship-enabled" type="checkbox">啟用此船</label>
+      <label>等級 Rank<input id="ship-rank" type="number" min="1" max="130" required></label>
+      <label>目前目標<select id="ship-goal"><option value="auto">系統推薦</option><option value="unlock">開船位／開圖</option><option value="level">練等</option><option value="gil">NPC 飾物收入</option><option value="item">家具收藏</option><option value="explore">指定地點探索</option><option value="manual">手動排航線</option></select></label>
+      <label class="dialog-check"><input id="ship-flagship" type="checkbox">設為主船（需啟用）</label>
+</div>
+      <fieldset class="ship-parts-editor" aria-describedby="ship-parts-help">
+        <legend>零件配置</legend>
+        <p id="ship-parts-help" class="ship-parts-help">依遊戲部位選擇：船體 → 船尾 → 船首 → 艦橋。</p>
+        <div class="ship-parts-grid">
+          <label for="ship-part-0"><span class="ship-part-slot"><b>1 · 船體</b><small>Hull</small></span><select id="ship-part-0" required aria-describedby="ship-build-feedback"></select></label>
+          <label for="ship-part-1"><span class="ship-part-slot"><b>2 · 船尾</b><small>Stern</small></span><select id="ship-part-1" required aria-describedby="ship-build-feedback"></select></label>
+          <label for="ship-part-2"><span class="ship-part-slot"><b>3 · 船首</b><small>Bow</small></span><select id="ship-part-2" required aria-describedby="ship-build-feedback"></select></label>
+          <label for="ship-part-3"><span class="ship-part-slot"><b>4 · 艦橋</b><small>Bridge</small></span><select id="ship-part-3" required aria-describedby="ship-build-feedback"></select></label>
+        </div>
+        <p id="ship-build-summary" class="ship-build-summary" role="status" aria-live="polite"></p>
+        <label for="ship-build" class="ship-build-quick-label">快速輸入 <small>數字、英文代碼或英文名稱</small><input id="ship-build" type="text" maxlength="120" autocomplete="off" spellcheck="false" required aria-describedby="ship-parts-input-help ship-build-feedback" placeholder="例：3113 ／ WSSW"></label>
+        <details class="ship-parts-reference"><summary>輸入說明、代碼對照與改型寫法</summary><p id="ship-parts-input-help" class="ship-parts-help">例如 3113、WSSW 或 Whale Shark Shark Whale，英文不分大小寫；也可用空格、逗號或 / 分隔四個零件。</p>
+          <ul><li>1／S · 鯊魚 Shark</li><li>2／U · 甲鱟 Unkiu</li><li>3／W · 鬚鯨 Whale</li><li>4／C · 腔棘魚 Coelacanth</li><li>5／Y · 希爾德拉 Syldra</li></ul>
+          <p>改型請在下方依部位勾選。快速輸入也接受緊跟單一零件的 +，例如 W+ S U C；未標 + 的部位保留原勾選。要取消改型請取消勾選。不接受 WSUC++ 等尾綴簡寫。</p>
+        </details>
+        <p id="ship-build-feedback" class="ship-build-feedback" role="status" aria-live="polite"></p>
+      </fieldset>
+
       <fieldset class="modified-parts"><legend>改裝零件（哪一部位是「改」就勾哪個）</legend>
 <label><input id="ship-modified-0" type="checkbox">船體改</label><label><input id="ship-modified-1" type="checkbox">船尾改</label><label><input id="ship-modified-2" type="checkbox">船首改</label><label><input id="ship-modified-3" type="checkbox">艦橋改</label></fieldset>
       <p id="ship-stats-preview" class="ship-stats-preview" aria-live="polite"></p>
-      <button id="ship-recommend" type="button">試填未改參考（需自行備齊）</button><p class="dialog-intro">參考不等於通用最佳配裝。R85 以上的 3124／WSUC 主要用作 OJ 飾物基準，不保證符合高階家具探查門檻；試填會將四部位改型取消，儲存前請核對。</p>
-      <label>目前目標<select id="ship-goal"><option value="auto">系統下一步</option><option value="unlock">開船位／開圖</option><option value="level">練等</option><option value="gil">NPC 飾物收入</option><option value="item">家具收藏</option><option value="manual">手動排航線</option></select></label>
-      <label class="dialog-check"><input id="ship-flagship" type="checkbox">設為主船（需啟用）</label>
       <p id="ship-dialog-message" class="dialog-message" role="status">儲存後才會更新船隻資料；取消不會變更設定。</p>
       <footer class="dialog-actions"><span></span><button type="button" data-close-dialog="ship-dialog">取消</button><button class="save-button" type="submit">儲存船隻</button></footer>
     </form>

@@ -2,7 +2,7 @@
   const key = window.SubState.KEY;
   const legacyKey = "ff14-submersible-fleet-v2";
   const parts = { "1": "鯊魚", "2": "甲鱟", "3": "鬚鯨", "4": "腔棘魚", "5": "希爾德拉" };
-  const goals = { auto: "系統下一步", manual: "手動", unlock: "開圖", level: "練等", gil: "NPC收入", item: "家具收藏" };
+  const goals = { auto: "系統推薦", manual: "手動", unlock: "開圖", level: "練等", gil: "NPC收入", item: "家具收藏" };
   const colors = { blue: "#3268a8", green: "#4f8564", purple: "#7755a0", red: "#9a4c59", gold: "#ad7c2d" };
   const calculator = window.SubVoyageEngine;
   const px = (code, x, y) => ({ code, x, y });
@@ -66,7 +66,7 @@
       name: index === 1 ? "主工房" : "工房 " + index,
       note: index === 1 ? "主帳號" : "",
       color: ["blue","green","purple","red","gold"][(index - 1) % 5],
-      flagship: 0, ships: defaultShips(), map: "deep", opened: {}, selectedNode: "",
+      flagship: 0, ships: defaultShips(), map: "deep", opened: {}, visited: {}, selectedNode: "",
       activeVoyageShip: 0, voyages: freshVoyages(), sailings: [null,null,null,null], layers: freshLayers()
     };
     if (!source) return base;
@@ -130,6 +130,7 @@
   const collapsedWorkshops = new Set();
   let editorWorkshopId = "", editorShipIndex = 0, creatingWorkshop = false;
   let returnFocus = null;
+  const shipPartsEditor = window.SubParts.createEditor(document, updateShipDraft);
   function treeRoute(item, index) {
     const voyage = item.voyages[index];
     const name = maps.find(map => map.id === voyage.map)?.name || "";
@@ -214,8 +215,7 @@
   function openShipEditor(id,index) {
     const item = state.workshops.find(w => w.id === id);
     if (!item || !item.ships[index]) return;
-    editorWorkshopId = id; editorShipIndex = index; item.activeVoyageShip = index;
-    selectWorkshop(id);
+    editorWorkshopId = id; editorShipIndex = index;
     const ship = item.ships[index];
     $("#ship-dialog-title").textContent = item.name + " · " + (index + 1) + " 號艇";
     $("#ship-enabled").checked = ship.enabled; $("#ship-rank").value = ship.rank;
@@ -223,6 +223,7 @@
     for(let i=0;i<4;i++)$("#ship-modified-"+i).checked=ship.modified?.[i]===true;
     $("#ship-flagship").checked = item.flagship === index && ship.enabled;
     $("#ship-dialog-message").textContent = "儲存後才會更新設定；取消不影響既有開圖與航程。";
+    shipPartsEditor.reset();
     updateShipDraft();
     showDialog("ship-dialog",'[data-owner="' + id + '"][data-edit-ship="' + index + '"]');
   }
@@ -230,8 +231,11 @@
     const enabled = $("#ship-enabled").checked;
     $("#ship-flagship").disabled = !enabled;
     if (!enabled) $("#ship-flagship").checked = false;
-    $("#ship-recommend").textContent = "試填未改參考 " + recommendedBuild(clampRank($("#ship-rank").value)) + "（待儲存）";
-    const ability=calculator.stats({rank:Number($("#ship-rank").value),build:$("#ship-build").value.trim(),modified:Array.from({length:4},(_,i)=>$("#ship-modified-"+i).checked)});
+    const reference = recommendedBuild(clampRank($("#ship-rank").value));
+    $("#ship-recommend").textContent = "試填未改參考 " + reference + " / " + window.SubParts.parse(reference).letters + "（待儲存）";
+    const draft = shipPartsEditor.syncFromInput();
+    if (!draft.valid) { $("#ship-stats-preview").textContent = "請先完成上方四個部位，才能預覽能力。"; return; }
+    const ability=calculator.stats({rank:Number($("#ship-rank").value),build:draft.build,modified:Array.from({length:4},(_,i)=>$("#ship-modified-"+i).checked)});
     $("#ship-stats-preview").textContent=ability.valid ? "探查 "+ability.surveillance+" · 收集 "+ability.retrieval+" · 速度 "+ability.speed+" · 航程 "+ability.range+" · 運氣 "+ability.favor+"｜容量 "+ability.cost+"／"+ability.capacity : ability.errors.join(" ");
   }
   $("#workshop-tree").addEventListener("click", event => {
@@ -278,14 +282,15 @@
   $("#ship-enabled").addEventListener("change",updateShipDraft);
   $("#ship-rank").addEventListener("input",updateShipDraft);
   $("#ship-build").addEventListener("input",updateShipDraft);
-  for(let i=0;i<4;i++)$("#ship-modified-"+i).addEventListener("change",updateShipDraft);
+  for(let i=0;i<4;i++)$("#ship-modified-"+i).addEventListener("change",()=>{shipPartsEditor.modifiedChanged();updateShipDraft();});
   $("#ship-recommend").addEventListener("click",()=>{ $("#ship-build").value=recommendedBuild(clampRank($("#ship-rank").value)); for(let i=0;i<4;i++)$("#ship-modified-"+i).checked=false; updateShipDraft(); });
   $("#ship-form").addEventListener("submit",event=>{
     event.preventDefault();const item=state.workshops.find(w=>w.id===editorWorkshopId);if(!item)return;
-    const rank=Number($("#ship-rank").value),build=$("#ship-build").value.trim();
-    if(!Number.isInteger(rank)||rank<1||rank>130||!(/^[1-5]{4}$/.test(build))){
-      $("#ship-dialog-message").textContent="等級需為 1～130 的整數；零件需四碼，每碼 1～5。";return;
+    const rank=Number($("#ship-rank").value),draft=shipPartsEditor.syncFromInput(),build=draft.build;
+    if(!Number.isInteger(rank)||rank<1||rank>130){
+      $("#ship-dialog-message").textContent="等級需為 1～130 的整數。";return;
     }
+    if(!draft.valid){$("#ship-dialog-message").textContent=draft.error;return;}
     const modified=Array.from({length:4},(_,i)=>$("#ship-modified-"+i).checked);
     const ability=calculator.stats({rank,build,modified});
     if($("#ship-enabled").checked&&!ability.valid){$("#ship-dialog-message").textContent=ability.errors.join(" ");return;}
@@ -296,6 +301,7 @@
       const other=item.ships.findIndex((s,i)=>s.enabled&&i!==editorShipIndex);
       if(other>=0)item.flagship=other;
     }
+    state.selectedId=item.id;item.activeVoyageShip=editorShipIndex;collapsedWorkshops.delete(item.id);
     validateFlagship(item);renderAll();closeDialog("ship-dialog");
   });
   function renderCommand() {
@@ -357,7 +363,7 @@
     const available = map.nodes.filter(node => nodeState(map, node.code) === "available").map(node => node.code);
     $("#available-summary").textContent = available.length ? "目前可爭取開啟：" + available.join("、") + "（點選查看前置節點）" : "目前沒有可爭取開啟的節點；請先補登遊戲中已發現的地點。";
     $("#route-next").textContent = map.locked ? "等待台服後續版本開放。" : next ? "推薦主線下一站：" + next + "；僅供參考，不限制其他航程。" : "本海圖的 7.2 主線已完成。";
-    renderOverlay(map); renderLegend(); renderVoyageEditor(); renderInspector(); renderActiveRoute(); renderWorkshopNav(); window.SubVoyageUI?.render(); window.SubLogbook?.render();
+    renderOverlay(map); renderLegend(); renderVoyageEditor(); renderInspector(); renderActiveRoute(); renderWorkshopNav(); window.SubVoyageUI?.render(); window.SubLogbook?.render(); window.SubExplored?.render();
   }
 
   function renderActiveRoute() {
@@ -402,7 +408,8 @@
     $("#voyage-route-list").innerHTML = voyage.nodes.length ? '<b>' + escapeHtml(maps.find(map => map.id === voyage.map)?.name || voyage.map) + ' · ' + voyage.nodes.length + '/5 站</b>' + voyage.nodes.map(code => '<button type="button" data-remove-stop="' + escapeHtml(code) + '" aria-label="移除 ' + escapeHtml(code) + '">' + escapeHtml(code) + ' ×</button>').join('<i>›</i>') : '<em>尚未安排航程；選節點後按「加入航程」。</em>';
     $("#clear-voyage").disabled = !voyage.nodes.length;
     const calculation=calculator.calculate(item.ships[index],voyage.map,voyage.nodes,item.opened);
-    $("#voyage-validation").textContent = !voyage.nodes.length ? "手動點海圖排航程，或按「計算推薦」。" : calculation.valid ? "✓ 配裝、等級、開圖與航程檢查通過；出航前仍請核對燃料及零件耐久。" : calculation.errors.join(" ");
+    const missingRequired=(item.ships[index].requiredStops||[]).filter(stop=>stop.map!==voyage.map||!voyage.nodes.includes(stop.code));
+    $("#voyage-validation").textContent = missingRequired.length ? "尚未包含本趟必去："+missingRequired.map(stop=>(maps.find(m=>m.id===stop.map)?.name||stop.map)+" "+stop.code).join("、")+"。請補齊後再出航。" : !voyage.nodes.length ? "手動點海圖排航程，或按「計算推薦」。" : calculation.valid ? "✓ 配裝、等級、開圖與航程檢查通過；出航前仍請核對燃料及零件耐久。" : calculation.errors.join(" ");
     const map = currentMap(); const select = $("#route-progress-select");
     const previous = select.value;
     select.innerHTML = map.nodes.filter(node => nodeState(map, node.code) !== "locked").map(node => '<option value="' + node.code + '">' + node.code + '</option>').join("");
@@ -429,6 +436,8 @@
   function toggleProgressNode(code) {
     const item = workshop(); const map = currentMap(); const node = nodeByCode(map, code);
     if (!node || nodeState(map, code) === "locked") return;
+    if (isOpened(map.id, code) && window.SubExplored) { window.SubExplored.removeOpened(map.id, [code]); return; }
+    if (isOpened(map.id, code) && item.visited?.[map.id]?.[code]) { notice("探索紀錄功能尚未載入，請重新整理後再取消開啟登記，避免遺失探索紀錄。"); return; }
     item.opened[map.id] = item.opened[map.id] || {};
     item.opened[map.id][code] = !isOpened(map.id, code);
     notice(code + (isOpened(map.id, code) ? " 已登記開啟；後續可開啟節點已更新。" : " 已取消登記；既有航程保留，請核對。"));
@@ -487,7 +496,7 @@
       const parentMap = node.parent && maps.find(m => m.id === node.parent[0]);
       const parentLabel = node.parent ? parentMap.name + " " + node.parent[1] : "";
       $("#node-title").textContent = map.name + " " + node.code + " · Rank " + node.rank;
-      $("#node-copy").textContent = status === "opened" ? "✓ 已開啟。可安排直接前往此節點。" : status === "available" ? "＋ 可開啟：尚未發現。前往 " + parentLabel + " 探索，爭取發現此地點。" : status === "locked" ? "台服 7.2 尚未開放。" : parentLabel ? "未開啟；前置節點 " + parentLabel + " 尚未登記。若遊戲已發現此地點，可直接補登。" : "初始地點；請依遊戲內進度登記。";
+      $("#node-copy").textContent = status === "opened" ? "已開啟（已發現）。可安排直接前往此節點；探索紀錄另行登記。" : status === "available" ? "＋ 可開啟：尚未發現。前往 " + parentLabel + " 探索，爭取發現此地點。" : status === "locked" ? "台服 7.2 尚未開放。" : parentLabel ? "未開啟；前置節點 " + parentLabel + " 尚未登記。若遊戲已發現此地點，可直接補登。" : "初始地點；請依遊戲內進度登記。";
       register.disabled = status === "locked";
       register.textContent = status === "opened" ? "取消 " + node.code + " 的開啟登記" : "我已在遊戲發現 " + node.code + "，登記已開啟";
     }
@@ -507,6 +516,8 @@
     renderMap(); save();
   });
   $("#reset-map").addEventListener("click", () => {
+    if (window.SubExplored) { window.SubExplored.resetMap(workshop().map); return; }
+    if (Object.values(workshop().visited?.[workshop().map] || {}).some(Boolean)) { notice("探索紀錄功能尚未載入，請重新整理後再清除，避免遺失探索紀錄。"); return; }
     const item = workshop(); const id = item.id + ":" + item.map;
     if (resetMapArmed !== id) { resetMapArmed = id; $("#reset-map").textContent = "再次點擊確認清除本海圖登記"; return; }
     item.opened[item.map] = {}; item.selectedNode = ""; resetMapArmed = "";
