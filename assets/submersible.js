@@ -363,7 +363,7 @@
     const available = map.nodes.filter(node => nodeState(map, node.code) === "available").map(node => node.code);
     $("#available-summary").textContent = available.length ? "目前可爭取開啟：" + available.join("、") + "（點選查看前置節點）" : "目前沒有可爭取開啟的節點；請先補登遊戲中已發現的地點。";
     $("#route-next").textContent = map.locked ? "等待台服後續版本開放。" : next ? "推薦主線下一站：" + next + "；僅供參考，不限制其他航程。" : "本海圖的 7.2 主線已完成。";
-    renderOverlay(map); renderLegend(); renderVoyageEditor(); renderInspector(); renderActiveRoute(); renderWorkshopNav(); window.SubVoyageUI?.render(); window.SubLogbook?.render(); window.SubExplored?.render();
+    renderOverlay(map); renderLegend(); renderVoyageEditor(); renderInspector(); renderActiveRoute(); renderWorkshopNav(); window.SubVoyageUI?.render(); window.SubLogbook?.render(); window.SubExplored?.render(); window.SubNodeUI?.render();
   }
 
   function renderActiveRoute() {
@@ -545,6 +545,6 @@
     const blob=new Blob([JSON.stringify({format:'ff14-submersible-backup-v47',exportedAt:new Date().toISOString(),...state,preserved},null,2)],{type:'application/json'});
     const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download='ff14-submersible-backup-'+new Date().toISOString().slice(0,10)+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   });
-  window.SubFleet={state,maps,isSailing,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor};
+  window.SubFleet={state,maps,isSailing,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor,voyageAction,renderInspector,canEditVoyage};
   renderAll();
 })();

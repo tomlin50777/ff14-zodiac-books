@@ -28,7 +28,7 @@ function render({fleet,previewRoute=null}){
  const marks=document.createElement('div');marks.className='map-milestone-index';
  for(const [code,label] of Object.entries(milestones[m.id]||{})){
   const button=document.createElement('button');button.type='button';button.textContent=code+' · '+label;button.setAttribute('aria-label','在海圖選取 '+code+'，'+label);
-  button.addEventListener('click',()=>{const node=document.querySelector('[data-node="'+code+'"]');if(node&&!node.disabled){node.click();document.querySelector('[data-node="'+code+'"]')?.focus();}});marks.append(button);
+  button.addEventListener('click',()=>{const node=document.querySelector('[data-node="'+code+'"]');if(node&&!node.disabled){node.click();if(!window.SubNodeUI?.isOpen())document.querySelector('[data-node="'+code+'"]')?.focus();}});marks.append(button);
  }
  if(marks.childElementCount)index.append(marks);
  const routes=document.createElement('ul');routes.className='map-route-index';
