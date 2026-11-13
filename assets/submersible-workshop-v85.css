@@ -1,0 +1,64 @@
+/* v85: compact workshop list and two-line fleet cards. Presentation only. */
+body.voyage-v47 .workshop-tree-list { gap:8px; }
+body.voyage-v47 .workshop-tree-branch { padding:8px 5px; border:1px solid transparent; border-left:4px solid transparent; background:var(--theme-surface-2); box-shadow:none; }
+body.voyage-v47 .workshop-tree-branch.current { border-color:transparent; border-left-color:#efa900; background:var(--theme-glow); box-shadow:none; }
+body.voyage-v47 .workshop-tree-row { gap:3px; align-items:center; }
+body.voyage-v47 .tree-workshop { display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:1px; min-height:45px; padding:2px 0; background:transparent; }
+body.voyage-v47 .tree-workshop > .tree-workshop-name { flex:none; font-size:15px; line-height:1.5; }
+body.voyage-v47 .tree-workshop .workshop-status { flex:none; min-height:18px; font-size:12px; }
+body.voyage-v47 .tree-disclosure { flex:0 0 27px; min-width:27px; min-height:38px; font-size:17px; }
+body.voyage-v47 .workshop-settings { flex:0 0 29px; min-width:29px; min-height:34px; font-size:19px; }
+body.voyage-v47 .tree-ships[hidden] { display:none !important; }
+body.voyage-v47 .tree-ships { margin-top:7px; gap:5px; }
+body.voyage-v47 .tree-ships .tree-ship-select { min-height:51px; padding:5px; gap:2px; }
+body.voyage-v47 .workshops-toggle-all { min-height:26px; margin-bottom:5px; padding:2px 5px; }
+body.voyage-v47 .workshop-deck-heading { margin-bottom:7px; }
+body.voyage-v47 .workshop-deck-heading strong { font-size:21px; line-height:1.3; }
+body.voyage-v47 .voyage-deck-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; }
+body.voyage-v47 .deck-ship { min-width:0; border-radius:8px; }
+body.voyage-v47 .deck-select { padding:9px 9px 8px; gap:4px; min-height:65px; }
+body.voyage-v47 .deck-ship-title { padding-right:29px; gap:7px; line-height:20px; }
+body.voyage-v47 .deck-ship-title b { font-size:15px; }
+body.voyage-v47 .deck-ship-title small { font-size:13px; }
+body.voyage-v47 .deck-ship-summary { display:flex; align-items:center; gap:5px; min-width:0; white-space:nowrap; line-height:19px; }
+body.voyage-v47 .deck-build { flex:0 1 auto; font-size:13px; line-height:19px; }
+body.voyage-v47 .deck-select .ship-status { font-size:12px !important; line-height:19px !important; align-self:center; }
+body.voyage-v47 .deck-select .ship-status::before { display:none; }
+body.voyage-v47 .deck-summary-dot { flex:none; }
+body.voyage-v47 .deck-settings { top:5px; right:5px; width:29px; height:29px; border:1px solid var(--theme-line); border-radius:6px; font-size:19px; }
+body.voyage-v47 .deck-ship.selected { border-left:5px solid #efa900; }
+body.voyage-v47 .deck-ship.selected .deck-select { padding-left:5px; }
+body.voyage-v47 .deck-accessible-detail { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+body.voyage-v47 .deck-select:focus-visible,
+body.voyage-v47 .deck-settings:focus-visible,
+body.voyage-v47 .tree-workshop:focus-visible,
+body.voyage-v47 .tree-disclosure:focus-visible,
+body.voyage-v47 .workshop-settings:focus-visible { outline:3px solid var(--theme-accent); outline-offset:-3px; }
+@container (max-width:560px) {
+  body.voyage-v47 .voyage-deck-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@container (max-width:300px) {
+  body.voyage-v47 .voyage-deck-grid { grid-template-columns:1fr; }
+}
+@media (pointer:coarse) {
+  body.voyage-v47 .tree-disclosure, body.voyage-v47 .workshop-settings { min-height:44px; }
+  body.voyage-v47 .deck-settings { width:36px; height:36px; }
+  body.voyage-v47 .deck-ship-title { padding-right:36px; }
+}
+body.voyage-v47 .workshop-actions { display:grid; gap:7px; padding-top:14px; }
+body.voyage-v47 .workshop-actions .tree-overview { display:block; width:100%; min-height:38px; margin:0; padding:7px 8px; font-size:13px; border:1px solid var(--theme-line); border-radius:7px; background:var(--theme-surface); color:var(--theme-ink); }
+body.voyage-v47 .workshop-actions .tree-overview:hover { background:var(--theme-glow); color:var(--theme-accent); }
+
+/* Four cards remain readable at the narrowest three-column desktop width. */
+@container (min-width:561px) and (max-width:700px) {
+  body.voyage-v47 .deck-select { padding-inline:7px; }
+  body.voyage-v47 .deck-ship-title { gap:3px; padding-right:25px; }
+  body.voyage-v47 .deck-ship-title b { font-size:12px; }
+  body.voyage-v47 .deck-ship-title small { font-size:11px; }
+  body.voyage-v47 .deck-settings { width:26px; height:26px; font-size:17px; }
+  body.voyage-v47 .deck-ship-summary { gap:3px; }
+  body.voyage-v47 .deck-build { font-size:11px; }
+  body.voyage-v47 .deck-select .ship-status { font-size:11px !important; }
+}
+body.voyage-v47 .deck-ship.selected .deck-settings { background:#edf8fc; color:#154b62; border-color:#a9cbd9; }
+body.voyage-v47 .deck-ship.selected .deck-settings:hover { background:#d3eff7; color:#103e53; }

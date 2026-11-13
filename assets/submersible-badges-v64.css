@@ -1,0 +1,45 @@
+/* v64: badges share the node's geometry, not viewport font metrics.
+   SVG circles, outlines and glyphs scale together at every map size.
+   The node button and its original hit target remain unchanged. */
+.voyage-v47 .map-node .node-explored-badge,
+.voyage-v47 .map-node.milestone-node .node-progress-badge {
+  width: 36%;
+  height: 36%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0;
+  line-height: 0;
+  pointer-events: none;
+}
+.voyage-v47 .map-node .node-explored-badge { --badge-fill: #124f40; }
+.voyage-v47 .map-node .node-progress-badge { --badge-fill: #182c3c; }
+.voyage-v47 .map-node.available .node-progress-badge { --badge-fill: #165c99; }
+.voyage-v47 .map-node .node-explored-badge svg,
+.voyage-v47 .map-node .node-progress-badge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: var(--badge-fill);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.voyage-v47 .map-node .node-explored-badge svg path,
+.voyage-v47 .map-node .node-progress-badge svg path,
+.voyage-v47 .map-node .node-progress-badge .badge-glyph-ring {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@media (forced-colors: active) {
+  .voyage-v47 .map-node .node-explored-badge svg,
+  .voyage-v47 .map-node .node-progress-badge svg {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+}

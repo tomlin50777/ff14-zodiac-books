@@ -1,0 +1,50 @@
+/* v87: four layout corrections only. No route, voyage or calculation changes. */
+body.voyage-v47 #console-next {container-type:inline-size;}
+body.voyage-v47 #console-next .route-facts b {
+  font-size:17px;line-height:1.5;white-space:nowrap;overflow-wrap:normal;
+  font-variant-numeric:tabular-nums;
+}
+@container (max-width:280px) {
+  body.voyage-v47 #console-next .planner-result > .route-facts {
+    grid-template-columns:minmax(0,1fr);gap:8px;
+  }
+  body.voyage-v47 #console-next .route-facts span {
+    display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:0;
+  }
+  body.voyage-v47 #console-next .route-facts span + span {border:0;padding:0;}
+  body.voyage-v47 #console-next .route-facts b {margin:0;}
+}
+/* Keep actions in the original result/event subtree, pinned to the panel bottom. */
+body.voyage-v47 #console-next .planner-result {display:contents;}
+body.voyage-v47 #console-next .candidate-actions {
+  position:sticky;bottom:0;z-index:3;flex:none;align-self:stretch;
+  margin-top:auto;padding:10px 0 0;background:var(--theme-surface);
+  border-top:1px solid var(--theme-line);
+  box-shadow:0 -8px 0 var(--theme-surface);
+}
+body.voyage-v47 #console-next .candidate-actions button {min-height:44px;}
+@media(min-width:1151px) {
+  body.voyage-v47 .chart-console {
+    min-height:0;max-height:100%;overflow-y:auto;overflow-x:hidden;
+    overscroll-behavior:contain;scroll-padding-block:8px 68px;
+  }
+  body.voyage-v47 #console-next {flex:1 0 auto;}
+  body.voyage-v47 #console-next #planner-results {min-height:68px;}
+}
+body.voyage-v47 .deck-select,
+body.voyage-v47 .deck-ship.selected .deck-select {padding-left:12px;text-align:left;}
+/* Explicitly clear inherited column direction: ship + route share the top row. */
+body.voyage-v47 .map-side-info .map-route-summary .map-route-heading {
+  flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;text-align:left;
+}
+body.voyage-v47 .map-side-info .map-route-summary .map-route-heading > div {line-height:30px;}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-route {
+  text-align:left;white-space:nowrap;overflow-wrap:normal;padding:0;min-width:0;
+}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics {
+  grid-template-columns:minmax(0,1.35fr) minmax(0,.75fr) minmax(0,1fr);gap:8px;
+}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics > span {
+  display:flex;flex-direction:column;align-items:flex-start;gap:1px;flex-wrap:nowrap;
+}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics b {font-variant-numeric:tabular-nums;}

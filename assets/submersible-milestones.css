@@ -1,0 +1,24 @@
+/* v61: special colors apply only until discovery; opened nodes use normal green. */
+.voyage-v47 [data-milestone-kind="slot"]{--milestone-color:#ac2344;--milestone-edge:#ff9bb0}
+.voyage-v47 [data-milestone-kind="gateway"]{--milestone-color:#126b78;--milestone-edge:#86e6ee}
+.voyage-v47 [data-milestone-kind="endpoint"]{--milestone-color:#725010;--milestone-edge:#ffd37a}
+.voyage-v47 .map-node.milestone-node{background:var(--milestone-color)!important;color:#fff!important;box-shadow:inset 0 0 0 2px var(--milestone-edge),0 2px 7px #0009}
+.voyage-v47 .map-node.milestone-node .node-milestone-short{color:#fff}
+.voyage-v47 .map-node.milestone-node .node-progress-badge{position:absolute;left:-5%;top:-8%;display:grid;place-items:center;width:30%;aspect-ratio:1;min-width:15px;min-height:15px;border:2px solid #fff;border-radius:50%;background:#182c3c;color:#fff;font:900 clamp(10px,1vw,15px)/1 system-ui,sans-serif;box-shadow:0 1px 4px #0008;pointer-events:none}
+.voyage-v47 .map-node.milestone-node.opened .node-progress-badge{background:#124f40}
+.voyage-v47 .map-node.milestone-node.available .node-progress-badge{background:#165c99}
+.voyage-v47 .map-milestone-index button[data-milestone-kind]{background:var(--milestone-color);border-color:var(--milestone-color);color:#fff;font-weight:700}
+.voyage-v47 .map-milestone-index button[data-milestone-kind]:hover{box-shadow:0 0 0 2px var(--milestone-edge)}
+.voyage-v47 .map-milestone-index button:focus-visible{outline:3px solid var(--theme-accent);outline-offset:3px}
+.voyage-v47 .map-milestone-legend{display:flex;flex-wrap:wrap;gap:5px 14px;margin:0;font-size:12px;line-height:1.6}
+.voyage-v47 .map-milestone-legend span{display:inline-flex;align-items:center;gap:6px}
+.voyage-v47 .map-milestone-legend i{width:12px;height:12px;flex:none;border-radius:3px;background:var(--milestone-color);border:1px solid var(--milestone-edge)}
+.voyage-v47 .tree-ships .ship-slot-open .tree-ship-icon{border:2px solid #387b68}
+.voyage-v47 .tree-ships .ship-slot-pending .tree-ship-icon{border:2px dashed var(--theme-muted)}
+.voyage-v47 .tree-ships [data-slot-open="false"] small{color:var(--theme-muted)}
+@media(forced-colors:active){.voyage-v47 .map-node.milestone-node,.voyage-v47 .map-milestone-index button{border:2px solid ButtonText}.voyage-v47 .map-milestone-legend i{forced-color-adjust:none}}
+
+/* Discovered milestones have no special ring, fill, or progress badge. */
+.voyage-v47 .map-node.milestone-node.opened{background:#24734f!important;color:#fff!important;box-shadow:0 2px 7px rgba(0,0,0,.6)}
+.voyage-v47 .map-milestone-index button[data-node-state="opened"]{background:#24734f;border-color:#24734f;color:#fff}
+.voyage-v47 .map-milestone-index button[data-node-state="opened"]:hover{box-shadow:0 0 0 2px #baf4dc}

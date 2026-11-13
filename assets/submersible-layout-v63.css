@@ -1,0 +1,25 @@
+/* v63: reserve room for the route controls and chart legend on desktop.
+   Resize the frame, not the image alone: hotspots and SVG share its coordinates.
+   Keep narrow/mobile layouts at their existing readable, full-column size. */
+@media (min-width: 761px) {
+  .voyage-v47 .map-viewport {
+    position: static;
+    padding: 6px;
+  }
+  .voyage-v47 .map-viewport > .map-frame {
+    --chart-height: clamp(320px, calc(100vh - 440px), 520px);
+    --chart-height: clamp(320px, calc(100dvh - 440px), 520px);
+    width: min(100%, calc(var(--chart-height) * var(--map-aspect, 1)));
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    margin-inline: auto;
+  }
+  .voyage-v47 .map-layer-index {
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .voyage-v47 .map-key {
+    padding-top: 8px;
+  }
+}

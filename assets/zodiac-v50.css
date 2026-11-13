@@ -11,7 +11,10 @@
 .book-reading-tools input:checked{background:#873c51;border-color:#873c51}
 .book-reading-tools input:checked::after{transform:translateX(12px);background:#fff5f8}
 .book-reading-tools .filter:has(input:focus-visible){outline:2px solid #f3c6d2;outline-offset:3px}
-.sticky-priority{top:var(--book-tools-height,50px);visibility:hidden}
+/* Share the main reading column's shell on the fixed surface itself, not
+   just its children, so the ribbon never paints across the whole viewport. */
+.sticky-priority{top:var(--book-tools-height,50px);visibility:hidden;border:1px solid rgba(224,197,125,.42);border-radius:0 0 10px 10px;box-sizing:border-box}
+.sticky-priority-inner{grid-template-columns:minmax(0,1fr);width:100%;min-width:0;padding-inline:12px;box-sizing:border-box}
 .sticky-priority.visible{visibility:visible}
 .route-stop{scroll-margin-top:var(--book-reading-offset,240px)}
 .sticky-fate-row{display:flex;flex-direction:column;min-width:0;border:1px solid var(--theme-line,#655338);border-radius:7px;overflow:hidden}

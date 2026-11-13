@@ -26,7 +26,7 @@ const openedLegend=document.querySelector('.legend-node.opened');if(openedLegend
 const legend=document.createElement('div');legend.className='legend-item';legend.innerHTML='<i class="legend-node explored">✓</i><span><b>探索過</b><small>已確認實際探索</small></span>';document.querySelector('.status-legend').append(legend);
 const dialog=document.createElement('dialog');dialog.id='explored-dialog';dialog.className='fleet-dialog explored-dialog';dialog.setAttribute('aria-labelledby','explored-dialog-title');document.body.append(dialog);
 let draft=null,restoreFocus=null;
-function finish(text){F.save();F.notice(text);F.renderAll();}
+function finish(text,warning=false){F.save();F.notice(warning?text:'');F.renderAll();}
 function signature(item,mapId){return JSON.stringify([item.opened[mapId],item.visited?.[mapId]]);}
 function close(){dialog.close();draft=null;}
 dialog.addEventListener('close',()=>{if(dialog.open)return;draft=null;if(restoreFocus?.isConnected)restoreFocus.focus();});
@@ -84,7 +84,7 @@ dialog.addEventListener('click',event=>{
  if(kind==='batch'&&draft.remove){forget(item,map.id,codes);text='已移除選取地點的探索紀錄；開啟登記保持不變。';}
  if(kind==='remove-opened'){for(const code of codes)delete item.opened[map.id][code];forget(item,map.id,codes);text='已取消 '+map.name+' '+codes.join('、')+' 的開啟及相關探索紀錄；既有航程保留，請核對。';}
  if(kind==='reset'){item.opened[map.id]={};item.visited??={};item.visited[map.id]={};item.selectedNode='';text='已清除 '+map.name+' 的開啟與探索紀錄；其他海圖、船隻與航程保持不變。';}
- close();finish(text);
+ close();finish(text,kind==='remove-opened');
 });
 document.querySelector('#node-explored').addEventListener('click',()=>{
  const item=F.workshop(),map=F.currentMap(),code=item.selectedNode;if(!validCodes(map.id,[code]).length)return;
@@ -96,6 +96,11 @@ function render(){
  const item=F.workshop(),map=F.currentMap(),nodes=eligible(map),code=item.selectedNode,node=nodes.find(n=>n.code===code);
  const explored=nodes.filter(n=>isVisited(item,map.id,n.code)).length,opened=nodes.filter(n=>isOpened(item,map.id,n.code)).length;
  document.querySelector('#map-count').textContent='已開啟 '+opened+'／'+nodes.length;
+ document.querySelector('#map-explored-count').textContent='已探索 '+explored+'／'+nodes.length;
+ for(const [trackId,barId,value] of [['map-opened-track','map-progress',opened],['map-explored-track','map-explored-progress',explored]]){
+  const track=document.getElementById(trackId);track.setAttribute('aria-valuemax',String(nodes.length||1));track.setAttribute('aria-valuenow',String(value));track.setAttribute('aria-valuetext',nodes.length?value+'／'+nodes.length:'本海圖尚未開放');
+  document.getElementById(barId).style.width=(nodes.length?value/nodes.length*100:0)+'%';
+ }
  summary.textContent=nodes.length?'探索過 '+explored+'／'+nodes.length+' · 尚無探索紀錄 '+(nodes.length-explored)+' 處':'本海圖尚未開放';
  document.querySelector('#node-explored-status').textContent=node?(isVisited(item,map.id,code)?'探索過：已確認實際到訪。':'尚無探索紀錄。可依遊戲紀錄手動補登。'):'選擇地點以查看探索紀錄。';
  const toggle=document.querySelector('#node-explored');toggle.disabled=!node;toggle.textContent=node?(isVisited(item,map.id,code)?'移除 '+code+' 的探索紀錄':'我已探索 '+code+'，登記為探索過'):'登記為探索過';
@@ -103,7 +108,7 @@ function render(){
  document.querySelectorAll('#map-hotspots [data-node]').forEach(button=>{
   const visited=isVisited(item,map.id,button.dataset.node);button.classList.toggle('explored',visited);
   button.querySelector('.node-explored-badge')?.remove();
-  if(visited){const badge=document.createElement('span');badge.className='node-explored-badge';badge.textContent='✓';badge.setAttribute('aria-hidden','true');button.append(badge);}
+  if(visited){const badge=document.createElement('span');badge.className='node-explored-badge';badge.innerHTML='<svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><circle cx="10" cy="10" r="9"/><path d="M5.5 10 8.5 13 14.5 6.5"/></svg>';badge.setAttribute('aria-hidden','true');button.append(badge);}
   const original=button.getAttribute('aria-label').replace(/，(?:探索過|尚無探索紀錄)$/,'');button.setAttribute('aria-label',original+'，'+(visited?'探索過':'尚無探索紀錄'));
  });
 }

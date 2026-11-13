@@ -1,0 +1,27 @@
+/* v80: restore the v78 recommendation panel around the v79 controls.
+   #console-next is a presentation wrapper only: no old tabs or voyage editor.
+   Keep the existing theme tokens so the night theme retains its dark panel. */
+.voyage-v47 .chart-console > #console-next.console-pane {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.voyage-v47 #console-next > #route-planner-dialog.inline-planner {
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--theme-line);
+  border-radius: 7px;
+  background: var(--theme-surface);
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .voyage-v47 #console-next > #route-planner-dialog.inline-planner {
+    padding: 12px;
+  }
+}

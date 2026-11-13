@@ -1,0 +1,74 @@
+/* v73: one control edge for every theme. Keep v72 surfaces, typography,
+   function colors and all workspace geometry. No theme-specific branches. */
+body.voyage-v47 {
+  --ui73-border: #91b7c6;
+  --ui73-outer: #0b3d56;
+  --ui73-selected: #ee9b3f;
+}
+
+/* Only the navigation/control families styled in v72. Exclude map nodes,
+   milestone buttons, status badges, text shortcuts and workshop color bars.
+   The inset also borders controls whose existing border width is zero;
+   neither shadow takes layout space. */
+body.voyage-v47 .section-nav .section-link.active,
+body.voyage-v47 .tree-ships .tree-ship-select,
+body.voyage-v47 .tree-ships .tree-ship-select[aria-current="true"],
+body.voyage-v47 .deck-ship,
+body.voyage-v47 .deck-ship.selected,
+body.voyage-v47 .deck-settings,
+body.voyage-v47 .map-chart-layout > #map-tabs button,
+body.voyage-v47 .map-chart-layout > #map-tabs button[aria-selected="true"],
+body.voyage-v47 .map-utility-toolbar button,
+body.voyage-v47 .console-tabs button,
+body.voyage-v47 .console-tabs button[aria-selected="true"],
+body.voyage-v47 #console-next .planner-strategies button,
+body.voyage-v47 #console-next .planner-strategies button[aria-pressed="true"],
+body.voyage-v47 #console-next #open-route-planner {
+  --ui73-state-edge: transparent;
+  --ui73-state-keyline: transparent;
+  border-color: var(--ui73-border);
+  box-shadow: 0 0 0 1px var(--ui73-outer),
+              inset 0 0 0 1px var(--ui73-border),
+              inset 5px 0 0 var(--ui73-state-edge),
+              inset 6px 0 0 var(--ui73-state-keyline);
+}
+
+/* Keep an orange selection marker distinct from the keyboard-focus ring.
+   The navy keyline also separates it from the pale left-hand ship surface. */
+body.voyage-v47 .section-nav .section-link.active,
+body.voyage-v47 .tree-ships .tree-ship-select[aria-current="true"],
+body.voyage-v47 .deck-ship.selected,
+body.voyage-v47 .map-chart-layout > #map-tabs button[aria-selected="true"],
+body.voyage-v47 .console-tabs button[aria-selected="true"],
+body.voyage-v47 #console-next .planner-strategies button[aria-pressed="true"] {
+  --ui73-state-edge: var(--ui73-selected);
+  --ui73-state-keyline: var(--ui73-outer);
+}
+
+/* Disabled controls retain their v72 color and cursor, without a selection
+   stripe suggesting an available action. Locked seas retain their notice. */
+body.voyage-v47 .map-chart-layout > #map-tabs button:disabled,
+body.voyage-v47 .map-utility-toolbar button:disabled,
+body.voyage-v47 #console-next .planner-strategies button:disabled,
+body.voyage-v47 #console-next #open-route-planner:disabled {
+  --ui73-state-edge: transparent;
+  --ui73-state-keyline: transparent;
+}
+
+/* Preserve v72's white inner keyboard focus and a dark outer focus ring.
+   Keep the shared boundary and selection marker visible while focused. */
+body.voyage-v47 .section-nav .section-link.active:focus-visible,
+body.voyage-v47 #workshop-tree .tree-ship-select:focus-visible,
+body.voyage-v47 .workshop-deck .deck-settings:focus-visible,
+body.voyage-v47 .map-chart-layout > #map-tabs button:focus-visible,
+body.voyage-v47 .map-utility-toolbar button:focus-visible,
+body.voyage-v47 .console-tabs button:focus-visible,
+body.voyage-v47 #console-next .planner-strategies button:focus-visible,
+body.voyage-v47 #console-next #open-route-planner:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+  box-shadow: 0 0 0 2px var(--ui73-outer),
+              inset 0 0 0 1px var(--ui73-border),
+              inset 5px 0 0 var(--ui73-state-edge),
+              inset 6px 0 0 var(--ui73-state-keyline);
+}

@@ -1,0 +1,48 @@
+/* v70: keep the original chart dimensions; use its spare width for controls.
+   All seven image ratios are below 1.024. Container thresholds reserve the
+   176px information column, 112px sea column, 8px gaps and 14px frame padding.
+   Narrow containers retain the full-size chart and stack the same controls. */
+.voyage-v47 .map-area{grid-column:1;grid-row:2;min-width:0;container:sea-chart / inline-size}
+.voyage-v47 .map-viewport{display:grid;grid-template-columns:minmax(0,1fr);gap:10px 8px;align-items:start}
+.voyage-v47 .map-viewport>.map-utility-toolbar{grid-column:1 / -1;grid-row:1;margin:0}
+.voyage-v47 .map-viewport>#map-tabs{grid-column:1 / -1;grid-row:2;min-width:0;margin:0;padding:0;gap:6px}
+.voyage-v47 .map-viewport>#map-tabs button{box-sizing:border-box;min-width:0;padding-inline:9px}
+.voyage-v47 .map-viewport>#map-tabs button[aria-selected="true"]{box-shadow:inset 0 0 0 1px currentColor;font-weight:800}
+.voyage-v47 .map-viewport>.map-frame{grid-column:1;grid-row:3}
+.voyage-v47 .map-side-info{grid-column:1;grid-row:4;display:flex;flex-direction:column;gap:9px;min-width:0}
+.voyage-v47 .map-side-info>.chart-progress{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;min-width:0;margin:0;padding:0;border:0}
+.voyage-v47 .map-side-info>.chart-progress>div:first-child{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 8px;min-width:0;font-size:12px}
+.voyage-v47 .map-side-info>.chart-progress>.progress-track{width:55px;flex:0 0 55px;height:5px;margin:0}
+.voyage-v47 .map-side-info>.chart-progress>small{font-size:11px}
+.voyage-v47 .map-side-info #map-explored-summary{flex:1 0 100%;min-width:0;margin:0;font:11px/1.5 system-ui;overflow-wrap:anywhere}
+.voyage-v47 .map-side-info>.map-layer-index{gap:8px;margin:0;min-width:0;font-size:11px;line-height:1.5}
+.voyage-v47 .map-side-info .map-milestone-index{order:1;gap:5px}
+.voyage-v47 .map-side-info .map-milestone-index button{min-height:30px;padding:4px 6px;line-height:1.5}
+.voyage-v47 .map-side-info .map-route-index{order:2;gap:5px}
+.voyage-v47 .map-side-info .map-route-index li{padding:4px 6px;min-width:0}
+.voyage-v47 .map-side-info .map-route-index strong{margin-right:6px}
+.voyage-v47 .map-side-info .map-milestone-legend{order:3;gap:3px 10px;font-size:10px;line-height:1.5}
+.voyage-v47 .map-side-info .map-milestone-legend i{width:9px;height:9px}
+.voyage-v47 .map-side-info>.map-key{gap:3px 10px;margin:0;padding:0;font-size:10px;line-height:1.5}
+@media(min-width:761px){
+ /* The far-right result list may be long; it must not stretch the deck row. */
+ .voyage-v47 #chart-room{grid-template-rows:min-content 1fr;align-content:start}
+ .voyage-v47 .chart-console{grid-row:1 / 3}
+ @container sea-chart (min-width:calc(clamp(320px,calc(100dvh - 440px),520px) * 1.024 + 198px)){
+  .voyage-v47 .map-viewport{grid-template-columns:auto 176px;justify-content:center}
+  .voyage-v47 .map-viewport>.map-frame{grid-column:1;grid-row:3;width:calc(var(--chart-height) * var(--map-aspect,1));margin-inline:0}
+  .voyage-v47 .map-side-info{grid-column:2;grid-row:3}
+  .voyage-v47 .map-side-info>.chart-progress{display:block}
+  .voyage-v47 .map-side-info>.chart-progress>.progress-track{width:100%;margin:6px 0}
+  .voyage-v47 .map-side-info #map-explored-summary{margin-top:3px}
+  .voyage-v47 .map-side-info .map-milestone-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .voyage-v47 .map-side-info .map-milestone-index button{text-align:left;overflow-wrap:anywhere}
+ }
+ @container sea-chart (min-width:calc(clamp(320px,calc(100dvh - 440px),520px) * 1.024 + 318px)){
+  .voyage-v47 .map-viewport{grid-template-columns:112px auto 176px}
+  .voyage-v47 .map-viewport>#map-tabs{grid-column:1;grid-row:2;display:flex;flex-direction:column;flex-wrap:nowrap}
+  .voyage-v47 .map-viewport>#map-tabs button{width:100%;padding-inline:6px;white-space:normal;overflow-wrap:anywhere}
+  .voyage-v47 .map-viewport>.map-frame{grid-column:2;grid-row:2}
+  .voyage-v47 .map-side-info{grid-column:3;grid-row:2}
+ }
+}

@@ -1,0 +1,139 @@
+/* v85 blueprint: vertical selection and bottom-aligned actions.
+   Keep all settings/info disclosures and use theme colors in every theme. */
+body.voyage-v47 #console-next,
+body.voyage-v47 #console-next > #route-planner-dialog.inline-planner {
+  display:flex;
+  flex-direction:column;
+  flex:1 0 auto;
+  min-width:0;
+}
+body.voyage-v47 #console-next #planner-results {
+  display:flex;
+  flex-direction:column;
+  flex:1 0 auto;
+  gap:10px;
+  margin-top:14px;
+}
+body.voyage-v47 #console-next .candidate-list-heading {
+  margin:0 0 2px;
+  color:var(--theme-ink);
+  font-size:20px;
+  line-height:1.4;
+}
+body.voyage-v47 #console-next .candidate-choices {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+body.voyage-v47 #console-next .candidate-choices button {
+  display:flex;
+  align-items:center;
+  gap:13px;
+  width:100%;
+  min-height:48px;
+  padding:9px 14px;
+  border-radius:7px;
+  text-align:left;
+  font-size:20px;
+  font-weight:650;
+  line-height:1.35;
+  background:var(--theme-surface-2);
+  color:var(--theme-ink);
+}
+body.voyage-v47 #console-next .candidate-choices button[aria-pressed="true"] {
+  background:var(--theme-glow);
+  border-color:var(--theme-accent);
+  box-shadow:inset 4px 0 var(--theme-accent);
+}
+body.voyage-v47 #console-next .candidate-check {
+  display:grid;
+  place-items:center;
+  flex:0 0 19px;
+  width:19px;
+  height:19px;
+  box-sizing:border-box;
+  border:1.5px solid var(--theme-muted);
+  border-radius:50%;
+  font:800 13px/1 system-ui,sans-serif;
+}
+body.voyage-v47 #console-next [aria-pressed="true"] .candidate-check {
+  background:var(--theme-accent);
+  border-color:var(--theme-accent);
+  color:var(--theme-surface);
+}
+body.voyage-v47 #console-next .candidate-choice-route { min-width:0;overflow-wrap:anywhere; }
+body.voyage-v47 #console-next .candidate-choices button:focus-visible {
+  outline:3px solid var(--theme-accent);
+  outline-offset:2px;
+}
+body.voyage-v47 #console-next .planner-result {
+  display:flex;
+  flex-direction:column;
+  flex:1 0 auto;
+  gap:0;
+}
+body.voyage-v47 #console-next .planner-result-heading {
+  gap:8px;
+  margin:0 0 8px;
+  font-size:11px;
+  line-height:1.5;
+}
+body.voyage-v47 #console-next .planner-result-heading span { min-width:0;overflow-wrap:anywhere; }
+body.voyage-v47 #console-next .planner-result > .route-facts {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0;
+  padding:14px 0 16px;
+  border-block:1px solid var(--theme-line);
+}
+body.voyage-v47 #console-next .route-facts span {
+  min-width:0;
+  padding-inline:6px;
+  font-size:12px;
+  line-height:1.5;
+}
+body.voyage-v47 #console-next .route-facts span + span {
+  border-left:1px solid var(--theme-line);
+  padding-left:14px;
+}
+body.voyage-v47 #console-next .route-facts b {
+  display:block;
+  margin-top:4px;
+  color:var(--theme-ink);
+  font-size:clamp(17px,1.45vw,24px);
+  font-weight:750;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+body.voyage-v47 #console-next .candidate-benefits {
+  margin:0;
+  padding:14px 6px 18px;
+  border:0;
+  font-size:13px;
+  line-height:1.6;
+}
+body.voyage-v47 #console-next .candidate-benefits > div {
+  grid-template-columns:6em minmax(0,1fr);
+  gap:12px;
+  margin-bottom:8px;
+}
+body.voyage-v47 #console-next .candidate-ship-choice { margin-bottom:14px; }
+body.voyage-v47 #console-next .candidate-actions {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:auto;
+  padding-top:14px;
+}
+body.voyage-v47 #console-next .candidate-actions button { min-height:50px;font-size:15px; }
+body.voyage-v47 #console-next #planner-status:empty { display:none; }
+@media(max-width:760px) {
+  body.voyage-v47 #console-next .route-facts b { font-size:20px; }
+  body.voyage-v47 #console-next .candidate-choices button { min-height:48px; }
+}
+@media(max-width:380px) {
+  body.voyage-v47 #console-next .route-facts b { font-size:17px; }
+  body.voyage-v47 #console-next .candidate-benefits > div { grid-template-columns:5em minmax(0,1fr);gap:8px; }
+  body.voyage-v47 #console-next .candidate-actions { gap:6px; }
+  body.voyage-v47 #console-next .candidate-actions button { font-size:13px; }
+}

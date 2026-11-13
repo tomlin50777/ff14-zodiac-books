@@ -41,7 +41,6 @@
     const selects = slots.map((_, index) => doc.querySelector('#ship-part-' + index));
     const modified = slots.map((_, index) => doc.querySelector('#ship-modified-' + index));
     const feedback = doc.querySelector('#ship-build-feedback');
-    const summary = doc.querySelector('#ship-build-summary');
     let lastInput = null, current = invalid('請選好四個部位。');
     selects.forEach(select => {
       const empty = doc.createElement('option');
@@ -55,7 +54,7 @@
       });
       select.addEventListener('change', () => {
         const values = selects.map(field => field.value);
-        input.value = values.every(Boolean) ? values.join('') : values.map(value => value || '?').join(' ');
+        input.value = values.map((value, index) => (value || '?') + (modified[index].checked ? '+' : '')).join(values.every(Boolean) ? '' : ' ');
         // Keep explicit partial dropdown selections. Never fill missing slots from an old build.
         lastInput = input.value;
         current = parse(input.value);
@@ -69,13 +68,7 @@
       selects.forEach(select => select.setAttribute('aria-invalid', String(!current.valid && !select.value)));
       feedback.textContent = current.valid ? '' : current.error;
       feedback.hidden = current.valid;
-      summary.classList.toggle('is-incomplete', !current.valid);
-      if (!current.valid) {
-        summary.textContent = '尚未完成配置，能力預覽與儲存暫不可用。';
-        return;
-      }
-      const letterParts = current.build.split('').map((id, index) => catalog[Number(id) - 1].code + (modified[index].checked ? '+' : ''));
-      summary.textContent = '數字 ' + current.build + ' ＝ 英文 ' + current.letters + '｜改型：' + (modified.some(field => field.checked) ? letterParts.join(' / ') : '四部位皆未改');
+
     }
 
     function syncFromInput() {
@@ -83,18 +76,31 @@
         lastInput = input.value;
         current = parse(input.value);
         selects.forEach((select, index) => { select.value = current.valid ? current.build[index] : ''; });
-        if (current.valid) current.modifiedMarks.forEach((mark, index) => { if (mark === true) modified[index].checked = true; });
+        if (current.valid) current.modifiedMarks.forEach((mark, index) => { modified[index].checked = mark === true; });
       }
       render();
       return current;
     }
 
-    function modifiedChanged() {
-      // Once a checkbox is edited, remove typed + marks so the text cannot contradict it.
-      if (current.valid) input.value = current.build;
+    function writeQuickInput() {
+      input.value = selects.map((select, index) => (select.value || '?') + (modified[index].checked ? '+' : '')).join(selects.every(select => select.value) ? '' : ' ');
+      lastInput = input.value;
+      current = parse(input.value);
     }
 
-    function reset() { lastInput = null; return syncFromInput(); }
+    function modifiedChanged() {
+      // Preserve incomplete selections while keeping each modified flag visible in quick input.
+      writeQuickInput();
+    }
+
+    function reset() {
+      // Saved builds store modified flags separately. Do not erase them while opening the editor.
+      current = parse(input.value);
+      selects.forEach((select, index) => { select.value = current.valid ? current.build[index] : ''; });
+      writeQuickInput();
+      render();
+      return current;
+    }
     return { syncFromInput, modifiedChanged, reset };
   }
   root.SubParts = Object.freeze({ catalog, slots, parse, createEditor });

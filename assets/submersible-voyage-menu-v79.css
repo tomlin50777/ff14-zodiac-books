@@ -1,0 +1,33 @@
+/* v79: on-demand voyage actions; keep the sea image layout unchanged. */
+.voyage-v47 .console-heading{margin:0 0 8px;padding:8px 12px;border-bottom:1px solid var(--line);font:700 14px/1.4 system-ui,sans-serif}
+.voyage-v47 .map-summary-column>.map-route-summary{grid-template-columns:minmax(116px,1.5fr) minmax(240px,3fr) 88px}
+.voyage-v47 .map-route-summary .map-voyage-action{gap:3px}
+.voyage-v47 .map-route-summary:not([data-compact="false"]) .map-voyage-action{flex-basis:88px}
+.voyage-v47 .map-route-summary #map-voyage-primary{width:56px;flex:0 0 56px}
+.voyage-v47 .map-route-summary #map-voyage-status{width:88px;cursor:pointer}
+.voyage-v47 .map-route-summary #map-voyage-status:hover,.voyage-v47 .map-route-summary #map-voyage-status[aria-expanded="true"]{background:#eaf2f8}
+.voyage-v47 .map-route-summary #map-voyage-more{box-sizing:border-box;width:29px;min-width:29px;height:30px;min-height:30px;margin:0;padding:0;border:1px solid #9aafbf;border-radius:4px;background:#f4f8fb;color:#235983;box-shadow:none;font:700 16px/1 system-ui,sans-serif;cursor:pointer}
+.voyage-v47 .map-route-summary #map-voyage-more:hover,.voyage-v47 .map-route-summary #map-voyage-more[aria-expanded="true"]{background:#e1edf5}
+.voyage-v47 .map-route-summary #map-plan-route{display:block;max-width:100%;height:auto;min-height:0;min-width:0;margin:0;padding:0;border:0;border-radius:2px;background:transparent;box-shadow:none;text-align:left;cursor:pointer}
+.voyage-v47 .map-route-summary #map-plan-route:hover{text-decoration:underline;text-underline-offset:2px}
+.voyage-v47 .map-route-summary #map-plan-route:focus-visible,.voyage-v47 .map-route-summary #map-voyage-more:focus-visible{outline:2px solid #1297c2;outline-offset:1px}
+.voyage-v47 .voyage-action-menu{position:fixed;z-index:1120;display:grid;gap:3px;box-sizing:border-box;min-width:160px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);overflow:auto;padding:5px;border:1px solid #91b7c6;border-radius:7px;background:#fff;color:#20394e;box-shadow:0 4px 18px #102b4933}
+.voyage-v47 .voyage-action-menu[hidden]{display:none!important}
+.voyage-v47 .voyage-action-menu button{width:100%;min-height:36px;margin:0;padding:7px 11px;border:0;border-radius:4px;background:transparent;color:#20394e;box-shadow:none;text-align:left;font:600 13px/1.5 system-ui,sans-serif;cursor:pointer}
+.voyage-v47 .voyage-action-menu button:hover:not(:disabled),.voyage-v47 .voyage-action-menu button:focus-visible{outline:2px solid #1297c2;outline-offset:-2px;background:#eaf2f8}
+.voyage-v47 .voyage-action-menu button:disabled{color:#7d8a94;cursor:not-allowed}
+.voyage-v47 .voyage-action-dialog{box-sizing:border-box;width:min(540px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:18px;overflow:auto}
+.voyage-v47 .voyage-action-dialog .dialog-heading{align-items:flex-start;gap:12px}
+.voyage-v47 .voyage-action-dialog .dialog-heading h2{margin:0;font-size:18px;line-height:1.5;overflow-wrap:anywhere}
+.voyage-v47 .voyage-action-dialog .sailing-panel{margin:12px 0 0;padding:0;border:0;background:transparent}
+.voyage-v47 .voyage-action-dialog .sailing-panel p{line-height:1.6}
+.voyage-v47 .voyage-action-dialog .sailing-actions{display:flex;flex-wrap:wrap;gap:8px}
+.voyage-v47 .voyage-action-dialog .sailing-actions button{flex:1 1 160px}
+.voyage-v47 .sailing-time-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.voyage-v47 .sailing-time-fields label,.voyage-v47 .sailing-clock{display:grid;gap:5px}
+.voyage-v47 .sailing-clock{margin:16px 0 8px}
+.voyage-v47 .sailing-time-fields input,.voyage-v47 .sailing-clock input{box-sizing:border-box;max-width:100%;min-width:0;width:100%}
+.voyage-v47 .voyage-detail-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.voyage-v47 .voyage-detail-metrics span{display:grid;gap:3px}
+.voyage-v47 .sailing-feedback:empty{display:none}
+@media(pointer:coarse){.voyage-v47 .voyage-action-menu button{min-height:44px}}

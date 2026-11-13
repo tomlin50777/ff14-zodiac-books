@@ -1,0 +1,228 @@
+/* v72: the approved navy / cyan / slate control hierarchy.
+   Presentation only. Do not redefine theme variables, workspace geometry,
+   map assets, node states, route colors, or milestone/icon colors here. */
+body.voyage-v47 {
+  --ui72-navy: #0b3d56;
+  --ui72-navy-hover: #15516c;
+  --ui72-white: #f7fcff;
+  --ui72-slate: #527487;
+  --ui72-slate-hover: #43677b;
+  --ui72-line: #91b7c6;
+  --ui72-cyan-soft: #e3f2f2;
+  --ui72-cyan: #c2e7f0;
+  --ui72-ink: #15394c;
+  --ui72-muted: #426274;
+  --ui72-route: #b7cbd5;
+  --ui72-locked: #d6e1e5;
+  --ui72-locked-ink: #506571;
+  --ui72-orange: #ad4a0d;
+  --ui72-orange-hover: #963c08;
+  --ui72-edge: #ee9b3f;
+}
+html[data-theme="night"] body.voyage-v47 {
+  --ui72-cyan-soft: #223e4b;
+  --ui72-cyan: #2a5868;
+  --ui72-ink: #edf7fb;
+  --ui72-muted: #bed6df;
+  --ui72-route: #344f61;
+  --ui72-locked: #2b3b49;
+  --ui72-locked-ink: #a6bac4;
+}
+
+/* Selected book tab; the page/header backgrounds remain theme-owned. */
+body.voyage-v47 .section-nav .section-link.active {
+  background: var(--ui72-navy);
+  border-color: var(--ui72-navy);
+  color: var(--ui72-white);
+}
+body.voyage-v47 .section-nav .section-link.active small { color: var(--ui72-white); }
+body.voyage-v47 .section-nav .section-link.active:hover { background: var(--ui72-navy-hover); }
+
+/* Workshop identity stripes remain the user's original workshop colors. */
+body.voyage-v47 .workshop-tree-branch.current {
+  background: var(--ui72-cyan-soft);
+  border-top-color: var(--ui72-navy);
+  border-right-color: var(--ui72-navy);
+  border-bottom-color: var(--ui72-navy);
+  box-shadow: 0 0 0 1px var(--ui72-navy);
+}
+body.voyage-v47 .tree-workshop { color: var(--ui72-ink); font-weight: 800; }
+body.voyage-v47 .tree-workshop > .workshop-note { color: var(--ui72-muted); font-weight: 600; }
+body.voyage-v47 .tree-ships .tree-ship-select { color: var(--ui72-ink); }
+body.voyage-v47 .tree-ships .tree-ship-select[aria-current="true"] {
+  background: var(--ui72-cyan);
+  border-color: var(--ui72-navy);
+  box-shadow: inset 0 0 0 1px var(--ui72-navy);
+}
+body.voyage-v47 .compact-ship-heading > b { font-weight: 800; }
+body.voyage-v47 .compact-ship-heading > small { color: var(--ui72-muted); font-weight: 600; }
+body.voyage-v47 .workshop-deck-heading strong { color: var(--ui72-ink); font-weight: 800; }
+body.voyage-v47 .workshop-deck-heading small { color: var(--ui72-muted); }
+
+/* Keep v71's three rows, ellipses, gear hit targets, and deck breakpoints. */
+body.voyage-v47 .deck-select { color: var(--ui72-ink); font-weight: 700; }
+body.voyage-v47 .deck-ship-title b { font-weight: 800; }
+body.voyage-v47 .deck-ship-title small,
+body.voyage-v47 .deck-route,
+body.voyage-v47 .deck-return { color: var(--ui72-muted); font-weight: 600; }
+body.voyage-v47 .deck-ship.selected {
+  background: var(--ui72-navy);
+  border-color: var(--ui72-line);
+  box-shadow: inset 0 0 0 1px var(--ui72-navy);
+}
+body.voyage-v47 .deck-ship.selected .deck-select,
+body.voyage-v47 .deck-ship.selected .deck-ship-title small,
+body.voyage-v47 .deck-ship.selected .deck-route,
+body.voyage-v47 .deck-ship.selected .deck-return { color: var(--ui72-white); }
+body.voyage-v47 .deck-ship.selected .ship-status { color: #d2e8f3; }
+body.voyage-v47 .deck-ship.selected .ship-status.status-sailing { color: #9fe7ff; }
+body.voyage-v47 .deck-ship.selected .ship-status.status-due { color: #ffd09a; }
+body.voyage-v47 .deck-ship.selected .ship-status.status-ready { color: #b3f2cd; }
+body.voyage-v47 .deck-settings {
+  color: var(--ui72-ink);
+  background: var(--ui72-cyan-soft);
+  border: 1px solid var(--ui72-line);
+}
+body.voyage-v47 .deck-ship.selected .deck-settings {
+  color: var(--ui72-white);
+  background: var(--ui72-navy);
+  border-color: var(--ui72-line);
+}
+body.voyage-v47 .deck-settings:hover { background: var(--ui72-cyan); }
+body.voyage-v47 .deck-ship.selected .deck-settings:hover { background: var(--ui72-navy-hover); }
+
+/* Sea selection: slate base, navy active state and a non-layout-shifting edge.
+   A locked sea remains clickable for its existing version notice. */
+body.voyage-v47 .map-chart-layout > #map-tabs button {
+  background: var(--ui72-slate);
+  border-color: var(--ui72-line);
+  color: var(--ui72-white);
+  font-size: 13px;
+  font-weight: 800;
+}
+body.voyage-v47 .map-chart-layout > #map-tabs button:hover:not(.locked):not(:disabled) { background: var(--ui72-slate-hover); }
+body.voyage-v47 .map-chart-layout > #map-tabs button.locked:not([aria-selected="true"]),
+body.voyage-v47 .map-chart-layout > #map-tabs button:disabled {
+  background: var(--ui72-locked);
+  border-color: var(--ui72-line);
+  color: var(--ui72-locked-ink);
+  opacity: 1;
+}
+body.voyage-v47 .map-chart-layout > #map-tabs button[aria-selected="true"] {
+  background: var(--ui72-navy);
+  border-color: var(--ui72-navy);
+  color: var(--ui72-white);
+  box-shadow: inset 5px 0 0 var(--ui72-edge);
+  opacity: 1;
+}
+body.voyage-v47 .map-chart-layout > #map-tabs button[aria-selected="true"]:hover:not(:disabled) { background: var(--ui72-navy-hover); }
+body.voyage-v47 .map-utility-toolbar button {
+  background: var(--ui72-slate);
+  border-color: var(--ui72-line);
+  color: var(--ui72-white);
+  font-weight: 800;
+}
+body.voyage-v47 .map-utility-toolbar button:hover:not(:disabled) { background: var(--ui72-slate-hover); }
+
+/* Information rail: preserve the original progress value, route stripes and
+   milestone/status icon colors. Only the surfaces and type hierarchy change. */
+body.voyage-v47 .map-side-info > .chart-progress > div:first-child {
+  padding: 7px 9px;
+  border-radius: 6px;
+  background: var(--ui72-navy);
+  color: var(--ui72-white);
+  font-size: 13px;
+  font-weight: 800;
+}
+body.voyage-v47 .map-side-info .chart-progress #map-count { color: var(--ui72-white); }
+body.voyage-v47 .map-side-info > .chart-progress > .progress-track {
+  height: 10px;
+  background: var(--ui72-route);
+}
+body.voyage-v47 .map-side-info > .chart-progress > small,
+body.voyage-v47 .map-side-info #map-explored-summary {
+  color: var(--ui72-ink);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+body.voyage-v47 .map-side-info > .map-layer-index { font-size: 12px; }
+body.voyage-v47 .map-side-info .map-route-index li {
+  background: var(--ui72-route);
+  color: var(--ui72-ink);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+body.voyage-v47 .map-side-info .map-route-index strong { font-weight: 800; }
+body.voyage-v47 .map-side-info .map-milestone-legend {
+  color: var(--ui72-ink);
+  font-size: 11px;
+  font-weight: 600;
+}
+body.voyage-v47 .map-side-info > .map-key,
+body.voyage-v47 .map-side-info > .map-key small {
+  color: var(--ui72-ink);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* Right-hand controls are part of the same hierarchy, not a separate theme. */
+body.voyage-v47 .console-tabs button { color: var(--ui72-ink); font-weight: 800; }
+body.voyage-v47 .console-tabs button[aria-selected="true"] {
+  background: var(--ui72-navy);
+  color: var(--ui72-white);
+  box-shadow: none;
+}
+body.voyage-v47 .console-tabs button[aria-selected="true"]:hover { background: var(--ui72-navy-hover); }
+body.voyage-v47 #console-next .planner-purpose,
+body.voyage-v47 #console-next #planner-mode { color: var(--ui72-ink); font-weight: 700; }
+body.voyage-v47 #console-next .planner-purpose { font-size: 13px; }
+body.voyage-v47 #console-next #next-step-title { color: var(--ui72-ink); font-weight: 800; }
+body.voyage-v47 #console-next #next-step-copy { color: var(--ui72-muted); font-weight: 600; }
+body.voyage-v47 #console-next .required-editor > summary,
+body.voyage-v47 #console-next .planner-limit-label {
+  color: var(--ui72-ink);
+  font-weight: 700;
+}
+body.voyage-v47 #console-next .planner-strategies button { color: var(--ui72-ink); font-weight: 700; }
+body.voyage-v47 #console-next .planner-strategies button[aria-pressed="true"] {
+  background: var(--ui72-navy);
+  border-color: var(--ui72-navy);
+  color: var(--ui72-white);
+  font-weight: 800;
+}
+body.voyage-v47 #console-next .planner-strategies button[aria-pressed="true"]:hover:not(:disabled) { background: var(--ui72-navy-hover); }
+body.voyage-v47 #console-next #open-route-planner {
+  background: var(--ui72-orange);
+  border-color: var(--ui72-orange);
+  color: var(--ui72-white);
+  font-size: 13px;
+  font-weight: 800;
+}
+body.voyage-v47 #console-next #open-route-planner:hover:not(:disabled) { background: var(--ui72-orange-hover); }
+body.voyage-v47 #console-next #open-route-planner:disabled,
+body.voyage-v47 #console-next .planner-strategies button:disabled,
+body.voyage-v47 .map-utility-toolbar button:disabled {
+  background: var(--ui72-locked);
+  border-color: var(--ui72-line);
+  color: var(--ui72-locked-ink);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* Dual-color focus remains visible on both light and navy controls. Do not
+   change focus management, hidden states, or pointer/keyboard behavior. */
+body.voyage-v47 .section-nav .section-link:focus-visible,
+body.voyage-v47 #workshop-tree button:focus-visible,
+body.voyage-v47 .workshop-deck button:focus-visible,
+body.voyage-v47 .map-chart-layout > #map-tabs button:focus-visible,
+body.voyage-v47 .map-utility-toolbar button:focus-visible,
+body.voyage-v47 .console-tabs button:focus-visible,
+body.voyage-v47 #console-next .planner-strategies button:focus-visible,
+body.voyage-v47 #console-next #open-route-planner:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+  box-shadow: 0 0 0 2px #0b3d56;
+}

@@ -1,20 +1,49 @@
 /* Map-only presentation. Does not mutate progress, ship plans, coordinates or images. */
 (function(root){
 'use strict';
+const rankTitles=new WeakMap();
 const palette=['#36e5ff','#ffb347','#d7a0ff','#ff80b5'];
 const milestones={deep:{J:'第 2 船位',O:'第 3 船位',T:'第 4 船位',AD:'通往灰海'},ash:{R:'通往翠浪海'},jade:{T:'通往妖歌海'},siren:{T:'通往紫礁海'},lilac:{T:'通往南蒼茫洋'},south:{M:'7.2 終點'}};
+const kindOf=(map,code)=>map==='deep'&&['J','O','T'].includes(code)?'slot':map==='south'?'endpoint':'gateway';
+function progress(fleet,item,map,code){
+ if(item.visited?.[map]?.[code]===true)return {symbol:'✓',label:'探索過'};
+ const state=fleet.nodeState(fleet.maps.find(m=>m.id===map),code);
+ return state==='opened'?{symbol:'●',label:'已開啟'}:state==='available'?{symbol:'＋',label:'可開啟'}:state==='locked'?{symbol:'×',label:'版本未開放'}:{symbol:'○',label:'未登記開啟'};
+}
 function render({fleet,previewRoute=null}){
  const w=fleet.workshop(),ship=w.ships[w.activeVoyageShip],m=fleet.currentMap(),svg=document.querySelector('#route-overlay');
- document.querySelectorAll('[data-node]').forEach(el=>{
+ const voyage=w.voyages[w.activeVoyageShip];
+ const plannedNodes=new Set(voyage?.map===m.id&&w.layers['ship-'+w.activeVoyageShip]!==false?voyage.nodes:[]);
+ document.querySelectorAll('#map-hotspots [data-node]').forEach(el=>{
   const code=el.dataset.node,node=m.nodes.find(n=>n.code===code),label=milestones[m.id]?.[code];
   if(label){
-   el.dataset.milestone=label;el.classList.add('milestone-node');
+   el.dataset.milestone=label;el.dataset.milestoneKind=kindOf(m.id,code);el.classList.add('milestone-node');
    if(!el.getAttribute('aria-label').includes(label))el.setAttribute('aria-label',el.getAttribute('aria-label')+'，'+label);
    let short=el.querySelector('.node-milestone-short');
    if(!short){short=document.createElement('span');short.className='node-milestone-short';short.setAttribute('aria-hidden','true');el.append(short);}
-   short.textContent=m.id==='deep'&&['J','O','T'].includes(code)?({J:'2船',O:'3船',T:'4船'}[code]):m.id==='south'?'上限':'新圖';
+   short.textContent=m.id==='deep'&&['J','O','T'].includes(code)?({J:'2船',O:'3船',T:'4船'}[code]):m.id==='south'?'終點':'新圖';
+   el.querySelector('.node-progress-badge')?.remove();
+   const status=progress(fleet,w,m.id,code);
+   if(status.symbol!=='✓'&&status.symbol!=='●'){const badge=document.createElement('span');badge.className='node-progress-badge';const glyph=status.symbol==='＋'?'<path d="M10 5.5v9M5.5 10h9"/>':status.symbol==='×'?'<path d="m6.5 6.5 7 7m0-7-7 7"/>':'<circle class="badge-glyph-ring" cx="10" cy="10" r="3.5"/>';badge.innerHTML='<svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><circle cx="10" cy="10" r="9"/>'+glyph+'</svg>';badge.title=status.label;badge.setAttribute('aria-hidden','true');el.append(badge);}
   }
-  if(node&&node.rank>ship.rank&&!el.disabled){el.classList.add('rank-short');el.title='需要 Rank '+node.rank+'；目前 '+ship.rank;}
+  // Presentation is rebuilt for the current boat, including on repeated renders.
+  el.classList.remove('rank-short','rank-required');
+  el.querySelectorAll('.node-rank-badge').forEach(badge=>badge.remove());
+  const previous=rankTitles.get(el);
+  if(previous&&el.getAttribute('title')===previous.applied){
+   if(previous.original===null)el.removeAttribute('title');else el.setAttribute('title',previous.original);
+  }
+  rankTitles.delete(el);
+  el.classList.toggle('current-voyage-node',plannedNodes.has(code)&&!el.disabled);
+  if(node&&node.rank>ship.rank&&!el.disabled){
+   el.classList.add('rank-required');
+   const original=el.getAttribute('title'),required='需要 Rank '+node.rank+'；目前 '+ship.rank;
+   const applied=original?original+'；'+required:required;
+   rankTitles.set(el,{original,applied});el.title=applied;
+   const badge=document.createElement('span');badge.className='node-rank-badge';badge.setAttribute('aria-hidden','true');
+   badge.innerHTML='<svg viewBox="0 0 12 14" focusable="false" aria-hidden="true"><path d="M3 6V4a3 3 0 0 1 6 0v2"/><rect x="1.5" y="6" width="9" height="7" rx="1.5"/><path class="rank-keyhole" d="M6 8.5v2"/></svg><span>R'+node.rank+'</span>';
+   el.append(badge);
+  }
  });
  svg.querySelectorAll('[data-v47-overlay],[data-map-ui]').forEach(el=>el.remove());
  const defs='<defs data-map-ui>'+palette.map((c,i)=>'<marker id="arrow-'+i+'" markerWidth="3" markerHeight="3" refX="2.6" refY="1.5" orient="auto"><path d="M0 0 L3 1.5 L0 3Z" fill="'+c+'"/></marker>').join('')+'<marker id="arrow-preview" markerWidth="3" markerHeight="3" refX="2.6" refY="1.5" orient="auto"><path d="M0 0 L3 1.5 L0 3Z" fill="#e5ad35"/></marker></defs>';
@@ -24,19 +53,23 @@ function render({fleet,previewRoute=null}){
  const path=svg.querySelector('.recommended-path');if(path)path.style.markerEnd='url(#arrow-preview)';
  let index=document.querySelector('#map-layer-index');
  if(!index){index=document.createElement('section');index.id='map-layer-index';index.className='map-layer-index';index.setAttribute('aria-label','海圖里程碑與各船航線');document.querySelector('.map-frame').after(index);}
- index.replaceChildren();
+ index.replaceChildren();document.querySelector('#map-milestone-help')?.replaceChildren();
  const marks=document.createElement('div');marks.className='map-milestone-index';
  for(const [code,label] of Object.entries(milestones[m.id]||{})){
-  const button=document.createElement('button');button.type='button';button.textContent=code+' · '+label;button.setAttribute('aria-label','在海圖選取 '+code+'，'+label);
-  button.addEventListener('click',()=>{const node=document.querySelector('[data-node="'+code+'"]');if(node&&!node.disabled){node.click();if(!window.SubNodeUI?.isOpen())document.querySelector('[data-node="'+code+'"]')?.focus();}});marks.append(button);
+  const status=progress(fleet,w,m.id,code),button=document.createElement('button');button.type='button';button.dataset.milestoneKind=kindOf(m.id,code);button.dataset.nodeState=fleet.nodeState(m,code);button.textContent=code+' · '+label+' '+status.symbol;button.setAttribute('aria-label','在海圖選取 '+code+'，'+label+'，'+status.label);button.title=status.label;
+  button.addEventListener('click',()=>{const node=document.querySelector('[data-node="'+code+'"]');if(node&&!node.disabled){fleet.workshop().selectedNode=code;window.SubNodeUI?.show({focus:true});}});marks.append(button);
  }
- if(marks.childElementCount)index.append(marks);
+ if(marks.childElementCount){
+  const legend=document.createElement('p');legend.className='map-milestone-legend';
+  legend.innerHTML='<span><i data-milestone-kind="slot" aria-hidden="true"></i>未開 · 紅色 J／O／T 船位</span><span><i data-milestone-kind="gateway" aria-hidden="true"></i>未開 · 青色新圖地點</span>'+(m.id==='south'?'<span><i data-milestone-kind="endpoint" aria-hidden="true"></i>未開 · 金色 7.2 終點</span>':'');
+  const help=document.querySelector('#map-milestone-help');if(help)help.replaceChildren(legend);
+  index.append(marks);
+ }
  const routes=document.createElement('ul');routes.className='map-route-index';
- function row(label,nodes,color){const li=document.createElement('li'),name=document.createElement('strong'),sequence=document.createElement('span');li.style.setProperty('--route-color',color);name.textContent=label;sequence.textContent=nodes.map((c,i)=>(i+1)+'. '+c).join(' → ');li.append(name,sequence);routes.append(li);}
+ function row(label,nodes,color){const li=document.createElement('li'),name=document.createElement('strong'),sequence=document.createElement('span');li.style.setProperty('--route-color',color);name.textContent=label;sequence.textContent=nodes.join(' → ');li.title=label+'：'+nodes.map((c,i)=>(i+1)+'. '+c).join(' → ');li.append(name,sequence);routes.append(li);}
  if(previewRoute?.map===m.id&&w.layers.recommended!==false)row('推薦預覽 · '+((previewRoute.shipIndex??w.activeVoyageShip)+1)+' 號艇',previewRoute.nodes,'#e5ad35');
  w.voyages.forEach((v,i)=>{if(v.map===m.id&&v.nodes.length&&w.layers['ship-'+i]!==false)row((i+1)+' 號艇',v.nodes,palette[i]);});
  if(routes.childElementCount)index.append(routes);
- if(marks.childElementCount){const note=document.createElement('p');note.className='map-layer-index-note';note.textContent='金色內框標示里程碑；船位資格與新海域須依遊戲實際探索結果確認。';index.append(note);}
  index.hidden=!index.childElementCount;
 }
 root.SubMapUI={render};

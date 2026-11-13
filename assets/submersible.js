@@ -64,7 +64,7 @@
     const base = {
       id: index === 1 ? "workshop-1" : "workshop-" + Date.now().toString(36) + "-" + index,
       name: index === 1 ? "主工房" : "工房 " + index,
-      note: index === 1 ? "主帳號" : "",
+      note: "",
       color: ["blue","green","purple","red","gold"][(index - 1) % 5],
       flagship: 0, ships: defaultShips(), map: "deep", opened: {}, visited: {}, selectedNode: "",
       activeVoyageShip: 0, voyages: freshVoyages(), sailings: [null,null,null,null], layers: freshLayers()
@@ -81,13 +81,23 @@
   let storageWarning = loaded.warning;
   function showStorageWarning() {
     let banner=document.getElementById('storage-status');
-    if(!banner){banner=document.createElement('p');banner.id='storage-status';banner.setAttribute('role','status');document.querySelector('.fleet-context').after(banner);}
+    if(!banner){banner=document.createElement('p');banner.id='storage-status';banner.setAttribute('role','status');document.querySelector('.voyage-main').prepend(banner);}
     banner.textContent=storageWarning;banner.hidden=!storageWarning;
   }
   function save() { try { storage.setItem(key, JSON.stringify(state)); } catch (error) { storageWarning='無法儲存：瀏覽器儲存空間不足或被停用。請匯出備份；重新載入會失去這次變更。'; } showStorageWarning(); }
   function isSailing(item=workshop(),index=item.activeVoyageShip){return Boolean(item.sailings?.[index]);}
   function canEditVoyage(){if(!isSailing())return true;notice('此船仍有出航紀錄。請先確認收船或取消紀錄，再修改航線。');return false;}
   function workshop() { return state.workshops.find(item => item.id === state.selectedId) || state.workshops[0]; }
+  // Slot eligibility is derived from explicit visits, never merely discovered nodes.
+  // Do not write inferred grants back: correcting a visit must remain reversible.
+  function isSlotUnlocked(item,index) {
+    if (!item || !Number.isInteger(index) || index < 0 || index > 3) return false;
+    return index === 0 || item.slotUnlocked?.[index] === true || item.ships[index]?.enabled === true || item.visited?.deep?.[['','J','O','T'][index]] === true;
+  }
+  function shipSlotLabel(item,index) {
+    if (item.ships[index].enabled) return 'R' + item.ships[index].rank + ' · ' + escapeHtml(item.ships[index].build);
+    return isSlotUnlocked(item,index) ? '船位已開 · 待登記船隻' : '待探索 ' + ['','J','O','T'][index] + ' 開船位';
+  }
   function colorOf(item) { return colors[item.color] || colors.blue; }
   function clampRank(value) { return Math.max(1, Math.min(130, parseInt(value, 10) || 1)); }
   function cleanBuild(value) { return String(value || "").replace(/[^1-5]/g, "").slice(0, 4).padEnd(4, "1"); }
@@ -127,33 +137,109 @@
   }
 
 
-  const collapsedWorkshops = new Set();
+  // v85: compact session-only navigation; saved fleet data is untouched.
+  const collapsedWorkshops = new Set(state.workshops.map(item => item.id));
   let editorWorkshopId = "", editorShipIndex = 0, creatingWorkshop = false;
   let returnFocus = null;
   const shipPartsEditor = window.SubParts.createEditor(document, updateShipDraft);
-  function treeRoute(item, index) {
-    const voyage = item.voyages[index];
-    const name = maps.find(map => map.id === voyage.map)?.name || "";
-    const route = voyage.nodes.join(" → ");
-    return '<small class="tree-route" title="' + escapeHtml(name + (route ? ' · ' + route : '尚未安排航程')) + '">' + escapeHtml(route || '尚未安排航程') + '</small>';
+  // Presentation-only state: a return estimate never collects a ship for the user.
+  function shipStatus(item, index, now = Date.now()) {
+    const ship = item.ships[index], sailing = item.sailings?.[index];
+    if (sailing) return sailing.returnAt <= now
+      ? { kind: "due", label: "可收船", detail: "預計已返航，仍需在遊戲收船後確認紀錄。" }
+      : { kind: "sailing", label: "航行中", detail: "預計返航：" + new Date(sailing.returnAt).toLocaleString("zh-TW") };
+    if (ship.enabled) return { kind: "ready", label: "可派遣", detail: "尚無出航紀錄；出航前仍需核對配裝、航線、燃料與耐久。" };
+    return isSlotUnlocked(item,index)
+      ? { kind: "empty", label: "待登記", detail: "船位已開，請依遊戲實況在船隻設定登記。" }
+      : { kind: "locked", label: "未開啟", detail: shipSlotLabel(item,index) };
+  }
+  function statusTag(item,index) {
+    const status=shipStatus(item,index);
+    return '<small class="ship-status status-' + status.kind + '" data-ship-status="' + index + '" data-owner="' + escapeHtml(item.id) + '" title="' + escapeHtml(status.detail) + '">' + status.label + '</small>';
+  }
+  // Show one actionable workshop status, with no claim for incomplete fleets.
+  function workshopStatus(item, now = Date.now()) {
+    const statuses=item.ships.map((ship,index)=>shipStatus(item,index,now).kind);
+    const status=statuses.includes('due') ? {kind:'due',label:'可收船'}
+      : statuses.includes('ready') ? {kind:'ready',label:'有船可派遣'}
+      : statuses.length===4 && statuses.every(kind=>kind==='sailing') ? {kind:'sailing',label:'皆在航行中'} : null;
+    return status ? '<span class="status-'+status.kind+'">'+status.label+'</span>' : '';
+  }
+  function workshopStatusTag(item) {
+    return '<small class="workshop-status" data-workshop-status="'+escapeHtml(item.id)+'" aria-label="工房船隻狀態">'+workshopStatus(item)+'</small>';
+  }
+  function shipTime(item,index,now = Date.now()) {
+    const sailing=item.sailings?.[index];
+    if(!sailing)return {label:'未出航',detail:'尚無出航時間紀錄。'};
+    const detail='預計返航：'+new Date(sailing.returnAt).toLocaleString('zh-TW');
+    if(sailing.returnAt<=now)return {label:'已到時',detail:detail+'；仍需確認收船。'};
+    const minutes=Math.ceil((sailing.returnAt-now)/60000),hours=Math.floor(minutes/60),rest=minutes%60;
+    return {label:'剩 '+(hours?hours+'時':'')+rest+'分',detail};
+  }
+  function shipTimeTag(item,index) {
+    const time=shipTime(item,index);
+    return '<span class="deck-time"><span class="deck-return" data-ship-time="'+index+'" data-owner="'+escapeHtml(item.id)+'" title="'+escapeHtml(time.detail)+'">時間：'+time.label+'</span>'+statusTag(item,index)+'</span>';
+  }
+  function refreshShipStatuses() {
+    const now=Date.now();
+    document.querySelectorAll('[data-ship-status]').forEach(tag=>{
+      const item=state.workshops.find(w=>w.id===tag.dataset.owner),index=Number(tag.dataset.shipStatus);
+      if(!item||!item.ships[index])return;
+      const status=shipStatus(item,index,now);
+      tag.className='ship-status status-'+status.kind;tag.textContent=status.label;tag.title=status.detail;
+    });
+    document.querySelectorAll('[data-workshop-status]').forEach(tag=>{
+      const item=state.workshops.find(w=>w.id===tag.dataset.workshopStatus);
+      if(item)tag.innerHTML=workshopStatus(item,now);
+    });
+    document.querySelectorAll('[data-ship-time]').forEach(tag=>{
+      const item=state.workshops.find(w=>w.id===tag.dataset.owner),index=Number(tag.dataset.shipTime);
+      if(!item||!item.ships[index])return;
+      const time=shipTime(item,index,now);tag.textContent='時間：'+time.label;tag.title=time.detail;
+    });
+  }
+  // Use the same saved plan as the map overlay and active-route controls.
+  // Actual departure snapshots remain separate in the existing logbook.
+  function displayedRoute(item,index) {
+    return item.voyages[index]?.nodes.length ? item.voyages[index] : null;
+  }
+  function shipRouteLabel(item,index) {
+    const route=displayedRoute(item,index);
+    return route ? '計畫：'+(maps.find(map=>map.id===route.map)?.name||route.map)+' · '+route.nodes.join(' → ') : '計畫：尚未安排航程';
+  }
+  function shipBuildLabel(ship) {
+    return ship.enabled ? [...ship.build].map((part,index)=>part+(ship.modified?.[index]?'+':'')).join('') : '配裝待登記';
+  }
+  function renderShipDeck() {
+    const item=workshop();
+    $('#selected-workshop-name').textContent=item.name;
+    $('#voyage-ship-tabs').innerHTML=item.ships.map((ship,index)=>{
+      const active=item.activeVoyageShip===index,route=shipRouteLabel(item,index),time=shipTime(item,index);
+      const detailId='deck-ship-detail-'+index;
+      const detail=route+'；'+time.detail+(item.flagship===index&&ship.enabled?'；工房旗艦':'');
+      return '<div class="deck-ship'+(active?' selected':'')+'"><button type="button" class="deck-select" data-voyage-ship="'+index+'" aria-pressed="'+active+'" aria-describedby="'+detailId+'" title="'+escapeHtml(detail)+'"><span class="deck-ship-title"><b>'+(index+1)+' 號艇</b>'+(ship.enabled?'<small>R'+ship.rank+'</small>':'')+'</span><span class="deck-ship-summary">'+(ship.enabled?'<span class="deck-build" title="'+escapeHtml(shipBuildLabel(ship))+'">'+escapeHtml(shipBuildLabel(ship))+'</span><span class="deck-summary-dot" aria-hidden="true">·</span>':'')+statusTag(item,index)+'</span></button><span class="deck-accessible-detail" id="'+detailId+'">'+escapeHtml(route)+'；<span data-ship-time="'+index+'" data-owner="'+escapeHtml(item.id)+'" title="'+escapeHtml(time.detail)+'">時間：'+escapeHtml(time.label)+'</span>'+(item.flagship===index&&ship.enabled?'；工房旗艦':'')+'</span><button type="button" class="deck-settings" data-edit-ship="'+index+'" data-owner="'+escapeHtml(item.id)+'" aria-label="設定 '+escapeHtml(item.name)+' '+(index+1)+' 號艇" title="船隻設定">⚙</button></div>';
+    }).join('');
   }
   let visibleFleetContext = "";
   function renderWorkshopNav() {
     const contextKey=state.selectedId+":"+workshop().activeVoyageShip;
     const contextChanged=contextKey!==visibleFleetContext;
-    if(contextChanged)collapsedWorkshops.delete(state.selectedId);
-    $("#workshop-tree").innerHTML = '<ul class="workshop-tree-list">' + state.workshops.map(item => {
+    $("#workshop-tree").innerHTML = '<ul class="workshop-tree-list">' + state.workshops.map((item,workshopIndex) => {
       const collapsed = collapsedWorkshops.has(item.id);
       const active = item.id === state.selectedId;
-      return '<li class="workshop-tree-branch' + (active ? ' current' : '') + '" style="--workshop-color:' + colorOf(item) + '"><div class="workshop-tree-row"><button class="tree-disclosure" type="button" data-toggle-workshop="' + escapeHtml(item.id) + '" aria-expanded="' + !collapsed + '" aria-label="' + (collapsed ? '展開 ' : '收合 ') + escapeHtml(item.name) + '">' + (collapsed ? '▸' : '▾') + '</button><button class="tree-workshop" type="button" data-edit-workshop="' + escapeHtml(item.id) + '"' + (active ? ' aria-current="true"' : '') + '><i></i><span>' + escapeHtml(item.name) + '<small>' + escapeHtml(item.note || '工房設定') + '</small></span><em>⚙</em></button></div><ul class="tree-ships"' + (collapsed ? ' hidden' : '') + '>' + item.ships.map((ship,index) => '<li><button type="button" data-edit-ship="' + index + '" data-owner="' + escapeHtml(item.id) + '"' + (active && item.activeVoyageShip === index ? ' aria-current="true"' : '') + '><span class="tree-ship-icon">' + (index + 1) + '</span><span><b>' + (index + 1) + ' 號艇' + (item.flagship === index && ship.enabled ? ' ★' : '') + '</b><small>' + (ship.enabled ? 'R' + ship.rank + ' · ' + escapeHtml(ship.build) : '尚未啟用') + '</small>' + treeRoute(item, index) + '</span><em>⚙</em></button></li>').join('') + '</ul></li>';
+      return '<li class="workshop-tree-branch' + (active ? ' current' : '') + '" style="--workshop-color:' + colorOf(item) + '"><div class="workshop-tree-row"><button class="tree-disclosure" type="button" data-toggle-workshop="' + escapeHtml(item.id) + '" aria-controls="workshop-ships-'+workshopIndex+'" aria-expanded="' + !collapsed + '" aria-label="' + (collapsed ? '展開 ' : '收合 ') + escapeHtml(item.name) + '">' + (collapsed ? '▸' : '▾') + '</button><button class="tree-workshop" type="button" data-select-workshop="' + escapeHtml(item.id) + '"' + (active ? ' aria-current="true"' : '') + ' title="' + escapeHtml(item.name + (item.note ? '\n' + item.note : '')) + '"><span class="tree-workshop-name">' + escapeHtml(item.name) + '</span>' + workshopStatusTag(item) + '</button><button class="workshop-settings" type="button" data-edit-workshop="'+escapeHtml(item.id)+'" aria-label="設定 '+escapeHtml(item.name)+'" title="工房設定">⚙</button></div><ul class="tree-ships" id="workshop-ships-'+workshopIndex+'"' + (collapsed ? ' hidden' : '') + '>' + item.ships.map((ship,index) => '<li><button type="button" class="tree-ship-select ' + (isSlotUnlocked(item,index) ? 'ship-slot-open' : 'ship-slot-pending') + '" data-slot-open="' + isSlotUnlocked(item,index) + '" data-select-ship="' + index + '" data-owner="' + escapeHtml(item.id) + '"' + (active && item.activeVoyageShip === index ? ' aria-current="true"' : '') + '><span class="compact-ship-heading"><b>' + (index + 1) + ' 號艇</b><small>' + (ship.enabled?'R'+ship.rank:'—') + '</small></span>'+statusTag(item,index)+'</button></li>').join('') + '</ul></li>';
     }).join('') + '</ul>';
+    const allCollapsed=state.workshops.every(item=>collapsedWorkshops.has(item.id));
+    $('#toggle-all-workshops').textContent=allCollapsed?'全部展開':'全部收合';
+    $('#toggle-all-workshops').setAttribute('aria-expanded',String(!allCollapsed));
     if(contextChanged){
       visibleFleetContext=contextKey;
       // Fleet-status badges are appended later in the same render cycle.
       // Measure the final layout on the next frame, not the intermediate tree.
       const reveal=()=>{
         if(state.selectedId+":"+workshop().activeVoyageShip!==contextKey)return;
-        const target=$("#workshop-tree").querySelector('[data-edit-ship][aria-current="true"]');
+        const currentShip=$("#workshop-tree").querySelector('[data-select-ship][aria-current="true"]');
+        const target=currentShip&&!currentShip.closest('[hidden]') ? currentShip : $("#workshop-tree").querySelector('[data-select-workshop][aria-current="true"]');
         if(target)for(const host of [$("#workshop-tree"),$("#fleet-manager")]){
           if(host.scrollHeight<=host.clientHeight||!/(auto|scroll)/.test(getComputedStyle(host).overflowY))continue;
           const box=host.getBoundingClientRect(),rect=target.getBoundingClientRect(),top=Math.max(0,box.top),bottom=Math.min(window.innerHeight,box.bottom);
@@ -169,14 +255,12 @@
   function renderOverview() {
     $("#workshop-overview-grid").innerHTML = state.workshops.map(item => {
       const stats = workshopStats(item);
-      return '<article class="workshop-overview-card" style="--workshop-color:' + colorOf(item) + '"><div class="overview-card-head"><div><h4>' + escapeHtml(item.name) + '</h4><p>' + escapeHtml(item.note || "尚未填寫帳號／角色備註") + '</p></div><button type="button" data-open-workshop="' + escapeHtml(item.id) + '">進入工房 →</button></div><div class="overview-card-stats"><div><span>已啟用</span><b>' + stats.active + '／4</b></div><div><span>最高等級</span><b>' + (stats.highest ? "Rank " + stats.highest : "—") + '</b></div><div><span>已開節點</span><b>' + stats.opened + '</b></div></div><div class="overview-ships">' + item.ships.map((ship, i) => '<div class="overview-ship ' + (ship.enabled ? "" : "disabled") + '"><b>' + (i + 1) + ' 號艇</b><small>' + (ship.enabled ? "R" + ship.rank + " · " + escapeHtml(ship.build) : "未啟用") + '</small></div>').join("") + '</div><div class="overview-next"><b>目前重點：</b>' + escapeHtml(stats.next[1]) + '</div></article>';
+      return '<article class="workshop-overview-card" style="--workshop-color:' + colorOf(item) + '"><div class="overview-card-head"><div><h4>' + escapeHtml(item.name) + '</h4>' + (item.note ? '<p>' + escapeHtml(item.note) + '</p>' : '') + '</div><button type="button" data-open-workshop="' + escapeHtml(item.id) + '">進入工房 →</button></div><div class="overview-card-stats"><div><span>已啟用</span><b>' + stats.active + '／4</b></div><div><span>最高等級</span><b>' + (stats.highest ? "Rank " + stats.highest : "—") + '</b></div><div><span>已開節點</span><b>' + stats.opened + '</b></div></div><div class="overview-ships">' + item.ships.map((ship, i) => '<div class="overview-ship ' + (ship.enabled ? "" : "disabled") + '"><b>' + (i + 1) + ' 號艇</b><small>' + (ship.enabled ? "R" + ship.rank + " · " + escapeHtml(ship.build) : "未啟用") + '</small></div>').join("") + '</div><div class="overview-next"><b>目前重點：</b>' + escapeHtml(stats.next[1]) + '</div></article>';
     }).join("");
   }
 
   function renderFleet() {
-    const item = workshop(); validateFlagship(item); const stats = workshopStats(item);
-    $("#summary-workshop").textContent = item.name; $("#summary-flagship").textContent = (item.flagship + 1) + " 號艇";
-    $("#summary-active").textContent = stats.active + "／4"; $("#summary-rank").textContent = stats.highest ? "最高 Rank " + stats.highest : "尚未啟用";
+    const item = workshop(); validateFlagship(item);
     renderCommand(); renderWorkshopNav(); save();
   }
   function renderAll() {
@@ -185,7 +269,15 @@
   }
   function selectWorkshop(id) {
     if (!state.workshops.some(item => item.id === id)) return;
-    state.selectedId = id; collapsedWorkshops.delete(id); notice(""); renderAll();
+    state.selectedId = id; notice(""); renderAll();
+  }
+  function selectShip(id,index) {
+    const item=state.workshops.find(w=>w.id===id);
+    if(!item||!Number.isInteger(index)||!item.ships[index])return;
+    state.selectedId=id;item.activeVoyageShip=index;
+    const route=displayedRoute(item,index);
+    if(route&&maps.some(map=>map.id===route.map))item.map=route.map;
+    item.selectedNode="";notice("");renderAll();
   }
   function showDialog(id, focusTarget) {
     returnFocus = focusTarget; $("#"+id).showModal();
@@ -248,10 +340,25 @@
       if (target && target.focus) target.focus();
       return;
     }
-    const ship = event.target.closest("[data-edit-ship]");
-    if (ship) { openShipEditor(ship.dataset.owner,Number(ship.dataset.editShip)); return; }
-    const group = event.target.closest("[data-edit-workshop]");
-    if (group) openWorkshopEditor(group.dataset.editWorkshop,false);
+    const ship = event.target.closest("[data-select-ship]");
+    if (ship) {
+      const id=ship.dataset.owner,index=Number(ship.dataset.selectShip);
+      selectShip(id,index);
+      $('#workshop-tree').querySelector('[data-owner="'+id+'"][data-select-ship="'+index+'"]').focus({preventScroll:true});
+      return;
+    }
+    const settings=event.target.closest("[data-edit-workshop]");
+    if(settings){openWorkshopEditor(settings.dataset.editWorkshop,false);return;}
+    const group=event.target.closest("[data-select-workshop]");
+    if(group){
+      const id=group.dataset.selectWorkshop;selectWorkshop(id);
+      $('#workshop-tree').querySelector('[data-select-workshop="'+id+'"]').focus({preventScroll:true});
+    }
+  });
+  $('#toggle-all-workshops').addEventListener('click',()=>{
+    if(state.workshops.every(item=>collapsedWorkshops.has(item.id)))collapsedWorkshops.clear();
+    else state.workshops.forEach(item=>collapsedWorkshops.add(item.id));
+    renderWorkshopNav();
   });
   $("#add-workshop").addEventListener("click",()=>openWorkshopEditor("",true));
   $("#show-overview").addEventListener("click",()=>{ renderOverview();showDialog("overview-dialog","#show-overview"); });
@@ -267,7 +374,7 @@
     if (!item) return;
     item.name=name;item.note=$("#workshop-note").value.trim();item.color=$("#workshop-color").value;
     if(creatingWorkshop)state.workshops.push(item);
-    state.selectedId=item.id;collapsedWorkshops.delete(item.id);
+    state.selectedId=item.id;if(creatingWorkshop)collapsedWorkshops.add(item.id);
     renderAll();closeDialog("workshop-dialog");
   });
   $("#delete-workshop").addEventListener("click",()=>{
@@ -301,8 +408,8 @@
       const other=item.ships.findIndex((s,i)=>s.enabled&&i!==editorShipIndex);
       if(other>=0)item.flagship=other;
     }
-    state.selectedId=item.id;item.activeVoyageShip=editorShipIndex;collapsedWorkshops.delete(item.id);
-    validateFlagship(item);renderAll();closeDialog("ship-dialog");
+    state.selectedId=item.id;item.activeVoyageShip=editorShipIndex;
+    validateFlagship(item);selectShip(item.id,editorShipIndex);closeDialog("ship-dialog");
   });
   function renderCommand() {
     const item = workshop(); const ship = item.ships[item.flagship]; const rec = recommendedBuild(ship.rank); const mark = milestone(ship.rank);
@@ -325,7 +432,7 @@
   }
   function nodeByCode(map, code) { return map.nodes.find(node => node.code === code); }
   function renderTabs() { const item = workshop(); mapTabs.innerHTML = maps.map(map => '<button type="button" role="tab" data-map="' + map.id + '" aria-selected="' + (item.map === map.id) + '" class="' + (map.locked ? "locked" : "") + '">' + map.name + '</button>').join(""); }
-  mapTabs.addEventListener("click", event => { const button = event.target.closest("[data-map]"); if (!button) return; const item = workshop(); item.map = button.dataset.map; item.selectedNode = ""; renderTabs(); renderMap(); save(); });
+  mapTabs.addEventListener("click", event => { const button = event.target.closest("[data-map]"); if (!button) return; const item = workshop(); item.map = button.dataset.map; item.selectedNode = ""; notice(""); renderTabs(); renderMap(); save(); });
 
   function renderLegend() {
     const item = workshop();
@@ -354,7 +461,7 @@
       const stateName = nodeState(map, node.code); const selected = node.code === item.selectedNode; const recommended = item.layers.recommended !== false && (window.SubVoyageUI?.routeForMap(map.id)||[]).includes(node.code);
       const disabled = stateName === "locked";
       const label = stateName === "opened" ? "已開啟" : stateName === "available" ? "可開啟" : stateName === "unopened" ? "尚未登記" : "版本尚未開放";
-      const action = "選取查看登記與航程操作";
+      const action = "已開啟地點按 Enter 或空白鍵加入／移除航程；按向下鍵開啟進度登記";
       return '<button type="button" class="map-node ' + stateName + (selected ? " selected" : "") + (recommended ? " recommended" : "") + '" data-node="' + node.code + '" style="left:' + (node.x / width * 100).toFixed(3) + '%;top:' + (node.y / height * 100).toFixed(3) + '%" aria-label="' + map.name + " " + node.code + "，" + label + "，" + action + '"' + (disabled ? " disabled" : "") + '><span class="node-code">' + node.code + '</span><span class="node-ship-badges">' + voyageBadges(map.id, node.code) + '</span></button>';
     }).join("");
     const availableNodes = map.nodes.filter(node => !(map.future || []).includes(node.code)); const done = availableNodes.filter(node => isOpened(map.id, node.code)).length;
@@ -363,76 +470,52 @@
     const available = map.nodes.filter(node => nodeState(map, node.code) === "available").map(node => node.code);
     $("#available-summary").textContent = available.length ? "目前可爭取開啟：" + available.join("、") + "（點選查看前置節點）" : "目前沒有可爭取開啟的節點；請先補登遊戲中已發現的地點。";
     $("#route-next").textContent = map.locked ? "等待台服後續版本開放。" : next ? "推薦主線下一站：" + next + "；僅供參考，不限制其他航程。" : "本海圖的 7.2 主線已完成。";
-    renderOverlay(map); renderLegend(); renderVoyageEditor(); renderInspector(); renderActiveRoute(); renderWorkshopNav(); window.SubVoyageUI?.render(); window.SubLogbook?.render(); window.SubExplored?.render(); window.SubNodeUI?.render();
+    renderOverlay(map); renderLegend(); renderVoyageEditor(); renderInspector(); renderWorkshopNav(); window.SubVoyageUI?.render(); window.SubLogbook?.render(); window.SubExplored?.render(); window.SubNodeUI?.render();
   }
-
-  function renderActiveRoute() {
-    const item = workshop(), index = item.activeVoyageShip, voyage = item.voyages[index];
-    const sea = maps.find(map => map.id === voyage.map)?.name || "";
-    $("#active-route-ship").textContent = (index + 1) + " 號艇";
-    $("#active-route-order").value = voyage.nodes.join(" → ") || "尚未安排";
-    $("#copy-active-route").disabled = !voyage.nodes.length;
-    const valid = voyage.nodes.length && calculator.calculate(item.ships[index],voyage.map,voyage.nodes,item.opened).valid;
-    $("#active-route-hint").textContent = voyage.nodes.length
-      ? "本趟航線 · " + sea + " · 依左到右順序選點" + (valid ? "" : " · 尚不符合出航條件，請看右側提示")
-      : "本趟航線 · 先在右側安排航程";
-  }
-  $("#copy-active-route").addEventListener("click", async () => {
-    const item = workshop(), index = item.activeVoyageShip, voyage = item.voyages[index];
-    if (!voyage.nodes.length) return;
-    const order = voyage.nodes.join(" → ");
-    const text = item.name + "｜" + (index + 1) + " 號艇｜" + (maps.find(map => map.id === voyage.map)?.name || voyage.map) + "｜" + order;
-    try {
-      if (!window.navigator?.clipboard?.writeText) throw new Error("Clipboard unavailable");
-      await window.navigator.clipboard.writeText(text);
-      if (workshop() === item && item.activeVoyageShip === index && item.voyages[index].nodes.join(" → ") === order) $("#active-route-hint").textContent = "已複製：" + (index + 1) + " 號艇 · " + order;
-    } catch (_) {
-      $("#active-route-order").focus(); $("#active-route-order").select();
-      $("#active-route-hint").textContent = "無法自動複製；航線已選取，請按 Ctrl+C／⌘C。";
-    }
-  });
 
   let mapNotice = "";
+  let mapNoticeTimer;
   let resetMapArmed = "";
-  function notice(message) { mapNotice = message; $("#map-feedback").textContent = message; }
+  function notice(message) {
+    clearTimeout(mapNoticeTimer);
+    mapNotice = message;
+    const feedback = $("#map-feedback");
+    feedback.textContent = message;
+    feedback.hidden = !message;
+    if (message) mapNoticeTimer = setTimeout(() => notice(""), 3000);
+  }
   hotspotHost.addEventListener("click", event => {
     const node = event.target.closest("[data-node]");
     if (!node || node.disabled) return;
     workshop().selectedNode = node.dataset.node;
-    notice("");
-    renderMap(); save();
+    window.SubNodeUI?.close(false);
+    if (nodeState(currentMap(), node.dataset.node) === "opened") toggleVoyageNode();
+    else window.SubNodeUI?.show({focus:true});
   });
   function renderVoyageEditor() {
     const item = workshop(); const index = item.activeVoyageShip; const voyage = item.voyages[index];
-    $("#voyage-ship-tabs").innerHTML = item.ships.map((ship, i) => '<button type="button" data-voyage-ship="' + i + '" aria-pressed="' + (i === index) + '">' + (i + 1) + ' 號艇<small>' + (ship.enabled ? 'Rank ' + ship.rank : '未啟用') + '</small></button>').join("");
-    $("#voyage-route-list").innerHTML = voyage.nodes.length ? '<b>' + escapeHtml(maps.find(map => map.id === voyage.map)?.name || voyage.map) + ' · ' + voyage.nodes.length + '/5 站</b>' + voyage.nodes.map(code => '<button type="button" data-remove-stop="' + escapeHtml(code) + '" aria-label="移除 ' + escapeHtml(code) + '">' + escapeHtml(code) + ' ×</button>').join('<i>›</i>') : '<em>尚未安排航程；選節點後按「加入航程」。</em>';
-    $("#clear-voyage").disabled = !voyage.nodes.length;
-    const calculation=calculator.calculate(item.ships[index],voyage.map,voyage.nodes,item.opened);
-    const missingRequired=(item.ships[index].requiredStops||[]).filter(stop=>stop.map!==voyage.map||!voyage.nodes.includes(stop.code));
-    $("#voyage-validation").textContent = missingRequired.length ? "尚未包含本趟必去："+missingRequired.map(stop=>(maps.find(m=>m.id===stop.map)?.name||stop.map)+" "+stop.code).join("、")+"。請補齊後再出航。" : !voyage.nodes.length ? "手動點海圖排航程，或按「計算推薦」。" : calculation.valid ? "✓ 配裝、等級、開圖與航程檢查通過；出航前仍請核對燃料及零件耐久。" : calculation.errors.join(" ");
+    renderShipDeck();
     const map = currentMap(); const select = $("#route-progress-select");
     const previous = select.value;
     select.innerHTML = map.nodes.filter(node => nodeState(map, node.code) !== "locked").map(node => '<option value="' + node.code + '">' + node.code + '</option>').join("");
     select.value = nodeByCode(map, previous) ? previous : (map.nodes[0]?.code || "");
     select.disabled = !map.nodes.length || map.locked; $("#complete-route").disabled = select.disabled;
     $("#map-feedback").textContent = mapNotice;
+    $("#map-feedback").hidden = !mapNotice;
   }
   $("#voyage-ship-tabs").addEventListener("click", event => {
-    const button = event.target.closest("[data-voyage-ship]"); if (!button) return;
-    workshop().activeVoyageShip = Number(button.dataset.voyageShip); notice(""); renderWorkshopNav(); renderMap(); save();
+    const settings=event.target.closest('[data-edit-ship]');
+    if(settings){openShipEditor(settings.dataset.owner,Number(settings.dataset.editShip));return;}
+    const button=event.target.closest('[data-voyage-ship]');if(!button)return;
+    const index=Number(button.dataset.voyageShip);selectShip(workshop().id,index);
+    $('#voyage-ship-tabs').querySelector('[data-voyage-ship="'+index+'"]').focus({preventScroll:true});
   });
-  $("#voyage-route-list").addEventListener("click", event => {
-    const button = event.target.closest("[data-remove-stop]"); if (!button) return;
-    if(!canEditVoyage())return;
-    const item = workshop(); const voyage = item.voyages[item.activeVoyageShip];
-    voyage.nodes = voyage.nodes.filter(code => code !== button.dataset.removeStop);
-    notice("已移除 " + button.dataset.removeStop + "。"); renderMap(); save();
-  });
-  $("#clear-voyage").addEventListener("click", () => {
-    if(!canEditVoyage())return;
-    const item = workshop(); item.voyages[item.activeVoyageShip] = { map: "", nodes: [] };
-    notice("已清除這艘船的航程；開圖登記保持不變。"); renderMap(); save();
-  });
+  function clearVoyage(expected) {
+    const item=workshop(),index=item.activeVoyageShip;
+    if(!expected||expected.item!==item||expected.index!==index||expected.sailing!==item.sailings[index]||expected.planSignature!==JSON.stringify([item.ships[index],item.voyages[index],item.opened]))return false;
+    if(!canEditVoyage())return false;
+    item.voyages[index]={map:"",nodes:[]};notice("");renderMap();save();return true;
+  }
   function toggleProgressNode(code) {
     const item = workshop(); const map = currentMap(); const node = nodeByCode(map, code);
     if (!node || nodeState(map, code) === "locked") return;
@@ -440,49 +523,46 @@
     if (isOpened(map.id, code) && item.visited?.[map.id]?.[code]) { notice("探索紀錄功能尚未載入，請重新整理後再取消開啟登記，避免遺失探索紀錄。"); return; }
     item.opened[map.id] = item.opened[map.id] || {};
     item.opened[map.id][code] = !isOpened(map.id, code);
-    notice(code + (isOpened(map.id, code) ? " 已登記開啟；後續可開啟節點已更新。" : " 已取消登記；既有航程保留，請核對。"));
+    notice(isOpened(map.id, code) ? "" : "開啟登記已取消；既有航程保留，請核對。");
     renderMap(); save();
   }
+  // Compare permutations of the selected set only; never infer prerequisite stops.
+  function optimizeCurrentVoyage() {
+    const item=workshop(),index=item.activeVoyageShip,voyage=item.voyages[index];
+    if(isSailing(item,index)||!voyage.nodes.length)return "";
+    const best=calculator.optimize(item.ships[index],voyage.map,voyage.nodes,item.opened);
+    if(best){voyage.nodes=[...best.nodes];return "";}
+    return "其餘站點已保留；目前條件無可行順序，請核對航程。";
+  }
   function voyageAction() {
-    const item = workshop(); const map = currentMap(); const node = nodeByCode(map, item.selectedNode);
-    if (!node) return { disabled: true, label: "請先選擇節點", reason: "" };
-    const status = nodeState(map, node.code);
-    if (status === "locked") return { disabled: true, label: "此節點尚未開放", reason: "台服 7.2 版本限制。" };
-    let targetMap = map, targetNode = node;
-    const unlocking = status === "available";
-    if (unlocking) {
-      targetMap = maps.find(m => m.id === node.parent[0]);
-      targetNode = nodeByCode(targetMap, node.parent[1]);
-    }
-    if (status === "unopened") return { disabled: true, label: "尚不能安排此地點", reason: node.parent ? "前置節點還沒登記開啟；若遊戲已發現此地點，可先補登。" : "起始地點請先登記為已開啟。" };
-    const ship = item.ships[item.activeVoyageShip], voyage = item.voyages[item.activeVoyageShip];
-    const targetLabel = (targetMap.id === map.id ? "" : targetMap.name + " ") + targetNode.code;
-    const assigned = voyage.map === targetMap.id && voyage.nodes.includes(targetNode.code);
-    if (assigned && !unlocking) return { disabled: false, label: "從 " + (item.activeVoyageShip + 1) + " 號艇移除 " + targetLabel, targetMap, targetNode, remove: true, reason: "點擊航程中的站點 × 也可移除。" };
-    const label = unlocking ? "安排前往 " + targetLabel + "，爭取開啟 " + node.code : "將 " + targetLabel + " 加入 " + (item.activeVoyageShip + 1) + " 號艇航程";
-    let reason = "";
-    if (assigned) reason = targetLabel + " 已在航程中，不需要重複加入；回航後再確認是否發現 " + node.code + "。";
-    else if (!ship.enabled) reason = "請先啟用 " + (item.activeVoyageShip + 1) + " 號艇。";
-    else if (ship.rank < targetNode.rank) reason = "前往 " + targetLabel + " 需要 Rank " + targetNode.rank + "；此艇目前 Rank " + ship.rank + "。";
-    else if (voyage.nodes.length && voyage.map !== targetMap.id) reason = "這艘船已有其他海域航程；請先清除原航程，再安排新海域。";
-    else if (voyage.nodes.length >= 5) reason = "航程最多 5 站，請先移除一站。";
-    if(!reason){
-      const candidates=[...voyage.nodes,targetNode.code];
-      const check=calculator.calculate(ship,targetMap.id,candidates,item.opened);
-      if(!check.valid){
-        // Only a range failure can be repaired by reordering. Keep all other checks strict.
-        if(check.range>check.ability.range && check.errors.length===1){
-          const alternative=calculator.optimize(ship,targetMap.id,candidates,item.opened);
-          if(alternative){
-            const route=alternative.nodes.join(" → ");
-            return {disabled:false,label:"重新排序並加入 "+targetLabel,targetMap,targetNode,reorderedNodes:alternative.nodes,
-              reason:"接在最後需要航程 "+check.range+"，超過上限 "+check.ability.range+"；改為 "+route+" 只需 "+alternative.range+"。按上方按鈕才會套用，不會刪除原有地點。"+(unlocking?"實際加入前置節點 "+targetLabel+"，爭取開啟 "+node.code+"；不會自動登記開圖。":"")};
-          }
-          reason=check.errors.join(" ")+" 已比較包含新地點的所有排列，仍無可行順序；請減少地點或調整配裝。";
-        }else reason=check.errors.join(" ");
-      }
-    }
-    return { disabled: Boolean(reason), label: assigned ? targetLabel + " 已在航程中" : label, targetMap, targetNode, reason: reason || (unlocking ? "實際加入的是前置節點 " + targetLabel + "；不會自動登記 " + node.code + " 已開啟。" : "加入後依點選順序排列，最多 5 站。") };
+    const item=workshop(),map=currentMap(),node=nodeByCode(map,item.selectedNode);
+    if(!node)return {disabled:true,label:"請先選擇節點",reason:""};
+    if(isSailing())return {disabled:true,label:"出航中，航線唯讀",reason:"請先確認收船或取消出航紀錄。"};
+    const status=nodeState(map,node.code);
+    if(status!=="opened")return {disabled:true,label:status==="locked"?"此節點尚未開放":"尚未登記開啟",reason:status==="locked"?"台服 7.2 版本限制。":"請依遊戲實況登記已開啟；不會自動加入前置地點。"};
+    const ship=item.ships[item.activeVoyageShip],voyage=item.voyages[item.activeVoyageShip];
+    const base={targetMap:map,targetNode:node};
+    if(voyage.map===map.id&&voyage.nodes.includes(node.code))return {...base,disabled:false,remove:true,label:"從航程移除 "+node.code,reason:"移除後重排其餘站點。"};
+    let reason="";
+    if(!ship.enabled)reason="請先啟用 "+(item.activeVoyageShip+1)+" 號艇。";
+    else if(ship.rank<node.rank)reason="前往 "+node.code+" 需要 Rank "+node.rank+"；此艇目前 Rank "+ship.rank+"。";
+    else if(voyage.nodes.length&&voyage.map!==map.id)reason="這艘船已有其他海域航程；請先清除原航程，再安排新海域。";
+    else if(voyage.nodes.length>=5)reason="航程最多 5 站，請先移除一站。";
+    if(reason)return {...base,disabled:true,label:"無法加入 "+node.code,reason};
+    const codes=[...voyage.nodes,node.code],best=calculator.optimize(ship,map.id,codes,item.opened);
+    if(!best){const check=calculator.calculate(ship,map.id,codes,item.opened);return {...base,disabled:true,label:"無法加入 "+node.code,reason:check.errors.join(" ")+" 已比較所有順序，仍無可行航線。"};}
+    return {...base,disabled:false,label:"加入 "+node.code,reorderedNodes:best.nodes,reason:"加入後依最短航時排序，最多 5 站。"};
+  }
+  function toggleVoyageNode() {
+    const plan=voyageAction();
+    if(plan.disabled){notice(plan.reason||plan.label);window.SubNodeUI?.render();return false;}
+    const item=workshop(),voyage=item.voyages[item.activeVoyageShip],code=plan.targetNode.code;
+    if(plan.remove){voyage.nodes=voyage.nodes.filter(c=>c!==code);notice(optimizeCurrentVoyage());}
+    else {voyage.map=plan.targetMap.id;voyage.nodes=[...plan.reorderedNodes];notice("");}
+    renderMap();save();
+    // Rendering replaces node buttons; preserve keyboard position after a toggle.
+    hotspotHost.querySelector('[data-node="'+code+'"]')?.focus({preventScroll:true});
+    return true;
   }
   function renderInspector() {
     const item = workshop(); const map = currentMap(); const node = nodeByCode(map, item.selectedNode);
@@ -505,16 +585,7 @@
     $("#node-voyage-help").textContent = plan.reason;
   }
   $("#node-register").addEventListener("click", () => toggleProgressNode(workshop().selectedNode));
-  $("#node-action").addEventListener("click", () => {
-    if(!canEditVoyage())return;
-    const plan = voyageAction(); if (plan.disabled) return;
-    const item = workshop(); const voyage = item.voyages[item.activeVoyageShip];
-    if (plan.remove) voyage.nodes = voyage.nodes.filter(code => code !== plan.targetNode.code);
-    else if(plan.reorderedNodes){voyage.map=plan.targetMap.id;voyage.nodes=[...plan.reorderedNodes];}
-    else { voyage.map = plan.targetMap.id; voyage.nodes.push(plan.targetNode.code); }
-    notice(plan.remove ? "已移出航程。" : plan.reorderedNodes ? "已重排並加入："+plan.reorderedNodes.join(" → ")+"；開圖登記未變更。" : "已加入 " + plan.targetMap.name + " " + plan.targetNode.code + "；開圖登記不會自動變更。");
-    renderMap(); save();
-  });
+  $("#node-action").addEventListener("click", toggleVoyageNode);
   $("#reset-map").addEventListener("click", () => {
     if (window.SubExplored) { window.SubExplored.resetMap(workshop().map); return; }
     if (Object.values(workshop().visited?.[workshop().map] || {}).some(Boolean)) { notice("探索紀錄功能尚未載入，請重新整理後再清除，避免遺失探索紀錄。"); return; }
@@ -522,7 +593,7 @@
     if (resetMapArmed !== id) { resetMapArmed = id; $("#reset-map").textContent = "再次點擊確認清除本海圖登記"; return; }
     item.opened[item.map] = {}; item.selectedNode = ""; resetMapArmed = "";
     $("#reset-map").textContent = "清除本海圖的開圖登記";
-    notice("已清除本海圖登記；船隻與航程保持不變。"); renderMap(); save();
+    notice(""); renderMap(); save();
   });
   $("#complete-route").addEventListener("click", () => {
     const item = workshop(); let map = currentMap(); let node = nodeByCode(map, $("#route-progress-select").value);
@@ -534,17 +605,17 @@
       if (!node.parent) break;
       map = maps.find(m => m.id === node.parent[0]); node = nodeByCode(map, node.parent[1]);
     }
-    notice("已補登 " + endpoint + " 與必要前置節點（含跨海域）；不會標記無關支線。"); renderMap(); save();
+    notice(""); renderMap(); save();
   });
 
-  const backupButton=document.createElement('button');backupButton.type='button';backupButton.className='tree-overview';backupButton.textContent='匯出本機備份';
-  document.querySelector('#fleet-manager').append(backupButton);
+  const backupButton=document.createElement('button');backupButton.type='button';backupButton.id='export-local-backup';backupButton.className='tree-overview';backupButton.textContent='匯出本機備份';
+  $('#workshop-actions').append(backupButton);
   backupButton.addEventListener('click',()=>{
     const preserved={};
     for(const original of [window.SubState.OLD,window.SubState.LEGACY,key+'-original-'+window.SubState.OLD,key+'-original-'+window.SubState.LEGACY,key+'-damaged-'+key]){try{const raw=storage.getItem(original);if(raw)preserved[original]=raw;}catch(_){}}
     const blob=new Blob([JSON.stringify({format:'ff14-submersible-backup-v47',exportedAt:new Date().toISOString(),...state,preserved},null,2)],{type:'application/json'});
     const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download='ff14-submersible-backup-'+new Date().toISOString().slice(0,10)+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   });
-  window.SubFleet={state,maps,isSailing,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor,voyageAction,renderInspector,canEditVoyage};
+  window.SubFleet={state,maps,isSailing,isSlotUnlocked,refreshShipStatuses,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor,voyageAction,renderInspector,canEditVoyage,toggleVoyageNode,optimizeCurrentVoyage,clearVoyage};
   renderAll();
 })();

@@ -1,0 +1,27 @@
+/* v69: use only the existing space beside the centered chart.
+   The query uses this map column's width, the original v63 height formula,
+   and an upper bound on all seven image aspect ratios (820 / 801 < 1.024).
+   238px reserves two 104px side columns, two 8px gaps and 14px border/padding.
+   Unsupported or narrower containers keep the controls above the full-size map. */
+.voyage-v47 .map-area{grid-column:1;grid-row:2;min-width:0;container:sea-chart / inline-size}
+.voyage-v47 .map-viewport>#map-tabs{margin:0 0 10px;min-width:0}
+.voyage-v47 .map-viewport>.chart-progress{display:flex;align-items:center;flex-wrap:wrap;gap:5px 10px;min-width:0;margin:0 0 10px;padding:0;border:0}
+.voyage-v47 .map-viewport>.chart-progress>div:first-child{min-width:0;gap:8px;font-size:11px}
+.voyage-v47 .map-viewport>.chart-progress>.progress-track{width:55px;flex:0 0 55px;height:5px;margin:0}
+.voyage-v47 .map-viewport>.chart-progress>small{font-size:11px;overflow-wrap:anywhere}
+@media(min-width:761px){
+ .voyage-v47 #chart-room{grid-template-rows:auto auto}
+ .voyage-v47 .chart-console{grid-row:1 / 3}
+ @container sea-chart (min-width:calc(clamp(320px,calc(100dvh - 440px),520px) * 1.024 + 238px)){
+  .voyage-v47 .map-viewport{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);column-gap:8px;align-items:start}
+  .voyage-v47 .map-viewport>.map-utility-toolbar{grid-column:1 / -1;grid-row:1}
+  .voyage-v47 .map-viewport>#map-tabs{grid-column:1;grid-row:2;display:flex;flex-direction:column;flex-wrap:nowrap;gap:6px;margin:0;padding:0}
+  .voyage-v47 .map-viewport>#map-tabs button{box-sizing:border-box;width:100%;min-width:0;padding-inline:6px;white-space:normal;overflow-wrap:anywhere}
+  .voyage-v47 .map-viewport>.map-frame{grid-column:2;grid-row:2;width:calc(var(--chart-height) * var(--map-aspect,1));margin-inline:0}
+  .voyage-v47 .map-viewport>.chart-progress{grid-column:3;grid-row:2;display:block;margin:0}
+  .voyage-v47 .map-viewport>.chart-progress>div:first-child{align-items:flex-start;flex-direction:column;gap:5px}
+  .voyage-v47 .map-viewport>.chart-progress>.progress-track{width:100%;margin:8px 0 6px}
+  .voyage-v47 .map-viewport>.map-layer-index{grid-column:1 / -1;grid-row:3}
+  .voyage-v47 .map-viewport>.map-key{grid-column:1 / -1;grid-row:4}
+ }
+}

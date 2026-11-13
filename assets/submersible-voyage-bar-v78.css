@@ -1,0 +1,12 @@
+/* v78: three equal metrics use the former income column's space.
+   Preserve v77's 36px header and readable wrapping on narrow/zoomed maps. */
+.voyage-v47 .map-summary-column>.map-route-summary{grid-template-columns:minmax(116px,1.5fr) minmax(240px,3fr) 70px}
+.voyage-v47 .map-route-summary #map-plan-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(min-width:1151px){
+ @supports(container-type:size){
+  @container sea-chart (min-width:800px){
+   /* Share the image row. The measured offset includes the frame border. */
+   .voyage-v47 .map-chart-layout>#map-tabs{grid-row:2;margin-top:var(--sea-selector-top,1px)}
+  }
+ }
+}

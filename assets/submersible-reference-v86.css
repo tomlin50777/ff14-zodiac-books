@@ -1,0 +1,96 @@
+/* v86: reference composition. Layout only; the original node, route and voyage
+   controls keep their handlers, IDs, validation and stored data. */
+body.voyage-v47 .shell{width:calc(100% - 64px);max-width:1520px}
+body.voyage-v47 #chart-room{gap:0 10px;isolation:isolate;position:relative}
+body.voyage-v47 .workshop-deck{padding:10px 10px 12px;border-radius:12px 12px 0 0;border-bottom:0;background:var(--theme-surface)}
+body.voyage-v47 .map-viewport{border-radius:0 0 12px 12px;border-top:0;padding:0 10px 10px;background:var(--theme-surface)}
+body.voyage-v47 .map-chart-header{display:flex;align-items:center;gap:8px;min-width:0;border-bottom:1px solid var(--theme-line);padding-bottom:5px}
+body.voyage-v47 .map-chart-header>#map-tabs{display:flex;flex:1 1 auto;flex-direction:row;flex-wrap:nowrap;gap:0;min-width:0;margin:0;padding:0;overflow-x:auto;border:0;background:transparent;border-radius:0}
+body.voyage-v47 .map-chart-header>#map-tabs button{flex:1 0 auto;min-width:0;width:auto;min-height:36px;margin:0;padding:6px 9px;border:0;border-radius:0;white-space:nowrap;background:transparent;color:var(--theme-ink);font-size:14px;box-shadow:none}
+body.voyage-v47 .map-chart-header>#map-tabs button.locked:not([aria-selected="true"]){opacity:.6}
+body.voyage-v47 .map-chart-header>#map-tabs button[aria-selected="true"]{color:var(--theme-accent);font-weight:800;box-shadow:inset 0 -3px var(--theme-accent)}
+body.voyage-v47 .map-chart-header>.map-utility-toolbar{display:flex;flex:none;gap:5px;margin:0;padding:0;align-items:center}
+body.voyage-v47 .map-chart-header>.map-utility-toolbar button{min-height:32px;height:32px;padding:4px 8px;margin:0;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-surface-2);color:var(--theme-ink);font-size:12px;white-space:nowrap}
+body.voyage-v47 .map-chart-header>.map-utility-toolbar #map-issues{display:inline-flex;align-items:center;justify-content:center;width:26px;min-width:26px;padding:3px}
+body.voyage-v47 .map-chart-header #map-issues[data-has-issues="true"]{color:#b6601d}
+body.voyage-v47 .map-chart-header button:focus-visible{outline:2px solid var(--theme-accent);outline-offset:-2px}
+body.voyage-v47 .map-chart-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;gap:10px}
+body.voyage-v47 .map-chart-layout>.map-chart-header{grid-column:1 / -1;grid-row:1}
+body.voyage-v47 .map-chart-layout>.map-canvas{grid-column:1;grid-row:2}
+body.voyage-v47 .map-chart-layout>.map-side-info{grid-column:1;grid-row:3;border:1px solid var(--theme-line);border-radius:8px;padding:9px;gap:16px;background:var(--theme-surface);align-self:stretch}
+body.voyage-v47 .map-side-info>.map-summary-column{flex:none;min-width:0}
+body.voyage-v47 .map-side-info .map-route-summary,
+body.voyage-v47 .map-side-info .map-route-summary[data-compact]{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:32px auto;gap:10px 6px;height:auto;min-height:0;width:100%;max-width:100%;padding:0 0 12px;margin:0;border:0;border-bottom:1px solid var(--theme-line);border-radius:0;background:transparent;overflow:visible}
+body.voyage-v47 .map-side-info .map-route-summary .map-route-heading{grid-column:1;grid-row:1;display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden}
+body.voyage-v47 .map-side-info .map-route-heading>div{flex:none}
+body.voyage-v47 .map-side-info #map-plan-ship{font-size:14px}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-route{flex:1 1 auto;min-width:0;width:auto;border:0;padding:0 2px;text-align:left;font-size:14px;scrollbar-width:thin}
+body.voyage-v47 .map-side-info .map-route-summary .map-voyage-action{grid-column:2;grid-row:1;display:flex;margin:0;height:30px;gap:5px}
+body.voyage-v47 .map-side-info .map-route-summary #map-voyage-primary,
+body.voyage-v47 .map-side-info .map-route-summary #map-voyage-status{width:60px;flex:0 0 60px;min-width:0;font-size:13px}
+body.voyage-v47 .map-side-info .map-route-summary #map-voyage-more{width:30px;min-width:30px;flex:0 0 30px}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics{grid-column:1 / -1;grid-row:2;display:grid;grid-template-columns:1.25fr .8fr 1fr;gap:6px;order:0;min-width:0}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics>span{display:flex;align-items:baseline;justify-content:flex-start;flex-wrap:wrap;gap:3px;padding:0;border:0;min-width:0;white-space:normal;text-align:left}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics small{position:static;width:auto;height:auto;overflow:visible;clip-path:none;color:var(--theme-muted);font-size:11px;white-space:nowrap}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics b{font-size:12px;line-height:1.6;white-space:nowrap}
+body.voyage-v47 .map-side-info>.chart-progress>.map-opened-label{padding:4px 8px;border-radius:5px;background:#0b4f65;color:#fff}
+body.voyage-v47 .map-side-info .chart-progress #map-count{color:inherit}
+body.voyage-v47 .map-side-info>.chart-progress>.map-opened-label,
+body.voyage-v47 .map-side-info>.chart-progress>.map-explored-label{font-size:15px}
+body.voyage-v47 .map-side-info>.chart-progress>.progress-track{height:10px;min-height:10px;margin:7px 0 12px}
+body.voyage-v47 .map-side-info .map-route-index{gap:4px}
+body.voyage-v47 .map-side-info .map-route-index li{min-height:28px;padding:3px 2px;border:0;background:transparent;border-radius:0;font-size:14px}
+body.voyage-v47 .map-side-info .map-milestone-index button{min-height:34px;font-size:12px}
+body.voyage-v47 .deck-select{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:20px 18px;gap:0 4px;padding:6px 36px 6px 8px;min-height:52px}
+body.voyage-v47 .deck-ship-title,body.voyage-v47 .deck-ship-summary{display:contents}
+body.voyage-v47 .deck-ship-title b{grid-column:1 / 3;grid-row:1;font-size:14px;line-height:20px}
+body.voyage-v47 .deck-ship-title small{grid-column:1;grid-row:2;font-size:12px;line-height:18px}
+body.voyage-v47 .deck-build{grid-column:2;grid-row:2;font-size:12px;line-height:18px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.voyage-v47 .deck-summary-dot{display:none}
+body.voyage-v47 .deck-select .ship-status{grid-column:3;grid-row:1 / 3;align-self:center;white-space:nowrap;font-size:12px!important}
+body.voyage-v47 .deck-settings{top:50%;transform:translateY(-50%);right:5px}
+body.voyage-v47 .deck-ship.selected .deck-select{padding-left:4px}
+@media(min-width:1151px){
+ body.voyage-v47 .fleet-layout{grid-template-columns:clamp(175px,13.5vw,218px) minmax(0,1fr);gap:10px}
+ body.voyage-v47 #chart-room{grid-template-columns:minmax(0,1fr) clamp(270px,21vw,340px)}
+ body.voyage-v47 .map-chart-layout{flex:1 0 360px;min-height:360px;grid-template-columns:minmax(0,1fr) minmax(238px,.63fr);grid-template-rows:42px minmax(0,1fr)}
+ body.voyage-v47 .map-chart-layout>.map-canvas{grid-column:1;grid-row:2;container-type:size}
+ body.voyage-v47 .map-chart-layout>.map-side-info{grid-column:2;grid-row:2;overflow:auto;scrollbar-width:thin;overscroll-behavior:contain}
+ body.voyage-v47 .map-canvas>.map-frame{width:min(100cqw,calc(100cqh * var(--map-aspect,1)));margin:0}
+}
+@media(min-width:1151px) and (max-width:1400px){
+ body.voyage-v47 .shell{width:calc(100% - 40px)}
+ body.voyage-v47 .map-chart-layout{grid-template-columns:minmax(0,1fr) 230px}
+ body.voyage-v47 .map-chart-header{gap:4px}
+ body.voyage-v47 .map-chart-header>#map-tabs button{padding-inline:7px;font-size:12px}
+ body.voyage-v47 .deck-select{grid-template-columns:auto minmax(0,1fr);padding-right:31px}
+ body.voyage-v47 .deck-select .ship-status{grid-column:2;grid-row:1;font-size:10px!important;justify-self:end}
+ body.voyage-v47 .deck-ship-title b{grid-column:1;font-size:12px}
+}
+@media(max-width:1150px){
+ body.voyage-v47 .shell{width:calc(100% - 32px)}
+ body.voyage-v47 .map-chart-layout{flex:none;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}
+ body.voyage-v47 .map-chart-layout>.map-canvas{grid-column:1;grid-row:2}
+ body.voyage-v47 .map-chart-layout>.map-side-info{grid-column:1;grid-row:3}
+ body.voyage-v47 .map-canvas>.map-frame{width:100%}
+ @container sea-chart (min-width:640px){
+  body.voyage-v47 .map-chart-layout{grid-template-columns:minmax(0,1fr) minmax(238px,.63fr);grid-template-rows:auto auto}
+  body.voyage-v47 .map-chart-layout>.map-side-info{grid-column:2;grid-row:2}
+ }
+}
+@media(max-width:760px){
+ body.voyage-v47 .shell{width:calc(100% - 16px)}
+ body.voyage-v47 .map-chart-header{flex-wrap:wrap}
+ body.voyage-v47 .map-chart-header>#map-tabs{flex-basis:100%}
+ body.voyage-v47 .map-chart-header>.map-utility-toolbar{margin-left:auto}
+ body.voyage-v47 .map-chart-header>#map-tabs button,body.voyage-v47 .map-chart-header>.map-utility-toolbar button{min-height:44px}
+ body.voyage-v47 .deck-select .ship-status{font-size:11px!important}
+}
+@media(pointer:coarse){
+ body.voyage-v47 .deck-select{padding-right:43px;min-height:56px}
+ body.voyage-v47 .map-side-info .map-route-summary[data-compact]{grid-template-rows:44px auto}
+ body.voyage-v47 .map-side-info .map-route-summary .map-voyage-action{height:44px}
+ body.voyage-v47 .map-side-info .map-route-summary #map-voyage-primary,body.voyage-v47 .map-side-info .map-route-summary #map-voyage-status,body.voyage-v47 .map-side-info .map-route-summary #map-voyage-more{min-height:44px;height:44px}
+ body.voyage-v47 .map-side-info .map-route-summary #map-voyage-more{width:44px;flex-basis:44px}
+}
+body.voyage-v47 .deck-select .ship-status::before{display:block;width:7px;height:7px;flex:0 0 7px}

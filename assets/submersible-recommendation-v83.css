@@ -1,0 +1,63 @@
+/* v84: waypoint labels and floating shared settings; keep the v83 panel layout. */
+body.voyage-v47 #console-next #planner-ship-summary[hidden],
+body.voyage-v47 #console-next [hidden] { display:none; }
+body.voyage-v47 #console-next .planner-purpose { margin-top:0; }
+body.voyage-v47 #console-next #next-step { display:flex;align-items:center;gap:8px;position:relative;margin:12px 0;padding:0; }
+body.voyage-v47 #console-next #next-step-title { flex:1;min-width:0;font-size:14px;line-height:1.6; }
+body.voyage-v47 #console-next .recommendation-info { flex:none;align-self:flex-start;padding-top:2px; }
+body.voyage-v47 #console-next #recommendation-info-toggle { display:grid;place-items:center;width:24px;min-width:24px;height:24px;min-height:24px;padding:0;border:1px solid var(--theme-line);border-radius:50%;background:var(--theme-surface-2);color:var(--theme-ink);font:700 14px/1 Georgia,serif; }
+body.voyage-v47 #console-next #recommendation-info-panel { position:absolute;right:0;top:100%;z-index:25;box-sizing:border-box;width:100%;max-height: min(420px,65vh);overflow:auto;padding:12px;border:1px solid var(--theme-line);border-radius:7px;background:var(--theme-surface);box-shadow:0 8px 25px #0003;color:var(--theme-ink);font-size:12px;line-height:1.7; }
+body.voyage-v47 #console-next #recommendation-info-panel p { font-size:12px;line-height:1.7;margin:0 0 8px; }
+body.voyage-v47 #console-next #recommendation-info-panel p:last-child { margin-bottom:0; }
+body.voyage-v47 #console-next #planner-strategies { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);gap:5px;width:100%;padding:0;border:0;background:none; }
+body.voyage-v47 #console-next #planner-strategies button { min-width:0;padding:7px 4px;min-height:40px;white-space:nowrap;font-size:12px; }
+body.voyage-v47 #console-next .planner-efficiency-control { display:flex;min-width:0;gap:0; }
+body.voyage-v47 #console-next .planner-efficiency-control [data-planner-strategy] { flex:1;border-radius:6px 0 0 6px; }
+body.voyage-v47 #console-next #planner-settings-toggle { flex:0 0 27px;width:27px;padding:5px;border-left:0;border-radius:0 6px 6px 0;background:var(--theme-surface-2);color:var(--theme-ink); }
+body.voyage-v47 #console-next #planner-settings-toggle svg { width:16px;height:16px;display:block;margin:auto;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round; }
+body.voyage-v47 #console-next #planner-settings-toggle[aria-expanded="true"] { background:var(--theme-glow);border-color:var(--theme-accent); }
+body.voyage-v47 #planner-settings { position:fixed;inset:auto;z-index:1000;box-sizing:border-box;width:min(360px,calc(100vw - 20px));max-height:calc(100vh - 20px);overflow:auto;overscroll-behavior:contain;padding:14px;margin:0;border:1px solid var(--theme-line);border-radius:8px;background:var(--theme-surface);color:var(--theme-ink);box-shadow:0 10px 30px #0004; }
+body.voyage-v47 #planner-settings[hidden] { display:none; }
+body.voyage-v47 #planner-settings::backdrop { background:transparent;pointer-events:none; }
+body.voyage-v47 #planner-settings .planner-settings-heading { display:flex;align-items:center;gap:8px;margin-bottom:10px; }
+body.voyage-v47 #planner-settings .planner-settings-heading h3 { flex:1;min-width:0;margin:0; }
+body.voyage-v47 #planner-settings button { border:1px solid var(--theme-line);border-radius:6px;padding:8px 10px;background:var(--theme-surface-2);color:var(--theme-ink);font:600 12px/1.45 system-ui;cursor:pointer; }
+body.voyage-v47 #planner-settings #planner-settings-close { flex:none;display:grid;place-items:center;min-width:36px;min-height:36px;padding:4px;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-surface-2);color:var(--theme-ink);font-size:22px;line-height:1; }
+body.voyage-v47 #planner-settings select,body.voyage-v47 #planner-settings #compare-routes { width:100%;min-height:42px;box-sizing:border-box; }
+body.voyage-v47 #planner-settings select { font-size:14px; }
+body.voyage-v47 #planner-settings :is(button,select):focus-visible { outline:3px solid var(--theme-accent);outline-offset:2px; }
+body.voyage-v47 #planner-settings h3 { margin:0 0 10px;font-size:13px;color:var(--theme-ink); }
+body.voyage-v47 #planner-settings .planner-controls { display:block;margin:10px 0; }
+body.voyage-v47 #console-next #planner-results { margin-top:12px;gap:10px; }
+body.voyage-v47 #console-next .candidate-choices { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px; }
+body.voyage-v47 #console-next .candidate-choices button { min-width:0;min-height:40px;padding:6px;font-size:12px;line-height:1.5;white-space:normal;overflow-wrap:anywhere;background:var(--theme-surface-2);color:var(--theme-ink);border:1px solid var(--theme-line); }
+body.voyage-v47 #console-next .candidate-choices button[aria-pressed="true"] { background:var(--theme-glow);border-color:var(--theme-accent);font-weight:800;box-shadow:inset 0 -2px var(--theme-accent); }
+body.voyage-v47 #console-next .planner-result { padding:0;border:0;border-radius:0;background:none; }
+body.voyage-v47 #console-next .planner-result-heading { align-items:baseline;font-size:11px; }
+body.voyage-v47 #console-next .planner-result-heading b { white-space:nowrap; }
+body.voyage-v47 #console-next .candidate-route { font-size:23px;line-height:1.5;overflow-wrap:anywhere;margin:8px 0; }
+body.voyage-v47 #console-next .route-facts { grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding:10px 0; }
+body.voyage-v47 #console-next .route-facts span:last-child { grid-column:auto; }
+body.voyage-v47 #console-next .route-facts span { font-size:11px; }
+body.voyage-v47 #console-next .route-facts b { font-size:13px; }
+body.voyage-v47 #console-next .candidate-benefits { margin:0 0 12px;padding:10px 0;border-top:1px solid var(--theme-line);font-size:12px;line-height:1.7; }
+body.voyage-v47 #console-next .candidate-benefits>div { display:grid;grid-template-columns:5em minmax(0,1fr);gap:8px;margin-bottom:6px; }
+body.voyage-v47 #console-next .candidate-benefits>div:last-child { margin-bottom:0; }
+body.voyage-v47 #console-next .candidate-benefits dt { color:var(--theme-muted); }
+body.voyage-v47 #console-next .candidate-benefits dd { margin:0;color:var(--theme-ink);overflow-wrap:anywhere;font-weight:650; }
+body.voyage-v47 #console-next .candidate-ship-choice { margin:0 0 12px;font-size:12px; }
+body.voyage-v47 #console-next .candidate-actions button { min-height:42px;font-size:13px; }
+@media(max-width:380px) {
+ body.voyage-v47 #console-next #planner-strategies { gap:3px;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr); }
+ body.voyage-v47 #console-next #planner-strategies button { font-size:11px;padding-inline:2px; }
+}
+/* Older cards promoted actions with flex order. v83 follows the approved DOM sequence. */
+body.voyage-v47 #console-next .planner-result > * { order:0; }
+body.voyage-v47 #console-next .planner-result > .route-facts { margin-top:0;padding:10px 0; }
+
+@media(max-width:760px) {
+ body.voyage-v47 #planner-settings select { font-size:16px; }
+ body.voyage-v47 #planner-settings #planner-settings-close { min-width:44px;min-height:44px; }
+ body.voyage-v47 #planner-settings select,body.voyage-v47 #planner-settings #compare-routes { min-height:44px; }
+ body.voyage-v47 #console-next .candidate-choices button { min-height:44px; }
+}

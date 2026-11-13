@@ -1,0 +1,26 @@
+/* v74: use the toolbar's free space; preserve the shared map coordinate frame. */
+.voyage-v47 .map-utility-toolbar{align-items:flex-start;gap:8px}
+.voyage-v47 .map-route-summary{flex:1 1 400px;min-width:0;align-self:center;color:var(--theme-ink);font:12px/1.5 system-ui,sans-serif}
+.voyage-v47 .map-route-summary p{margin:0}
+.voyage-v47 .map-route-heading{display:flex;align-items:baseline;flex-wrap:wrap;gap:3px 9px}
+.voyage-v47 #map-plan-route{overflow-wrap:anywhere;font-weight:700}
+.voyage-v47 #map-plan-mode{font-size:11px;color:var(--theme-muted)}
+.voyage-v47 #map-plan-metrics{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:2px}
+.voyage-v47 #map-plan-metrics span{white-space:nowrap}
+.voyage-v47 #map-plan-validation,.voyage-v47 .map-route-feedback{font:12px/1.5 system-ui,sans-serif;color:var(--theme-ink)}
+.voyage-v47 #map-plan-validation:empty,.voyage-v47 .map-route-feedback:empty{display:none}
+.voyage-v47 .map-route-feedback{margin:0;flex:none}
+.voyage-v47 .workshop-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin:0 0 9px}
+.voyage-v47 .workshop-toolbar>button{flex:0 1 auto;width:auto;min-height:32px;margin:0;padding:4px 2px;font:600 11px/1.5 system-ui,sans-serif}
+.voyage-v47 .workshop-toolbar>#toggle-all-workshops{margin-left:auto}
+.node-progress-checks{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:10px}
+.node-progress-checks label{display:flex;align-items:center;gap:7px;min-height:40px;font:700 14px/1.5 system-ui,sans-serif;cursor:pointer}
+.node-progress-checks input{width:20px;height:20px;margin:0;accent-color:var(--theme-accent,#255d91)}
+.node-popover .node-operation[hidden]{display:none!important}
+.node-popover #node-required{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:8px;border:1px solid var(--theme-line);border-radius:7px;background:var(--theme-surface-2);color:var(--theme-ink);font:700 12px/1.5 system-ui,sans-serif;cursor:pointer}
+.node-progress-chooser{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:15px 0}
+.node-progress-chooser select,.node-progress-chooser button{min-height:40px;padding:7px 10px;border:1px solid var(--theme-line);border-radius:7px;background:var(--theme-surface-2);color:var(--theme-ink)}
+.node-progress-checks input:focus-visible,.node-popover #node-required:focus-visible{outline:3px solid #43a6d5;outline-offset:3px}
+/* Long-press must not select the marker text or open the platform callout. */
+.voyage-v47 #map-hotspots .map-node{touch-action:pan-x pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+@media(max-width:760px){.voyage-v47 .map-route-summary{flex-basis:100%}.voyage-v47 .workshop-toolbar>button{min-height:40px}.node-progress-checks label{min-height:44px}}

@@ -1,0 +1,54 @@
+/* v80: rank requirements sit below the disc, like the reference map.
+   Planned stops use orange fill; only the inspected node gets a cyan ring. */
+.voyage-v47 #map-hotspots .map-node.rank-required {
+  border-style: solid;
+}
+.voyage-v47 #map-hotspots .node-rank-badge {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: calc(100% - 3px);
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-sizing: border-box;
+  padding: 1px 5px;
+  border: 1.5px solid #b7cad6;
+  border-radius: 8px;
+  background: #233341;
+  color: #fff;
+  box-shadow: 0 1px 3px #0008;
+  font: 700 clamp(9px, .95vw, 12px)/1.1 system-ui, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.voyage-v47 #map-hotspots .node-rank-badge svg {
+  display: block;
+  width: .75em;
+  height: .9em;
+  flex: none;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+.voyage-v47 #map-hotspots .node-rank-badge svg rect { fill: currentColor; stroke: none; }
+.voyage-v47 #map-hotspots .node-rank-badge .rank-keyhole { stroke: #233341; }
+/* Specificity also overrides the older important milestone/state fills. */
+.voyage-v47 #map-hotspots .map-node.current-voyage-node {
+  background: #e99a35 !important;
+  color: #25180b !important;
+  border-color: #ffe1b0;
+}
+.voyage-v47 #map-hotspots .current-voyage-node .node-milestone-short { color: #25180b; }
+.voyage-v47 #map-hotspots .map-node.selected {
+  outline: 3px solid #65e5f4;
+  outline-offset: 4px;
+}
+.voyage-v47 #map-hotspots .map-node:focus-visible {
+  outline: 3px solid #65e5f4;
+  outline-offset: 4px;
+}
