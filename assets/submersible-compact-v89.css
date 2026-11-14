@@ -1,0 +1,58 @@
+/* v89: selection-only workshop rows and single-line ship cards.
+   The three-column layout, chart and recommendation widths stay unchanged. */
+body.voyage-v47 .workshop-tree-list{gap:6px}
+body.voyage-v47 .workshop-tree-branch{padding:3px 2px;border-left-width:3px}
+body.voyage-v47 .workshop-tree-row{gap:3px;min-width:0}
+body.voyage-v47 .tree-workshop{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px;min-height:34px;padding:0;white-space:nowrap}
+body.voyage-v47 .workshop-identity{display:flex;align-items:center;gap:8px;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--theme-muted) transparent;overscroll-behavior-x:contain;text-overflow:clip}
+body.voyage-v47 .workshop-identity::-webkit-scrollbar{height:6px}
+body.voyage-v47 .workshop-identity::-webkit-scrollbar-thumb{background:var(--theme-muted);border-radius:3px}
+body.voyage-v47 .workshop-identity::-webkit-scrollbar-track{background:transparent}
+body.voyage-v47 .workshop-identity>.tree-workshop-name{flex:none;min-width:0;font-size:12px;line-height:20px;white-space:nowrap}
+body.voyage-v47 .workshop-identity>.workshop-note{flex:none;min-width:0;margin:0;color:var(--theme-muted);font:400 11px/20px system-ui;white-space:nowrap}
+body.voyage-v47 .tree-workshop>.workshop-status{min-width:0;min-height:0;font-size:11px;line-height:20px;white-space:nowrap;margin:0}
+body.voyage-v47 .workshop-settings{flex:0 0 24px;min-width:24px;min-height:32px;padding:0;font-size:18px}
+body.voyage-v47 #fleet-manager{padding-inline:6px}
+body.voyage-v47 #fleet-manager{display:flex;flex-direction:column;overflow:hidden}
+body.voyage-v47 #fleet-manager>.tree-heading,body.voyage-v47 #workshop-actions{flex:none}
+body.voyage-v47 #fleet-manager #workshop-tree{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin}
+body.voyage-v47 #workshop-actions{margin-top:auto}
+body.voyage-v47 .workshop-deck {
+  container: ship-deck / inline-size;
+}
+body.voyage-v47 .voyage-deck-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  overflow: visible;
+}
+body.voyage-v47 .voyage-deck-grid > .deck-ship {
+  min-width: 0;
+}
+@container ship-deck (max-width: 899px) {
+  body.voyage-v47 .voyage-deck-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container ship-deck (max-width: 449px) {
+  body.voyage-v47 .voyage-deck-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+body.voyage-v47 .deck-select,body.voyage-v47 .deck-ship.selected .deck-select{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-rows:24px;align-items:center;gap:5px;min-height:38px;padding:6px 38px 6px 8px;white-space:nowrap}
+body.voyage-v47 .deck-ship-title,body.voyage-v47 .deck-ship-summary{display:contents}
+body.voyage-v47 .deck-ship-title b{grid-column:1;grid-row:1;font-size:13px;line-height:24px}
+body.voyage-v47 .deck-ship-title small{grid-column:2;grid-row:1;font-size:12px;line-height:24px}
+body.voyage-v47 .deck-build{grid-column:3;grid-row:1;min-width:0;font-size:12px;line-height:24px;white-space:nowrap;overflow:visible;text-overflow:clip}
+body.voyage-v47 .deck-select .ship-status{grid-column:4;grid-row:1;justify-self:end;font-size:11px!important;line-height:24px!important;white-space:nowrap}
+body.voyage-v47 .deck-settings{width:28px;height:28px;top:50%;right:4px;transform:translateY(-50%)}
+@media(max-width:1150px){
+ body.voyage-v47 #fleet-manager{max-height:320px}
+ body.voyage-v47 #fleet-manager #workshop-tree{max-height:210px}
+}
+@media(pointer:coarse){
+ body.voyage-v47 .tree-workshop{min-height:44px}
+ body.voyage-v47 .workshop-settings{flex-basis:36px;min-width:36px;min-height:44px}
+ body.voyage-v47 .deck-select,body.voyage-v47 .deck-ship.selected .deck-select{min-height:44px;padding-right:44px}
+ body.voyage-v47 .deck-settings{width:36px;height:36px}
+}

@@ -148,12 +148,13 @@ function renderSummary(){
  const calc=route&&(!sailing||complete)?E.calculate(sailing?{enabled:true,rank:departure.rank,build:departure.build,modified:departure.modified}:ship,route.map,route.nodes,sailing?undefined:item.opened):null;
  const valid=calc?.valid===true,map=F.maps.find(m=>m.id===route?.map);
  $('#map-plan-ship').textContent=(index+1)+' 號艇';
- $('#map-plan-sea').textContent=!due&&route?.nodes.length?' · '+(map?.name||route.map):'';
- $('#map-plan-route').textContent=due?'已返航':route?.nodes.length?route.nodes.join('→'):sailing?'—':'尚未安排航程';
+ $('#map-plan-sea').textContent=route?.nodes.length?' · '+(map?.name||route.map):'';
+ $('#map-plan-route').textContent=route?.nodes.length?route.nodes.join('→'):sailing?'未記錄航線':'尚未安排航程';
  $('#map-plan-route').title=sailing?(route?'本趟出航快照：'+map.name+' '+route.nodes.join(' → '):'沒有可信的出航航線快照；不以目前計畫推測。'):route?.nodes.length?(map?.name||route.map)+' '+route.nodes.join(' → '):$('#map-plan-route').textContent;
  routeSummary.dataset.source=sailing?'snapshot':'plan';
- const time=valid&&!due?Math.floor(calc.seconds/3600)+'時'+Math.floor(calc.seconds%3600/60)+'分':'—',metrics=$('#map-plan-metrics');metrics.replaceChildren();
- for(const [key,label,value] of [['time','時間',time],['fuel','燃料',valid&&!due?calc.fuel+' 罐':'—'],['range','航距',valid&&!due?calc.range+'／'+calc.ability.range:'—']]){
+ const time=valid?Math.floor(calc.seconds/3600)+'時'+Math.floor(calc.seconds%3600/60)+'分':'—',metrics=$('#map-plan-metrics');metrics.replaceChildren();metrics.hidden=!valid;routeSummary.dataset.hasMetrics=String(valid);
+ for(const [key,label,value] of [['time','時間',time],['fuel','燃料',valid?calc.fuel+' 罐':'—'],['range','航距',valid?calc.range+'／'+calc.ability.range:'—']]){
+  if(!valid)continue;
   const span=document.createElement('span'),name=document.createElement('small'),number=document.createElement('b');span.dataset.metric=key;name.textContent=label;number.textContent=value;span.append(name,number);
   const note=key==='time'?'依'+(sailing?'出航快照':'目前計畫')+'估算的全趟航時，以遊戲管制台為準。':'依'+(sailing?'出航快照':'目前計畫')+'估算。';
   span.title=note;span.setAttribute('aria-label',label+' '+value+'。'+note);metrics.append(span);

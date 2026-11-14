@@ -2,6 +2,36 @@
 (function(root){
 'use strict';
 const rankTitles=new WeakMap();
+// One clock for the currently rendered workshop; never stores or collects voyages.
+let countdownTimer=null,countdownRows=[],countdownFleet=null,countdownStateKey='';
+function countdownText(returnAt,now){
+ if(!Number.isFinite(returnAt)||returnAt<=0)return '—';
+ const seconds=Math.max(0,Math.ceil((returnAt-now)/1000));
+ if(!seconds)return '可收船';
+ return [Math.floor(seconds/3600),Math.floor(seconds%3600/60),seconds%60].map(n=>String(n).padStart(2,'0')).join(':');
+}
+function updateCountdowns(){
+ const now=Date.now();
+ for(const row of countdownRows){
+  const sailing=row.workshop.sailings?.[row.index];
+  const text=sailing?countdownText(sailing.returnAt,now):(row.workshop.ships[row.index]?.enabled===false?'未開啟':'可派遣');
+  if(row.element.textContent!==text){
+   row.element.textContent=text;
+  }
+  row.element.hidden=false;
+  row.element.classList.toggle('status-ready',text==='可派遣');
+  row.element.classList.toggle('status-due',text==='可收船');
+ }
+ // All sailings in this workshop count, even off-map or hidden route layers.
+ const workshop=countdownFleet?.workshop();
+ const signature=workshop?JSON.stringify([workshop.id,workshop.sailings.map(record=>record?[record.returnAt,record.returnAt<=now]:null)]):'';
+ if(signature!==countdownStateKey){countdownStateKey=signature;countdownFleet?.refreshShipStatuses();root.SubNodeUI?.render();root.SubVoyageUI?.refreshShipState();}
+}
+function stopClock(){if(countdownTimer!==null){clearInterval(countdownTimer);countdownTimer=null;}}
+function startClock(){stopClock();updateCountdowns();if(countdownTimer===null&&countdownFleet?.workshop()?.sailings?.some(Boolean))countdownTimer=setInterval(updateCountdowns,1000);}
+root.addEventListener('pagehide',stopClock);
+root.addEventListener('pageshow',startClock);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopClock();else startClock();});
 const palette=['#36e5ff','#ffb347','#d7a0ff','#ff80b5'];
 const milestones={deep:{J:'第 2 船位',O:'第 3 船位',T:'第 4 船位',AD:'通往灰海'},ash:{R:'通往翠浪海'},jade:{T:'通往妖歌海'},siren:{T:'通往紫礁海'},lilac:{T:'通往南蒼茫洋'},south:{M:'7.2 終點'}};
 const kindOf=(map,code)=>map==='deep'&&['J','O','T'].includes(code)?'slot':map==='south'?'endpoint':'gateway';
@@ -65,12 +95,14 @@ function render({fleet,previewRoute=null}){
   const help=document.querySelector('#map-milestone-help');if(help)help.replaceChildren(legend);
   index.append(marks);
  }
+ countdownRows=[];countdownFleet=fleet;
  const routes=document.createElement('ul');routes.className='map-route-index';
- function row(label,nodes,color){const li=document.createElement('li'),name=document.createElement('strong'),sequence=document.createElement('span');li.style.setProperty('--route-color',color);name.textContent=label;sequence.textContent=nodes.join(' → ');li.title=label+'：'+nodes.map((c,i)=>(i+1)+'. '+c).join(' → ');li.append(name,sequence);routes.append(li);}
+ function row(label,nodes,color,shipIndex=null,planOnly=false){const li=document.createElement('li'),name=document.createElement('strong'),sequence=document.createElement('span');li.style.setProperty('--route-color',color);name.textContent=label;sequence.textContent=(planOnly?'計畫：':'')+nodes.join(' → ');li.title=label+(shipIndex!==null?'計畫：':'：')+nodes.map((c,i)=>(i+1)+'. '+c).join(' → ');li.append(name,sequence);if(shipIndex!==null){const time=document.createElement('span');time.className='map-ship-countdown';time.setAttribute('aria-label',label+'船況或返航倒數');li.append(time);countdownRows.push({element:time,workshop:w,index:shipIndex});}routes.append(li);}
  if(previewRoute?.map===m.id&&w.layers.recommended!==false)row('推薦預覽 · '+((previewRoute.shipIndex??w.activeVoyageShip)+1)+' 號艇',previewRoute.nodes,'#e5ad35');
- w.voyages.forEach((v,i)=>{if(v.map===m.id&&v.nodes.length&&w.layers['ship-'+i]!==false)row((i+1)+' 號艇',v.nodes,palette[i]);});
+ w.voyages.forEach((v,i)=>{if(v.map!==m.id||!v.nodes.length||w.layers['ship-'+i]===false)return;const sailing=w.sailings?.[i],recorded=sailing?root.SubLogbook?.snapshotRoute(sailing):null;const planOnly=!!sailing&&(!recorded||recorded.map.id!==v.map||recorded.nodes.join('|')!==v.nodes.join('|'));row((i+1)+' 號艇',v.nodes,palette[i],i,planOnly);});
  if(routes.childElementCount)index.append(routes);
  index.hidden=!index.childElementCount;
+ startClock();
 }
 root.SubMapUI={render};
 })(window);

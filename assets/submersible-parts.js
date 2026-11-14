@@ -49,7 +49,7 @@
       catalog.forEach(part => {
         const option = doc.createElement('option');
         option.value = part.id;
-        option.textContent = part.id + ' / ' + part.code + ' · ' + part.local + ' ' + part.name;
+        option.textContent = part.id + ' / ' + part.code + ' · ' + part.local + '級';
         select.appendChild(option);
       });
       select.addEventListener('change', () => {

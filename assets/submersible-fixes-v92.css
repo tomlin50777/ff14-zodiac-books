@@ -1,0 +1,10 @@
+/* v92: neutral equal progress labels; override the older first-child rule. */
+body.voyage-v47 .map-side-info > .chart-progress > div.map-opened-label,
+body.voyage-v47 .map-side-info > .chart-progress > div.map-explored-label{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin:0 0 7px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:var(--theme-ink);font-size:13px;line-height:1.5;font-weight:400}
+body.voyage-v47 .map-side-info .map-route-summary #map-plan-metrics[hidden]{display:none}
+body.voyage-v47 .map-side-info .map-route-summary[data-has-metrics="false"]{grid-template-rows:32px;row-gap:0}
+body.voyage-v47 .map-side-info .map-route-index .map-ship-countdown.status-ready{color:var(--theme-ink)}
+body.voyage-v47 #console-next #recommendation-ship-state{border:0;border-radius:0;background:transparent;box-shadow:none;padding:0}
+body.voyage-v47 #recommendation-ship-state .recommendation-ship-status{margin:0 0 14px}
+body.voyage-v47 #recommendation-ship-state .recommendation-ship-status.due{margin-bottom:0}
+@media(pointer:coarse){body.voyage-v47 .map-side-info .map-route-summary[data-has-metrics="false"]{grid-template-rows:44px}}

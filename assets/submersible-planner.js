@@ -23,7 +23,46 @@ const mobileFleet=document.createElement('button');mobileFleet.id='fleet-mobile-
 // Map route toggles and progress disclosure are handled by SubFleet / SubNodeUI.
 $('.mobile-next a').onclick=event=>{event.preventDefault();$('#route-planner-dialog').scrollIntoView({behavior:'smooth',block:'start'});};
 
-let lastKey='',preview=null,candidates=[],selectedCandidate=0,candidateKey='',run=0,strategy='outcome',buildSuggestions=[],decision=null;
+let lastKey='',preview=null,candidates=[],selectedCandidate=0,candidateKey='',run=0,strategy='outcome',buildSuggestions=[],decision=null,calculationCompleted=false,shipStateKey='';
+const shipStatePanel=document.createElement('section');shipStatePanel.id='recommendation-ship-state';shipStatePanel.hidden=true;recommendationPane.prepend(shipStatePanel);
+function selectedShipState(now=Date.now()){const {w,i}=sel(),record=w.sailings?.[i];return !record?'ready':record.returnAt<=now?'due':'sailing';}
+function currentShipStateKey(){const {w,i}=sel(),now=Date.now();return JSON.stringify([w.id,i,w.ships[i],w.sailings.map(record=>record?[record.returnAt,record.returnAt<=now,record.snapshot]:null)]);}
+function upgradePreparation(w,i,status){
+ const ship=w.ships[i],rank=Number(ship?.rank),parts=window.SubParts;
+ if(!['sailing','due'].includes(status)||!ship?.enabled||!F.isSlotUnlocked(w,i)||!Number.isInteger(rank)||!parts)return null;
+ const nextRank=rank+1,target=F.recommendedBuild(nextRank);
+ if(target===F.recommendedBuild(rank))return null;
+ const current=parts.parse(ship.build);if(!current.valid)return null;
+ const changes=parts.slots.flatMap((slot,index)=>{
+  // Same-type modified parts already satisfy the type reference; never suggest downgrading them.
+  if(current.build[index]===target[index])return [];
+  const from=parts.catalog.find(p=>p.id===current.build[index]),to=parts.catalog.find(p=>p.id===target[index]);
+  if(!from||!to)return [];
+  return [{slot,index,fromCode:current.build[index]+(ship.modified?.[index]?'+':''),toCode:target[index],from:from.local+'級'+slot+(ship.modified?.[index]?'（改型）':''),to:to.local+'級'+slot}];
+ });
+ if(!changes.length)return null;
+ return {rank,nextRank,current:[...current.build].map((part,index)=>part+(ship.modified?.[index]?'+':'')).join(''),target,changes};
+}
+function renderUpgradePreparation(w,i,status){
+ const info=upgradePreparation(w,i,status);if(!info)return '';
+ const target=[...info.target].map((digit,index)=>'<span'+(info.changes.some(change=>change.index===index)?' class="changed-part"':'')+'>'+esc(digit)+'</span>').join('');
+ return '<section class="upgrade-preparation" aria-label="下一等換裝提醒"><h3>'+(i+1)+' 號艇 · R'+info.nextRank+' 換裝提醒</h3><p class="upgrade-ranks">目前 R'+info.rank+' · '+(status==='due'?'可收船':'航行中')+'</p><div class="upgrade-builds"><div><span>目前配裝</span><strong>'+esc(info.current)+'</strong></div><span aria-hidden="true">→</span><div><span>建議配裝</span><strong>'+target+'</strong></div></div><ul>'+info.changes.map(change=>'<li><strong>'+esc(change.slot)+'</strong><span class="upgrade-change-code">'+esc(change.fromCode)+' → '+esc(change.toCode)+'</span><span class="upgrade-target">'+esc(change.to)+'</span></li>').join('')+'</ul></section>';
+}
+function renderShipState(){
+ const {w,i}=sel(),status=selectedShipState();shipStateKey=currentShipStateKey();
+ $('#route-planner-dialog').hidden=status!=='ready';shipStatePanel.hidden=status==='ready';
+ if(status==='ready'){shipStatePanel.replaceChildren();return status;}
+ showSettings(false);showInfo(false);closeRequired();
+ const title=(i+1)+' 號艇'+(status==='due'?'已返航，收船後顯示推薦航線':'航行中');
+ let content=status==='due'?'<p class="recommendation-ship-status '+status+'">'+esc(title)+'</p>':'';
+ if(status==='sailing'){
+  const due=w.sailings.map((record,index)=>({record,index})).filter(x=>x.index!==i&&x.record&&x.record.returnAt<=Date.now());
+  content+=due.length?'<div class="recommendation-return-card">'+due.map(({record,index})=>{const route=window.SubLogbook?.snapshotRoute(record);return '<div class="recommendation-return-row"><strong>'+(index+1)+' 號艇可收船</strong><p>'+esc(route?route.nodes.join(' → '):'未記錄航線')+'</p><button type="button" data-switch-returned-ship="'+index+'">切換至 '+(index+1)+' 號艇 →</button></div>';}).join('')+'</div>':'<p class="recommendation-ship-status sailing">'+esc(title)+'</p><p class="recommendation-return-empty">本艇返航後可收船</p>';
+ }
+ shipStatePanel.innerHTML=content+renderUpgradePreparation(w,i,status);return status;
+}
+shipStatePanel.onclick=event=>{const button=event.target.closest('[data-switch-returned-ship]');if(!button)return;const {w}=sel(),index=Number(button.dataset.switchReturnedShip);if(!w.sailings?.[index]||w.sailings[index].returnAt>Date.now())return;F.selectShip(w.id,index);};
+function refreshShipState(){if(currentShipStateKey()!==shipStateKey)render();}
 
 // v83: compact explanations and shared settings, without changing the ranking inputs.
 const infoHost=$('.recommendation-info'),infoToggle=$('#recommendation-info-toggle'),infoPanel=$('#recommendation-info-panel'),settingsToggle=$('#planner-settings-toggle'),settingsPanel=$('#planner-settings');
@@ -166,8 +205,7 @@ function sailing(w,i){return F.isSailing?.(w,i)===true;}
 function emptyAction(){
  const {w,i,ship}=sel(),goal=goalOf(w,i);
  if(!ship.enabled||!E.stats(ship).valid)return ['settings','確認船隻等級與配裝'];
- if(sailing(w,i)&&goal!=='item')return ['plan','查看航次／確認收船'];
- if(goal==='explore'||ship.requiredStops?.length)return ['required','檢查本趟必去地點'];
+  if(goal==='explore'||ship.requiredStops?.length)return ['required','檢查本趟必去地點'];
  if(goal==='manual')return ['map','在海圖手動選點'];
  const ability=E.stats(ship),unconstrained=goal==='gil'?(E.npcEvidence||[]).some(e=>ability.surveillance>=e.surveillance&&ability.retrieval>=e.retrieval&&ability.favor>=e.favor&&E.calculate(ship,e.map,[e.code],w.opened).valid):goal==='item'?Boolean(decision?.jobs.length):Object.entries(E.data.maps).some(([map,d])=>d.nodes.some(n=>isOpen(w,map,n.code)&&E.calculate(ship,map,[n.code],w.opened).valid));
  if(unconstrained&&(Number($('#planner-hours').value)>0||$('#planner-scope').value==='current'))return ['constraints','檢查航時上限與比較範圍'];
@@ -191,10 +229,10 @@ function frontier(w,map,code){
 function decide(){
  const {w,i,ship}=sel(),goal=goalOf(w,i),ability=E.stats(ship);
  if(goal==='item'){
-  const p=C.plan(targetOf(w),w,i),ready=p.routes.filter(r=>r.ready),frontiers=p.routes.filter(r=>r.kind==='unlock');
-  let jobs=ready.length?w.ships.flatMap((s,j)=>s.enabled&&!sailing(w,j)&&E.stats(s).valid?[{shipIndex:j,mode:'collection',collectionSources:p.item.sources.filter(x=>x.regionConfirmed===true),kind:'collect'}]:[]):[...new Set(frontiers.map(r=>r.shipIndex))].map(j=>({shipIndex:j,mode:'auto',priorityStops:frontiers.filter(r=>r.shipIndex===j).map(r=>({map:r.map,code:r.nodes[0]})),kind:'unlock'}));
+  const p=C.plan(targetOf(w),w,i),ready=p.routes.filter(r=>r.shipIndex===i&&r.ready),frontiers=p.routes.filter(r=>r.shipIndex===i&&r.kind==='unlock');
+  let jobs=ready.length&&ship.enabled&&!sailing(w,i)&&ability.valid?[{shipIndex:i,mode:'collection',collectionSources:p.item.sources.filter(x=>x.regionConfirmed===true),kind:'collect'}]:[...new Set(frontiers.map(r=>r.shipIndex))].map(j=>({shipIndex:j,mode:'auto',priorityStops:frontiers.filter(r=>r.shipIndex===j).map(r=>({map:r.map,code:r.nodes[0]})),kind:'unlock'}));
   if(ship.requiredStops?.length)jobs=jobs.filter(j=>j.shipIndex===i).flatMap(j=>j.kind==='unlock'?j.priorityStops.map(front=>({...j,requiredStops:[...ship.requiredStops,...(ship.requiredStops.some(x=>x.map===front.map&&x.code===front.code)?[]:[front])]})):[j]);
-  return {title:ready.length?'比較可取得收藏的航線':jobs.length?'收藏前置開圖 · 本趟不取得目標':'收藏條件尚未備齊',copy:ready.length?'各船獨立比較來源訪問數與作息，非全艦隊資源最佳化；掉率未知，不等於保證取得或最高掉率。':jobs.length?'先朝已確認來源的前置探索。'+(strategy==='time'?'省時只保留這個前置成果，再取短航時，可能放棄旁支。':'同趟比較其他可開地點與經驗。')+'這不是目標家具採集。':'請查看各船缺項，或試算配裝。若想先練等，請明確切換目標；不自動替換你的收藏目標。',details:p.blockers,jobs};
+  return {title:ready.length?'比較可取得收藏的航線':jobs.length?'收藏前置開圖 · 本趟不取得目標':'收藏條件尚未備齊',copy:ready.length?'比較本艇的來源訪問數與作息；掉率未知，不等於保證取得或最高掉率。':jobs.length?'先朝已確認來源的前置探索。'+(strategy==='time'?'省時只保留這個前置成果，再取短航時，可能放棄旁支。':'同趟比較其他可開地點與經驗。')+'這不是目標家具採集。':'請查看各船缺項，或試算配裝。若想先練等，請明確切換目標；不自動替換你的收藏目標。',details:p.blockers,jobs};
  }
  if(!ship.enabled)return {title:'先登記你已經擁有的船',copy:'先確認等級與四部件，並依遊戲補登開圖；不預填進度。',jobs:[]};
  if(sailing(w,i))return {title:'這艘船有尚未收船的航次',copy:'先確認收船或取消誤登，再規劃下一趟；既有航次保持不變。',jobs:[]};
@@ -218,14 +256,14 @@ function decide(){
 }
 function routeCards(routes){
  const {w}=sel();
- if(!routes.length){$('#candidate-calculation-details').innerHTML='';return '<p class="empty-state">'+(goalOf(w)==='gil'?'目前沒有符合成熟樣本條件的 NPC 航線。':'目前沒有符合條件的候選航線。')+'</p>';}
+ if(!routes.length){$('#candidate-calculation-details').innerHTML='';return calculationCompleted?'<p class="empty-state">目前條件下沒有候選航線</p>':'';}
  selectedCandidate=Math.min(selectedCandidate,routes.length-1);
  const n=selectedCandidate,r=routes[n],si=r.shipIndex??w.activeVoyageShip,ship=w.ships[si],calc=E.calculate(ship,r.map,r.nodes,w.opened),cycle=E.effectiveCycle(calc.seconds,w.cadenceHours??24);
- const disabled=!calc.valid||sailing(w,si),targets=r.targets||[];
+ const disabled=si!==w.activeVoyageShip||!calc.valid||sailing(w,si),targets=r.targets||[];
  const context=r.kind==='other-goal'?'主線受限 · 其他目標備案':r.kind==='collect'?'收藏來源':r.kind==='unlock'?'收藏前置 · 不取得目標':r.kind==='level'?'練等路線':'';
  $('#candidate-calculation-details').innerHTML='<p>'+esc(r.reason||'')+'</p>'+(r.ranking?.mode==='collection'?'<p>符合目標來源 '+r.collectionVisits+' 站，掉率未知。</p>':'')+'<p>航距 '+calc.range+'／'+calc.ability.range+' · '+esc(statsLabel(calc.ability))+'。</p><p>航時為公式估算，以遊戲管制台為準。基礎經驗不含隨機加成；開圖與掉落不保證成功。燃料與耐久請在遊戲核對。</p>'+(calc.errors.length?'<p>'+esc(calc.errors.join(' '))+'</p>':'');
  const tabs='<h3 class="candidate-list-heading" id="candidate-list-heading">候選航線</h3><div class="candidate-choices" role="group" aria-labelledby="candidate-list-heading">'+routes.map((route,index)=>'<button type="button" data-candidate="'+index+'" aria-pressed="'+(index===n)+'" aria-controls="selected-candidate" title="'+esc(mapName(route.map)+' · '+route.nodes.join(' → '))+'" aria-label="'+esc(mapName(route.map)+' · '+route.nodes.join(' → '))+'"><span class="candidate-check" aria-hidden="true">'+(index===n?'✓':'')+'</span><span class="candidate-choice-route">'+esc(route.nodes.join(' → '))+'</span></button>').join('')+'</div>';
- return tabs+'<article id="selected-candidate" class="planner-result" aria-label="所選推薦航線"><div class="planner-result-heading"><span>'+esc(mapName(r.map)+(context?' · '+context:''))+'</span><b>'+(si+1)+' 號艇</b></div><div class="route-facts"><span>預估航時<b>'+duration(calc.seconds)+'</b></span><span>有效週期<b>'+duration(cycle)+'</b></span></div><dl class="candidate-benefits"><div><dt>燃料</dt><dd>'+calc.fuel+' 罐</dd></div><div><dt>基礎經驗</dt><dd>'+calc.xp.toLocaleString('zh-TW')+'</dd></div><div><dt>可能發現</dt><dd>'+esc(targets.length?targets.join('、'):'無新地點候選')+'</dd></div></dl>'+(r.shipChoices?.length>1?'<label class="field-label candidate-ship-choice">派遣船隻<select data-candidate-ship="'+n+'">'+r.shipChoices.map(j=>'<option value="'+j+'" '+(j===si?'selected':'')+'>'+(j+1)+' 號艇</option>').join('')+'</select></label>':'')+'<div class="candidate-actions"><button type="button" data-preview="'+n+'" '+(disabled?'disabled':'')+'>在海圖預覽</button><button type="button" data-depart="'+n+'" '+(disabled?'disabled':'')+'>出航</button></div></article>';
+ return tabs+'<article id="selected-candidate" class="planner-result" aria-label="所選推薦航線"><div class="route-facts"><span>預估航時<b>'+duration(calc.seconds)+'</b></span><span>有效週期<b>'+duration(cycle)+'</b></span></div><dl class="candidate-benefits"><div><dt>燃料</dt><dd>'+calc.fuel+' 罐</dd></div><div><dt>基礎經驗</dt><dd>'+calc.xp.toLocaleString('zh-TW')+'</dd></div><div><dt>可能發現</dt><dd>'+esc(targets.length?targets.join('、'):'無新地點候選')+'</dd></div></dl>'+(r.shipChoices?.length>1?'<label class="field-label candidate-ship-choice">派遣船隻<select data-candidate-ship="'+n+'">'+r.shipChoices.map(j=>'<option value="'+j+'" '+(j===si?'selected':'')+'>'+(j+1)+' 號艇</option>').join('')+'</select></label>':'')+'<div class="candidate-actions"><button type="button" data-preview="'+n+'" '+(disabled?'disabled':'')+'>在海圖預覽</button><button type="button" data-depart="'+n+'" '+(disabled?'disabled':'')+'>以此路線出航</button></div></article>';
 }
 function renderCollection(){
  const {w}=sel();$('#collection-browser').hidden=goalOf(w)!=='item';$('#collection-reference').hidden=goalOf(w)!=='item';
@@ -243,8 +281,10 @@ function enhanceMap(){window.SubMapUI?.render({fleet:F,previewRoute:preview?.rou
 function fleetStatus(){F.refreshShipStatuses();}
 
 function render(){
- const {w,i,ship}=sel(),context=w.id+':'+i;if(context!==disclosureContext){disclosureContext=context;showSettings(false);showInfo(false);}renderRequired();renderHours();const k=key();
- if(k!==lastKey){run++;$('#planner-results').setAttribute('aria-busy','false');preview=null;selectedCandidate=0;candidateKey='';showInfo(false);buildSuggestions=[];$('#collection-build-results').innerHTML='';lastKey=k;$('#planner-mode').value=goalOf(w,i);$('#planner-cadence').value=String(w.cadenceHours??24);renderCollection();decision=decide();candidates=[];$('#next-step-title').textContent=decision.title;$('#mobile-next-title').textContent=goalOf(w,i)==='item'?itemLabel(C.items.find(x=>x.id===targetOf(w))||C.items[0])+' · '+decision.title:decision.title;$('#next-step-copy').textContent=decision.copy;$('#next-step-details').querySelector('summary').textContent=goalOf(w)==='gil'?'收益模型與缺項':'查看各船缺項與來源限制';$('#next-step-details').hidden=!decision.details?.length;$('#next-step-detail-list').innerHTML=(decision.details||[]).map(t=>'<li>'+esc(t)+'</li>').join('');$('#planner-status').textContent='';$('#planner-results').innerHTML=routeCards(candidates);if(decision.jobs.length)compare();}
+ const {w,i,ship}=sel(),status=renderShipState();
+ if(status!=='ready'){run++;lastKey='';candidateKey='';calculationCompleted=false;candidates=[];preview=null;$('#planner-results').setAttribute('aria-busy','false');renderMilestones();enhanceMap();fleetStatus();window.SubLogbook?.render();return;}
+ const context=w.id+':'+i;if(context!==disclosureContext){disclosureContext=context;showSettings(false);showInfo(false);}renderRequired();renderHours();const k=key();
+ if(k!==lastKey){calculationCompleted=false;run++;$('#planner-results').setAttribute('aria-busy','false');preview=null;selectedCandidate=0;candidateKey='';showInfo(false);buildSuggestions=[];$('#collection-build-results').innerHTML='';lastKey=k;$('#planner-mode').value=goalOf(w,i);$('#planner-cadence').value=String(w.cadenceHours??24);renderCollection();decision=decide();candidates=[];$('#next-step-title').textContent=decision.title;$('#mobile-next-title').textContent=goalOf(w,i)==='item'?itemLabel(C.items.find(x=>x.id===targetOf(w))||C.items[0])+' · '+decision.title:decision.title;$('#next-step-copy').textContent=decision.copy;$('#next-step-details').querySelector('summary').textContent=goalOf(w)==='gil'?'收益模型與缺項':'查看各船缺項與來源限制';$('#next-step-details').hidden=!decision.details?.length;$('#next-step-detail-list').innerHTML=(decision.details||[]).map(t=>'<li>'+esc(t)+'</li>').join('');$('#planner-status').textContent='';$('#planner-results').innerHTML=routeCards(candidates);if(decision.jobs.length)compare();}
  $('#planner-ship-summary').textContent=w.name+' · '+(i+1)+' 號艇 · '+(ship.enabled?'Rank '+ship.rank:'尚未登記')+' · '+({outcome:'成果優先',efficiency:'效率優先',time:'省時優先'}[strategy]);
  updateEmptyAction();
 
@@ -254,6 +294,7 @@ function applyCandidate(n,depart=false){
  const r=candidates[n],{w}=sel();if(!r)return false;
  if(candidateKey!==key()){$('#planner-status').textContent='條件已變更，請等待重新比較。';render();return false;}
  const i=r.shipIndex??w.activeVoyageShip,ship=w.ships[i];
+ if(i!==w.activeVoyageShip){F.notice('所選船隻已變更，請重新選擇本艇的推薦航線。');render();return false;}
  if(sailing(w,i)){F.notice('尚未收船，不能取代航次計畫。');return false;}
  const missing=(ship.requiredStops||[]).filter(x=>x.map!==r.map||!r.nodes.includes(x.code));if(missing.length){$('#planner-status').textContent='此候選缺少本趟必去地點，請重新比較。';return false;}
  const calc=E.calculate(ship,r.map,r.nodes,w.opened);if(!calc.valid){$('#planner-status').textContent=calc.errors.join(' ');return false;}
@@ -273,10 +314,10 @@ function applyCandidate(n,depart=false){
 function previewRoute(n){return applyCandidate(n);}
 function allTargets(){const out={};for(const map of F.maps)for(const node of map.nodes){if(F.nodeState(map,node.code)!=='available'||!node.parent)continue;const [m,c]=node.parent;out[m]??={};out[m][c]??=[];out[m][c].push(map.name+' '+node.code);}return out;}
 async function compare(){
- const {w}=sel();decision=decide();if(!decision.jobs.length)return;
+ const {w}=sel();if(selectedShipState()!=='ready')return;decision=decide();if(!decision.jobs.length)return;
  const token=++run,k=key(),snapshot=structuredClone(w),targets=allTargets(),scope=$('#planner-scope').value==='current'?[w.map]:undefined;
  const stopped=()=>token!==run||key()!==k;
- candidates=[];selectedCandidate=0;candidateKey='';preview=null;$('#planner-results').setAttribute('aria-busy','true');$('#planner-results').innerHTML='<p class="empty-state">正在完整比較 1–5 站組合與順序…</p>';$('#planner-status').textContent='正在計算；更改目標或船隻會取消舊比較。';
+ calculationCompleted=false;candidates=[];selectedCandidate=0;candidateKey='';preview=null;$('#planner-results').setAttribute('aria-busy','true');$('#planner-results').innerHTML='<p class="empty-state">正在完整比較 1–5 站組合與順序…</p>';$('#planner-status').textContent='正在計算；更改目標或船隻會取消舊比較。';
  let checked=0,results=[],warnings=[];
  try{
   await new Promise(resolve=>setTimeout(resolve,0));
@@ -292,7 +333,7 @@ async function compare(){
   results=[...grouped.values()].sort((a,b)=>E.compareRoutes(a,b,decision.jobs[0].mode,strategy)||a.shipIndex-b.shipIndex);candidates=[];const stopSets=new Set();for(const r of results){const id=r.map+':'+[...r.nodes].sort().join(',');if(!stopSets.has(id)){candidates.push(r);stopSets.add(id);}if(candidates.length===3)break;}
   if(goalOf(w)==='auto'&&candidates.length&&candidates[0].ranking?.mode==='auto'&&!candidates[0].priorityVisits){candidates=candidates.map(r=>({...r,kind:'other-goal'}));$('#next-step-title').textContent='主線受目前限制排除 · 其他目標備案';$('#mobile-next-title').textContent='主線受限 · 其他目標備案';$('#next-step-copy').textContent='下列候選不拜訪指定主線前置，不推進該船位／海域目標；可放寬航時或範圍再比較。';}
   if(goalOf(w)==='item'&&!candidates.length&&decision.jobs.some(j=>j.kind==='unlock')){$('#next-step-title').textContent='目前限制內沒有收藏前置航線';$('#mobile-next-title').textContent='收藏前置受限，請檢查範圍／航時';$('#next-step-copy').textContent='可拜訪的收藏前置被航時或海圖範圍排除；不以無關航點冒充前置進度，請檢查限制。';}
-  candidateKey=k;selectedCandidate=0;$('#planner-results').innerHTML=routeCards(candidates);
+  calculationCompleted=true;candidateKey=k;selectedCandidate=0;$('#planner-results').innerHTML=routeCards(candidates);
   $('#planner-status').textContent='';
   const details=[...(decision.details||[]),...new Set(warnings)];$('#next-step-detail-list').innerHTML=details.map(x=>'<li>'+esc(x)+'</li>').join('');$('#next-step-details').hidden=!details.length;
   if(goalOf(w)==='gil'&&!candidates.length){$('#next-step-title').textContent='目前沒有可估算毛值的 NPC 航線';$('#mobile-next-title').textContent='NPC 成熟樣本條件尚未備齊';$('#next-step-copy').textContent=emptyAction()[0]==='constraints'?'已有成熟資格來源，但本次航時上限或海圖範圍排除了候選。':(E.npcEvidence||[]).some(x=>isOpen(w,x.map,x.code))?'已開來源尚未達成熟樣本性能或拜訪等級；這不代表不能掉落一般飾物。':'尚未登記成熟樣本來源 J／M／O／R／Z；這不代表沒有一般航線。';}
@@ -315,13 +356,13 @@ $('#compare-routes').onclick=compare;
 $('#planner-hours').onchange=()=>{const {w}=sel();w.plannerHours=Number($('#planner-hours').value);hoursChoices[w.id]=true;try{localStorage.setItem(hoursChoiceKey,JSON.stringify(hoursChoices));}catch(_){}F.save();lastKey='';render();};
 $('#planner-scope').onchange=()=>{lastKey='';render();};
 $('#planner-strategies').onclick=e=>{const b=e.target.closest('[data-planner-strategy]');if(!b)return;strategy=b.dataset.plannerStrategy;document.querySelectorAll('[data-planner-strategy]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));render();};
-$('#planner-results').onchange=e=>{const choice=e.target.closest('[data-candidate-ship]');if(!choice)return;const n=Number(choice.dataset.candidateShip),r=candidates[n],i=Number(choice.value);if(!r?.shipChoices?.includes(i))return;r.shipIndex=i;$('#planner-results').innerHTML=routeCards(candidates);$('#planner-results [data-candidate-ship="'+n+'"]')?.focus({preventScroll:true});};
+$('#planner-results').onchange=e=>{const choice=e.target.closest('[data-candidate-ship]');if(!choice)return;const n=Number(choice.dataset.candidateShip),r=candidates[n],i=Number(choice.value);if(i!==sel().i||!r?.shipChoices?.includes(i))return;r.shipIndex=i;$('#planner-results').innerHTML=routeCards(candidates);$('#planner-results [data-candidate-ship="'+n+'"]')?.focus({preventScroll:true});};
 $('#planner-results').onclick=e=>{
  const selected=e.target.closest('[data-candidate]');if(selected){const n=Number(selected.dataset.candidate);if(!candidates[n])return;selectedCandidate=n;$('#planner-results').innerHTML=routeCards(candidates);$('#planner-results [data-candidate="'+n+'"]')?.focus({preventScroll:true});return;}
  const p=e.target.closest('[data-preview]');if(p&&!p.disabled){previewRoute(Number(p.dataset.preview));return;}
  const b=e.target.closest('[data-depart]');if(b&&!b.disabled)applyCandidate(Number(b.dataset.depart),true);
 };
 setInterval(fleetStatus,30000);
-window.SubVoyageUI={render,addRequired,showReturn:()=>window.SubLogbook?.openDetails(),routeForMap:id=>preview?.key===key()&&preview.route.map===id?preview.route.nodes:[]};
+window.SubVoyageUI={render,refreshShipState,addRequired,showReturn:()=>window.SubLogbook?.openDetails(),routeForMap:id=>preview?.key===key()&&preview.route.map===id?preview.route.nodes:[]};
 render();
 })();

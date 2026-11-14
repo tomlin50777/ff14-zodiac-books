@@ -1,0 +1,49 @@
+/* v90: presentation only. Existing voyage, recommendation and settings handlers remain in use. */
+body.voyage-v47 .voyage-deck-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;overflow:visible}
+body.voyage-v47 .deck-ship{border:1px solid var(--theme-line);box-shadow:none;min-width:0}
+body.voyage-v47 .deck-ship.selected{border:1px solid var(--theme-line);border-left:3px solid #efa900;background:#12475d;box-shadow:none}
+body.voyage-v47 .deck-select,body.voyage-v47 .deck-ship.selected .deck-select{grid-template-columns:auto auto auto minmax(0,1fr);gap:3px;padding:4px 34px 4px 6px;min-height:36px;border:0;box-shadow:none;background:transparent}
+body.voyage-v47 .deck-ship-title b{font-weight:600;font-size:12px}
+body.voyage-v47 .deck-ship-title small,body.voyage-v47 .deck-build{font-weight:400;font-size:11px}
+body.voyage-v47 .deck-select .ship-status{font-size:10px!important;justify-self:end}
+body.voyage-v47 .deck-settings{border:1px solid var(--theme-line);box-shadow:none;width:28px;height:28px;right:3px}
+body.voyage-v47 #map-progress-management,body.voyage-v47 #map-help{border:1px solid var(--theme-line);box-shadow:none}
+body.voyage-v47 .deck-select:focus-visible,body.voyage-v47 .deck-settings:focus-visible,body.voyage-v47 #map-progress-management:focus-visible,body.voyage-v47 #map-help:focus-visible{outline:3px solid #e99b22;outline-offset:2px;box-shadow:none}
+body.voyage-v47 .map-side-info .map-route-index{display:grid;grid-template-columns:max-content minmax(0,max-content) max-content;column-gap:12px;row-gap:4px;align-items:center}
+body.voyage-v47 .map-side-info .map-route-index li{display:grid;grid-template-columns:subgrid;grid-column:1/-1;column-gap:12px;min-height:25px;padding:0;border:0;background:transparent;white-space:nowrap;font-size:12px;overflow-wrap:normal}
+body.voyage-v47 .map-side-info .map-route-index li::before{display:none}
+body.voyage-v47 .map-side-info .map-route-index strong{display:flex;align-items:center;gap:6px;margin:0;font-weight:500}
+body.voyage-v47 .map-side-info .map-route-index strong::before{content:"";width:9px;height:9px;flex:none;border-radius:50%;background:var(--route-color)}
+body.voyage-v47 .map-side-info .map-route-index li>span{overflow-wrap:normal;white-space:nowrap}
+body.voyage-v47 .map-side-info .map-route-index .map-ship-countdown{margin-left:0;justify-self:start;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";min-width:8ch}
+body.voyage-v47 .map-side-info .map-route-index .map-ship-countdown.status-due{color:#b65b0a}
+body.voyage-v47 #console-next .planner-purpose{margin-bottom:0}
+body.voyage-v47 #console-next #next-step{display:flex;align-items:center;justify-content:flex-start;gap:6px;margin:3px 0 8px;padding:0;border:0;background:none;box-shadow:none}
+body.voyage-v47 #console-next #next-step-title{flex:0 1 auto;font-size:12px;line-height:1.5;font-weight:400;color:var(--theme-muted)}
+body.voyage-v47 #console-next .recommendation-info{align-self:center;padding:0}
+body.voyage-v47 #console-next #recommendation-info-toggle{width:20px;min-width:20px;height:20px;min-height:20px;font-size:12px}
+@container ship-deck (max-width:749px){
+ body.voyage-v47 .deck-select,body.voyage-v47 .deck-ship.selected .deck-select{gap:2px;padding-left:4px;padding-right:32px}
+ body.voyage-v47 .deck-ship-title b{font-size:11px}
+ body.voyage-v47 .deck-ship-title small,body.voyage-v47 .deck-build{font-size:10px}
+}
+@media(pointer:coarse){
+ body.voyage-v47 .deck-select,body.voyage-v47 .deck-ship.selected .deck-select{min-height:44px;padding-right:40px}
+ body.voyage-v47 .deck-settings{width:36px;height:36px}
+}
+body.voyage-v47{--fleet-due-color:#af5911}
+html[data-theme="night"] body.voyage-v47{--fleet-due-color:#ffc47b}
+body.voyage-v47 .deck-select .ship-status.status-due,body.voyage-v47 .map-side-info .map-route-index .map-ship-countdown.status-due{color:var(--fleet-due-color)}
+body.voyage-v47 .deck-ship.selected .ship-status.status-due{color:#ffd09a}
+body.voyage-v47 .deck-select .ship-status::before{content:"";display:inline-block;width:5px;height:5px;vertical-align:middle;margin-right:3px;border-radius:50%;background:currentColor}
+
+body.voyage-v47 .map-side-info .map-route-index li>span:not(.map-ship-countdown){white-space:normal;overflow-wrap:anywhere}
+body.voyage-v47 .deck-select .ship-status{gap:0}
+/* Preserve complete ship information on narrow screens, using the existing
+   v89.1 responsive rows rather than hiding rank, build or status. */
+@container ship-deck (max-width:599px){
+ body.voyage-v47 .voyage-deck-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@container ship-deck (max-width:449px){
+ body.voyage-v47 .voyage-deck-grid{grid-template-columns:minmax(0,1fr)}
+}

@@ -1,0 +1,5 @@
+/* v88: only the per-boat route countdown. */
+body.voyage-v47 .map-side-info .map-route-index li > strong{flex-shrink:0}
+body.voyage-v47 .map-side-info .map-route-index li > span:not(.map-ship-countdown){min-width:0}
+body.voyage-v47 .map-side-info .map-route-index .map-ship-countdown{margin-left:auto;flex:0 0 auto;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:12px}
+body.voyage-v47 .map-side-info .map-route-index .map-ship-countdown[hidden]{display:none}

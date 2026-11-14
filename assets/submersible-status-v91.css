@@ -1,0 +1,19 @@
+/* v91: state-specific recommendation content; keep the existing column geometry and theme. */
+body.voyage-v47 #recommendation-ship-state[hidden],body.voyage-v47 #route-planner-dialog[hidden]{display:none!important}
+body.voyage-v47 #recommendation-ship-state{min-width:0;padding:0}
+body.voyage-v47 .recommendation-ship-status{display:flex;align-items:center;gap:8px;margin:4px 0 20px;font-size:15px;font-weight:600;line-height:1.6}
+body.voyage-v47 .recommendation-ship-status::before{content:"";width:10px;height:10px;flex:none;border-radius:50%;background:var(--theme-accent)}
+body.voyage-v47 .recommendation-ship-status.due::before{background:var(--fleet-due-color)}
+body.voyage-v47 .recommendation-return-card{border:1px solid color-mix(in srgb,var(--fleet-due-color) 35%,var(--theme-line));border-radius:10px;padding:14px;background:color-mix(in srgb,var(--fleet-due-color) 5%,var(--theme-surface))}
+body.voyage-v47 .recommendation-return-row+ .recommendation-return-row{border-top:1px solid var(--theme-line);margin-top:14px;padding-top:14px}
+body.voyage-v47 .recommendation-return-row strong{display:flex;align-items:center;gap:8px;color:var(--fleet-due-color);font-size:15px;font-weight:600}
+body.voyage-v47 .recommendation-return-row strong::before{content:"";width:10px;height:10px;flex:none;border-radius:50%;background:currentColor}
+body.voyage-v47 .recommendation-return-row p{margin:9px 0;font-size:14px;overflow-wrap:anywhere}
+body.voyage-v47 .recommendation-return-row button{width:100%;min-height:36px;padding:6px 10px;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-surface);color:var(--theme-ink);font-size:13px;font-weight:600;box-shadow:none}
+body.voyage-v47 .recommendation-return-row button:focus-visible{outline:3px solid var(--theme-accent);outline-offset:2px}
+body.voyage-v47 .recommendation-return-empty{margin:0;color:var(--theme-muted);font-size:13px}
+body.voyage-v47 .map-side-info .chart-progress{display:grid;grid-template-columns:minmax(0,1fr);gap:0;background:none;border:0;box-shadow:none;padding:0}
+body.voyage-v47 .map-side-info .chart-progress .map-opened-label,body.voyage-v47 .map-side-info .chart-progress .map-explored-label{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin:0 0 7px;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:var(--theme-ink);font-size:13px;line-height:1.5;font-weight:400}
+body.voyage-v47 .map-side-info .chart-progress #map-count,body.voyage-v47 .map-side-info .chart-progress #map-explored-count{margin:0;padding:0;border:0;background:none;box-shadow:none;color:inherit;font-size:inherit;font-weight:400;font-variant-numeric:tabular-nums}
+body.voyage-v47 .map-side-info .chart-progress>.progress-track{width:100%;height:6px;min-height:6px;margin:0 0 16px;padding:0;border:0;border-radius:99px;overflow:hidden;background:var(--theme-line)}
+body.voyage-v47 .map-side-info .chart-progress>.progress-track i{display:block;height:100%;border-radius:inherit;background:var(--theme-accent)}

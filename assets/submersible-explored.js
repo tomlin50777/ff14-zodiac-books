@@ -95,8 +95,8 @@ required.addEventListener('click',()=>{const item=F.workshop(),map=F.currentMap(
 function render(){
  const item=F.workshop(),map=F.currentMap(),nodes=eligible(map),code=item.selectedNode,node=nodes.find(n=>n.code===code);
  const explored=nodes.filter(n=>isVisited(item,map.id,n.code)).length,opened=nodes.filter(n=>isOpened(item,map.id,n.code)).length;
- document.querySelector('#map-count').textContent='已開啟 '+opened+'／'+nodes.length;
- document.querySelector('#map-explored-count').textContent='已探索 '+explored+'／'+nodes.length;
+ document.querySelector('#map-count').textContent=opened+' / '+nodes.length;
+ document.querySelector('#map-explored-count').textContent=explored+' / '+nodes.length;
  for(const [trackId,barId,value] of [['map-opened-track','map-progress',opened],['map-explored-track','map-explored-progress',explored]]){
   const track=document.getElementById(trackId);track.setAttribute('aria-valuemax',String(nodes.length||1));track.setAttribute('aria-valuenow',String(value));track.setAttribute('aria-valuetext',nodes.length?value+'／'+nodes.length:'本海圖尚未開放');
   document.getElementById(barId).style.width=(nodes.length?value/nodes.length*100:0)+'%';

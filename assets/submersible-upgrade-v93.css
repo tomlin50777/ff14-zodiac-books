@@ -1,0 +1,15 @@
+/* v93: next-rank preparation, without changing console geometry or theme. */
+body.voyage-v47 .upgrade-preparation{margin-top:24px;padding-top:20px;border-top:1px solid var(--theme-line);color:var(--theme-ink)}
+body.voyage-v47 .upgrade-preparation h3{margin:0 0 8px;font-size:17px;font-weight:600;line-height:1.5}
+body.voyage-v47 .upgrade-preparation .upgrade-ranks{margin:0 0 16px;color:var(--theme-muted);font-size:13px;line-height:1.6}
+body.voyage-v47 .upgrade-builds{display:flex;align-items:center;gap:14px;margin:0 0 20px}
+body.voyage-v47 .upgrade-builds div{display:flex;flex-direction:column;gap:4px;min-width:0}
+body.voyage-v47 .upgrade-builds div span{color:var(--theme-muted);font-size:12px}
+body.voyage-v47 .upgrade-builds strong{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+body.voyage-v47 .upgrade-preparation h4{margin:0 0 10px;font-size:14px;font-weight:600}
+body.voyage-v47 .upgrade-preparation ul{list-style:none;padding:0;margin:0}
+body.voyage-v47 .upgrade-preparation li{display:grid;grid-template-columns:1fr;gap:4px;padding:10px 0;line-height:1.5;font-size:14px}
+body.voyage-v47 .upgrade-preparation li+li{border-top:1px solid var(--theme-line)}
+body.voyage-v47 .upgrade-preparation li strong{font-weight:600}
+body.voyage-v47 .upgrade-preparation .upgrade-current{color:var(--theme-muted);font-size:13px}
+body.voyage-v47 .upgrade-preparation .upgrade-target{color:var(--theme-ink);font-weight:600;overflow-wrap:anywhere}

@@ -123,10 +123,8 @@
     return milestone(ship.rank)[1];
   }
   function validateFlagship(item) {
-    if (!item.ships[item.flagship] || !item.ships[item.flagship].enabled) {
-      const first = item.ships.findIndex(ship => ship.enabled);
-      item.flagship = first >= 0 ? first : 0;
-    }
+    item.flagship = item.ships.reduce((best,ship,index) =>
+      ship.enabled && (best < 0 || Number(ship.rank) > Number(item.ships[best].rank)) ? index : best, -1);
   }
   function workshopStats(item) {
     validateFlagship(item);
@@ -137,8 +135,6 @@
   }
 
 
-  // v85: compact session-only navigation; saved fleet data is untouched.
-  const collapsedWorkshops = new Set(state.workshops.map(item => item.id));
   let editorWorkshopId = "", editorShipIndex = 0, creatingWorkshop = false;
   let returnFocus = null;
   const shipPartsEditor = window.SubParts.createEditor(document, updateShipDraft);
@@ -216,22 +212,18 @@
     $('#voyage-ship-tabs').innerHTML=item.ships.map((ship,index)=>{
       const active=item.activeVoyageShip===index,route=shipRouteLabel(item,index),time=shipTime(item,index);
       const detailId='deck-ship-detail-'+index;
-      const detail=route+'；'+time.detail+(item.flagship===index&&ship.enabled?'；工房旗艦':'');
-      return '<div class="deck-ship'+(active?' selected':'')+'"><button type="button" class="deck-select" data-voyage-ship="'+index+'" aria-pressed="'+active+'" aria-describedby="'+detailId+'" title="'+escapeHtml(detail)+'"><span class="deck-ship-title"><b>'+(index+1)+' 號艇</b>'+(ship.enabled?'<small>R'+ship.rank+'</small>':'')+'</span><span class="deck-ship-summary">'+(ship.enabled?'<span class="deck-build" title="'+escapeHtml(shipBuildLabel(ship))+'">'+escapeHtml(shipBuildLabel(ship))+'</span><span class="deck-summary-dot" aria-hidden="true">·</span>':'')+statusTag(item,index)+'</span></button><span class="deck-accessible-detail" id="'+detailId+'">'+escapeHtml(route)+'；<span data-ship-time="'+index+'" data-owner="'+escapeHtml(item.id)+'" title="'+escapeHtml(time.detail)+'">時間：'+escapeHtml(time.label)+'</span>'+(item.flagship===index&&ship.enabled?'；工房旗艦':'')+'</span><button type="button" class="deck-settings" data-edit-ship="'+index+'" data-owner="'+escapeHtml(item.id)+'" aria-label="設定 '+escapeHtml(item.name)+' '+(index+1)+' 號艇" title="船隻設定">⚙</button></div>';
+      const detail=(index+1)+' 號艇；'+(ship.enabled?'R'+ship.rank+'；'+shipBuildLabel(ship)+'；':'')+shipStatus(item,index).label+'；'+route+'；'+time.detail+(item.flagship===index&&ship.enabled?'；工房旗艦':'');
+      return '<div class="deck-ship'+(active?' selected':'')+'"><button type="button" class="deck-select" data-voyage-ship="'+index+'" aria-pressed="'+active+'" aria-describedby="'+detailId+'" aria-label="'+escapeHtml(detail)+'" title="'+escapeHtml(detail)+'"><span class="deck-ship-title"><b>'+(index+1)+' 號艇</b>'+(ship.enabled?'<small>R'+ship.rank+' ·</small>':'')+'</span><span class="deck-ship-summary">'+(ship.enabled?'<span class="deck-build" title="'+escapeHtml(shipBuildLabel(ship))+'">'+escapeHtml(shipBuildLabel(ship))+'</span><span class="deck-summary-dot" aria-hidden="true">·</span>':'')+statusTag(item,index)+'</span></button><span class="deck-accessible-detail" id="'+detailId+'">'+escapeHtml(route)+'；<span data-ship-time="'+index+'" data-owner="'+escapeHtml(item.id)+'" title="'+escapeHtml(time.detail)+'">時間：'+escapeHtml(time.label)+'</span>'+(item.flagship===index&&ship.enabled?'；工房旗艦':'')+'</span><button type="button" class="deck-settings" data-edit-ship="'+index+'" data-owner="'+escapeHtml(item.id)+'" aria-label="設定 '+escapeHtml(item.name)+' '+(index+1)+' 號艇" title="船隻設定">⚙</button></div>';
     }).join('');
   }
   let visibleFleetContext = "";
   function renderWorkshopNav() {
     const contextKey=state.selectedId+":"+workshop().activeVoyageShip;
     const contextChanged=contextKey!==visibleFleetContext;
-    $("#workshop-tree").innerHTML = '<ul class="workshop-tree-list">' + state.workshops.map((item,workshopIndex) => {
-      const collapsed = collapsedWorkshops.has(item.id);
+    $("#workshop-tree").innerHTML = '<ul class="workshop-tree-list">' + state.workshops.map(item => {
       const active = item.id === state.selectedId;
-      return '<li class="workshop-tree-branch' + (active ? ' current' : '') + '" style="--workshop-color:' + colorOf(item) + '"><div class="workshop-tree-row"><button class="tree-disclosure" type="button" data-toggle-workshop="' + escapeHtml(item.id) + '" aria-controls="workshop-ships-'+workshopIndex+'" aria-expanded="' + !collapsed + '" aria-label="' + (collapsed ? '展開 ' : '收合 ') + escapeHtml(item.name) + '">' + (collapsed ? '▸' : '▾') + '</button><button class="tree-workshop" type="button" data-select-workshop="' + escapeHtml(item.id) + '"' + (active ? ' aria-current="true"' : '') + ' title="' + escapeHtml(item.name + (item.note ? '\n' + item.note : '')) + '"><span class="tree-workshop-name">' + escapeHtml(item.name) + '</span>' + workshopStatusTag(item) + '</button><button class="workshop-settings" type="button" data-edit-workshop="'+escapeHtml(item.id)+'" aria-label="設定 '+escapeHtml(item.name)+'" title="工房設定">⚙</button></div><ul class="tree-ships" id="workshop-ships-'+workshopIndex+'"' + (collapsed ? ' hidden' : '') + '>' + item.ships.map((ship,index) => '<li><button type="button" class="tree-ship-select ' + (isSlotUnlocked(item,index) ? 'ship-slot-open' : 'ship-slot-pending') + '" data-slot-open="' + isSlotUnlocked(item,index) + '" data-select-ship="' + index + '" data-owner="' + escapeHtml(item.id) + '"' + (active && item.activeVoyageShip === index ? ' aria-current="true"' : '') + '><span class="compact-ship-heading"><b>' + (index + 1) + ' 號艇</b><small>' + (ship.enabled?'R'+ship.rank:'—') + '</small></span>'+statusTag(item,index)+'</button></li>').join('') + '</ul></li>';
+      return '<li class="workshop-tree-branch' + (active ? ' current' : '') + '" style="--workshop-color:' + colorOf(item) + '"><div class="workshop-tree-row"><button class="tree-workshop'+(item.note?' has-account':'')+'" type="button" data-select-workshop="' + escapeHtml(item.id) + '"' + (active ? ' aria-current="true"' : '') + ' title="' + escapeHtml(item.name + (item.note ? '\n' + item.note : '')) + '"><span class="workshop-identity"><span class="tree-workshop-name">' + escapeHtml(item.name) + '</span>' + (item.note ? '<span class="workshop-note">'+escapeHtml(item.note)+'</span>' : '') + '</span>' + workshopStatusTag(item) + '</button><button class="workshop-settings" type="button" data-edit-workshop="'+escapeHtml(item.id)+'" aria-label="設定 '+escapeHtml(item.name)+'" title="工房設定">⚙</button></div></li>';
     }).join('') + '</ul>';
-    const allCollapsed=state.workshops.every(item=>collapsedWorkshops.has(item.id));
-    $('#toggle-all-workshops').textContent=allCollapsed?'全部展開':'全部收合';
-    $('#toggle-all-workshops').setAttribute('aria-expanded',String(!allCollapsed));
     if(contextChanged){
       visibleFleetContext=contextKey;
       // Fleet-status badges are appended later in the same render cycle.
@@ -282,7 +274,32 @@
   function showDialog(id, focusTarget) {
     returnFocus = focusTarget; $("#"+id).showModal();
   }
-  function closeDialog(id) { $("#"+id).close(); }
+  function closeDialog(id) {
+    if(id==="ship-dialog" && shipEditorDirty()){ $("#ship-discard-dialog").showModal(); return; }
+    $("#"+id).close();
+  }
+  let shipEditorInitial="";
+  function shipEditorSnapshot() {
+    const parsed=window.SubParts.parse($("#ship-build").value);
+    return JSON.stringify({enabled:$("#ship-enabled").checked,rank:$("#ship-rank").value,
+      goal:$("#ship-goal").value,build:parsed.valid?parsed.build:$("#ship-build").value,
+      modified:Array.from({length:4},(_,i)=>$("#ship-modified-"+i).checked)});
+  }
+  function shipEditorDirty(){return shipEditorSnapshot()!==shipEditorInitial;}
+  $("#ship-dialog").addEventListener("cancel",event=>{event.preventDefault();closeDialog("ship-dialog");});
+  $("#ship-continue-edit").addEventListener("click",()=>{$("#ship-discard-dialog").close();});
+  $("#ship-discard").addEventListener("click",()=>{$("#ship-discard-dialog").close();$("#ship-dialog").close();});
+  const helpHost=$(".ship-help-host"),helpToggle=$("#ship-help-toggle"),helpPanel=$("#ship-input-help");
+  let helpPinned=false;
+  function showShipHelp(open){helpPanel.hidden=!open;helpToggle.setAttribute("aria-expanded",String(open));}
+  helpHost.addEventListener("mouseenter",()=>showShipHelp(true));
+  helpHost.addEventListener("mouseleave",()=>{if(!helpPinned&&!helpHost.contains(document.activeElement))showShipHelp(false);});
+  helpToggle.addEventListener("focus",()=>showShipHelp(true));
+  helpHost.addEventListener("focusout",event=>{if(!helpPinned&&!helpHost.contains(event.relatedTarget))showShipHelp(false);});
+  helpToggle.addEventListener("click",()=>{helpPinned=!helpPinned;showShipHelp(helpPinned);});
+  document.addEventListener("click",event=>{if(!helpHost.contains(event.target)){helpPinned=false;showShipHelp(false);}});
+  helpHost.addEventListener("keydown",event=>{if(event.key==="Escape"&&!helpPanel.hidden){event.preventDefault();event.stopPropagation();helpPinned=false;showShipHelp(false);helpToggle.focus();showShipHelp(false);}});
+
   ["workshop-dialog","ship-dialog","overview-dialog"].forEach(id => {
     $("#"+id).addEventListener("close", () => {
       if (returnFocus) {
@@ -313,40 +330,29 @@
     $("#ship-enabled").checked = ship.enabled; $("#ship-rank").value = ship.rank;
     $("#ship-build").value = ship.build; $("#ship-goal").value = ship.plannerGoal || ship.goal || "auto";
     for(let i=0;i<4;i++)$("#ship-modified-"+i).checked=ship.modified?.[i]===true;
-    $("#ship-flagship").checked = item.flagship === index && ship.enabled;
-    $("#ship-dialog-message").textContent = "儲存後才會更新設定；取消不影響既有開圖與航程。";
+    $("#ship-dialog-message").textContent = ""; helpPinned=false;showShipHelp(false);
     shipPartsEditor.reset();
     updateShipDraft();
+    shipEditorInitial=shipEditorSnapshot();
     showDialog("ship-dialog",'[data-owner="' + id + '"][data-edit-ship="' + index + '"]');
   }
   function updateShipDraft() {
-    const enabled = $("#ship-enabled").checked;
-    $("#ship-flagship").disabled = !enabled;
-    if (!enabled) $("#ship-flagship").checked = false;
     const reference = recommendedBuild(clampRank($("#ship-rank").value));
-    $("#ship-recommend").textContent = "試填未改參考 " + reference + " / " + window.SubParts.parse(reference).letters + "（待儲存）";
     const draft = shipPartsEditor.syncFromInput();
-    if (!draft.valid) { $("#ship-stats-preview").textContent = "請先完成上方四個部位，才能預覽能力。"; return; }
-    const ability=calculator.stats({rank:Number($("#ship-rank").value),build:draft.build,modified:Array.from({length:4},(_,i)=>$("#ship-modified-"+i).checked)});
-    $("#ship-stats-preview").textContent=ability.valid ? "探查 "+ability.surveillance+" · 收集 "+ability.retrieval+" · 速度 "+ability.speed+" · 航程 "+ability.range+" · 運氣 "+ability.favor+"｜容量 "+ability.cost+"／"+ability.capacity : ability.errors.join(" ");
+    const modified=Array.from({length:4},(_,i)=>$("#ship-modified-"+i).checked);
+    const code=draft.valid?[...draft.build].map((part,i)=>part+(modified[i]?"+":"")).join(""):"—";
+    $("#ship-current-build").textContent=code;$("#ship-preview-build").textContent=code;
+    $("#ship-reference-build").textContent=reference;
+    const changes=draft.valid?window.SubParts.slots.filter((slot,i)=>draft.build[i]!==reference[i]||modified[i]):[];
+    $("#ship-recommend-diff").textContent=!draft.valid?"":changes.length?changes.join("、")+"需要更換":"已符合推薦配裝";
+    $("#ship-recommend").disabled=draft.valid&&!changes.length;
+    if (!draft.valid) { $("#ship-stats-preview").textContent = "請完成有效配裝"; $("#ship-dialog-message").textContent = ""; return; }
+    const ability=calculator.stats({rank:Number($("#ship-rank").value),build:draft.build,modified});
+    const values=[["探查",ability.surveillance],["收集",ability.retrieval],["速度",ability.speed],["航程",ability.range],["運氣",ability.favor],["容量",ability.cost+" / "+ability.capacity]];
+    $("#ship-stats-preview").innerHTML=values.map(([label,value])=>'<div><span>'+label+'</span><strong>'+escapeHtml(value??"—")+'</strong></div>').join("");
+    $("#ship-dialog-message").textContent=ability.valid?"":ability.errors.join(" ");
   }
   $("#workshop-tree").addEventListener("click", event => {
-    const toggle = event.target.closest("[data-toggle-workshop]");
-    if (toggle) {
-      const id = toggle.dataset.toggleWorkshop;
-      if (collapsedWorkshops.has(id)) collapsedWorkshops.delete(id); else collapsedWorkshops.add(id);
-      renderWorkshopNav();
-      const target = document.querySelector('[data-toggle-workshop="' + id + '"]');
-      if (target && target.focus) target.focus();
-      return;
-    }
-    const ship = event.target.closest("[data-select-ship]");
-    if (ship) {
-      const id=ship.dataset.owner,index=Number(ship.dataset.selectShip);
-      selectShip(id,index);
-      $('#workshop-tree').querySelector('[data-owner="'+id+'"][data-select-ship="'+index+'"]').focus({preventScroll:true});
-      return;
-    }
     const settings=event.target.closest("[data-edit-workshop]");
     if(settings){openWorkshopEditor(settings.dataset.editWorkshop,false);return;}
     const group=event.target.closest("[data-select-workshop]");
@@ -354,11 +360,6 @@
       const id=group.dataset.selectWorkshop;selectWorkshop(id);
       $('#workshop-tree').querySelector('[data-select-workshop="'+id+'"]').focus({preventScroll:true});
     }
-  });
-  $('#toggle-all-workshops').addEventListener('click',()=>{
-    if(state.workshops.every(item=>collapsedWorkshops.has(item.id)))collapsedWorkshops.clear();
-    else state.workshops.forEach(item=>collapsedWorkshops.add(item.id));
-    renderWorkshopNav();
   });
   $("#add-workshop").addEventListener("click",()=>openWorkshopEditor("",true));
   $("#show-overview").addEventListener("click",()=>{ renderOverview();showDialog("overview-dialog","#show-overview"); });
@@ -374,7 +375,7 @@
     if (!item) return;
     item.name=name;item.note=$("#workshop-note").value.trim();item.color=$("#workshop-color").value;
     if(creatingWorkshop)state.workshops.push(item);
-    state.selectedId=item.id;if(creatingWorkshop)collapsedWorkshops.add(item.id);
+    state.selectedId=item.id;
     renderAll();closeDialog("workshop-dialog");
   });
   $("#delete-workshop").addEventListener("click",()=>{
@@ -403,22 +404,20 @@
     if($("#ship-enabled").checked&&!ability.valid){$("#ship-dialog-message").textContent=ability.errors.join(" ");return;}
     const ship=item.ships[editorShipIndex];ship.enabled=$("#ship-enabled").checked;ship.modified=modified;
     ship.rank=rank;ship.build=build;ship.goal=$("#ship-goal").value;ship.plannerGoal=ship.goal;
-    if(ship.enabled&&$("#ship-flagship").checked)item.flagship=editorShipIndex;
-    else if(item.flagship===editorShipIndex) {
-      const other=item.ships.findIndex((s,i)=>s.enabled&&i!==editorShipIndex);
-      if(other>=0)item.flagship=other;
-    }
     state.selectedId=item.id;item.activeVoyageShip=editorShipIndex;
-    validateFlagship(item);selectShip(item.id,editorShipIndex);closeDialog("ship-dialog");
+    validateFlagship(item);selectShip(item.id,editorShipIndex);shipEditorInitial=shipEditorSnapshot();closeDialog("ship-dialog");
   });
   function renderCommand() {
-    const item = workshop(); const ship = item.ships[item.flagship]; const rec = recommendedBuild(ship.rank); const mark = milestone(ship.rank);
+    const item = workshop();validateFlagship(item); const ship = item.ships[item.flagship];
+    $("#apply-build").disabled=!ship;
+    if(!ship){["command-ship","command-action","command-copy","command-build","command-build-copy","command-target","command-target-copy"].forEach(id=>$("#"+id).textContent="");return;}
+    const rec = recommendedBuild(ship.rank); const mark = milestone(ship.rank);
     let copy = "配置使用台服數字寫法；四碼依序為船體、船尾、船首、艦橋。";
     if (ship.rank <= 3 && ship.goal === "unlock") copy = "3 級時 C、D 即使顯示在遊戲內，也可能因最低等級不足而無法選取；這不是故障。";
     if (ship.goal === "gil" && ship.rank < 85) copy = "前期先開齊四艘並保持出航。太早換收益配置，通常只會拖慢整體成長。";
     $("#command-ship").textContent = item.name + " · " + (item.flagship + 1) + " 號艇 · Rank " + ship.rank; $("#command-action").textContent = shipAdvice(ship); $("#command-copy").textContent = copy; $("#command-build").textContent = rec; $("#command-build-copy").textContent = Object.keys(parts).map(number => number + "=" + parts[number]).join(" · "); $("#command-target").textContent = mark[0]; $("#command-target-copy").textContent = mark[1];
   }
-  $("#apply-build").addEventListener("click", () => { const item = workshop();openShipEditor(item.id,item.flagship);$("#ship-build").value=recommendedBuild(item.ships[item.flagship].rank);for(let i=0;i<4;i++)$("#ship-modified-"+i).checked=false;updateShipDraft(); });
+  $("#apply-build").addEventListener("click", () => { const item = workshop();validateFlagship(item);if(item.flagship<0)return;openShipEditor(item.id,item.flagship);$("#ship-build").value=recommendedBuild(item.ships[item.flagship].rank);for(let i=0;i<4;i++)$("#ship-modified-"+i).checked=false;updateShipDraft(); });
 
   const mapTabs = $("#map-tabs"); const mapImage = $("#sea-map-image"); const hotspotHost = $("#map-hotspots"); const routeOverlay = $("#route-overlay");
   function currentMap() { const item = workshop(); return maps.find(map => map.id === item.map) || maps[0]; }
@@ -616,6 +615,6 @@
     const blob=new Blob([JSON.stringify({format:'ff14-submersible-backup-v47',exportedAt:new Date().toISOString(),...state,preserved},null,2)],{type:'application/json'});
     const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download='ff14-submersible-backup-'+new Date().toISOString().slice(0,10)+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   });
-  window.SubFleet={state,maps,isSailing,isSlotUnlocked,refreshShipStatuses,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor,voyageAction,renderInspector,canEditVoyage,toggleVoyageNode,optimizeCurrentVoyage,clearVoyage};
+  window.SubFleet={state,maps,recommendedBuild,selectShip,isSailing,isSlotUnlocked,refreshShipStatuses,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor,voyageAction,renderInspector,canEditVoyage,toggleVoyageNode,optimizeCurrentVoyage,clearVoyage};
   renderAll();
 })();
