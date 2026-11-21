@@ -4,7 +4,7 @@
   const loot='https://docs.google.com/spreadsheets/d/1eiuGRrQTjJ5n4ogybKOBxJRT7EiJLlX93fge-Z8MmD4/edit';
   const official=id=>'https://na.finalfantasyxiv.com/lodestone/topics/detail/'+id+'/';
   const lookup=name=>'https://submarine.girin.dev/en/item/'+encodeURIComponent(name)+'/';
-  const source=(map,code,rank,surveillance,dropAddedPatch,thresholdNote='社群觀測資格門檻，非必掉保證')=>({map,code,rank,surveillance,dropAddedPatch,thresholdNote,sourceURL:loot,regionConfirmed:typeof dropAddedPatch==='string'&&Number(dropAddedPatch)<=7.2,regionAvailability:dropAddedPatch?'研究已核對來源 patch；台服版本相容推論，非當服實測':'來源歷史版本待確認，不提供推薦',taiwanDirectlyObserved:false,retrievalThreshold:null,favorThreshold:null,dropRate:null});
+  const source=(map,code,rank,surveillance,dropAddedPatch,thresholdNote='社群觀測資格門檻，非必掉保證')=>({map,code,rank,surveillance,dropAddedPatch,thresholdNote,sourceURL:loot,regionConfirmed:typeof dropAddedPatch==='string'&&Number(dropAddedPatch)<=Number(root.SubVoyageData.version),regionAvailability:dropAddedPatch?'研究已核對來源 patch；台服版本相容推論，非當服實測':'來源歷史版本待確認，不提供推薦',taiwanDirectlyObserved:false,retrievalThreshold:null,favorThreshold:null,dropRate:null});
   const marbleSources=[source('siren','E',92,222,'6.1','原始表觀測 222；查詢工具採保守值 225。此處按原表判斷資格，仍須遊戲確認。')];
   const items=[
     {id:'combed-wool-rug',name:'Combed Wool Rug',kind:'finished',dropItem:'Combed Wool Rug',quantity:1,itemIntroducedPatch:'3.4',description:'地毯成品直掉；另有製作途徑，不是潛艇獨占。中文僅為用途說明。',recipe:'此目標可直接取得成品；也可查官方製作配方。',sourceURL:official('159309cb1ef0706cf37a9a91e3e18865b70097a6'),sources:[source('deep','R',37,85,null,'T2 探查 ≥85；物品 3.4 已有，但此潛艇來源的精確新增 patch 尚未核定。')]},
@@ -29,8 +29,17 @@
     src.historicalEvidence={dropKnownByDate:date,sourceURL:url,summary,confidence:'中高：具日期的原始玩家回報，與後續掉落表交叉核對；非官方掉率保證',exactIntroductionPatch:null,supports:'此物品與此航點在 7.2 前已有關係；不證明首次 patch 或台服實測'};
     src.thresholdNote+='來源至遲 '+date+' 已有原始紀錄；精確首次加入 patch 仍未知。';
   });
+  // Taiwan 7.3 compatibility: dated player recordings cross-checked against sector tables.
+  const south73Report = 'https://jp.finalfantasyxiv.com/lodestone/character/2199398/blog/5481886';
+  const south73DB = 'https://submarine.girin.dev/en/';
+  for (const [code,rank,name,surveillance] of [["O", 132, "Scroll Cabinet", 262], ["O", 132, "Alzadaal's Treasure Rug", 247], ["O", 132, "Hewn Stone Circle", 247], ["R", 134, "Overhead Studio Light", 264], ["S", 135, "Wood Slice Loft", 250]]) {
+    items.push({id:name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),name,kind:'finished',dropItem:name,
+      itemIntroducedPatch:null,description:'南蒼茫洋 7.3 代表家具掉落；英文名稱供查詢。',
+      recipe:'成品直掉。',sourceURL:south73Report,
+      sources:[{...source('south',code,rank,surveillance,'7.3','國際服社群觀測；探查門檻不代表保證掉落。'),sourceURL:south73DB}]});
+  }
   items.forEach(item=>{item.lookupURL=lookup(item.dropItem);item.checkedAt='2026-11-01';item.dropRate=null;});
-  const scope='精選 19 項家具／庭具目標；只以有 7.2 前來源證據者規劃，未核定候選來源不參與推薦，不是全家具或完整掉落目錄。英文名為查找鍵，中文描述不冒充台服正式譯名。台服掉率、收集產量與二次探索個別門檻未完整核定；不估算取得次數或保證最快。';
+  const scope='精選家具／庭具目標；只以有目前版本來源證據者規劃，未核定候選來源不參與推薦，不是全家具或完整掉落目錄。英文名為查找鍵，中文描述不冒充台服正式譯名。台服掉率、收集產量與二次探索個別門檻未完整核定；不估算取得次數或保證最快。';
   function plan(itemId,workshop,selectedIndex=0){
     const item=items.find(x=>x.id===itemId);
     const result={title:item?.name||'請選擇收藏目標',description:item?item.description:scope,item:item||null,routes:[],blockers:[]};

@@ -1,6 +1,7 @@
 /* Local-only state. v46 source keys are never overwritten. */
 (function(root){
 'use strict';
+const maxRank=root.SubVoyageData.rankCap;
 const KEY='ff14-submersible-workshops-v47', OLD='ff14-submersible-workshops-v3', LEGACY='ff14-submersible-fleet-v2';
 const object=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
 const str=(x,f='',n=80)=>typeof x==='string'?x.slice(0,n):f;
@@ -15,11 +16,11 @@ function sanitize(source,index,maps){
  for(let i=0;i<4;i++){
   const p=object(Array.isArray(s.ships)?s.ships[i]:null);
   const plannerPreference=p.plannerGoal??s.plannerGoal??(['auto','unlock','level','gil','item','manual','explore'].includes(p.goal)?p.goal:'auto');
-  out.ships.push({requiredStops:Array.isArray(p.requiredStops)?p.requiredStops.filter(x=>x&&typeof x.map==='string'&&typeof x.code==='string').map(x=>({map:str(x.map,'',20),code:str(x.code,'',3)})):[],collectionTarget:str(p.collectionTarget??s.collectionTarget,'',100),plannerGoal:['auto','unlock','level','gil','item','manual','explore'].includes(plannerPreference)?plannerPreference:'auto',enabled:p.enabled===true,rank:int(p.rank,1,130,null),build:/^[1-5]{4}$/.test(p.build||'')?p.build:'',goal:['auto','unlock','level','gil','item','manual','explore'].includes(plannerPreference)?plannerPreference:'auto',modified:Array.from({length:4},(_,j)=>p.modified?.[j]===true)});
+  out.ships.push({requiredStops:Array.isArray(p.requiredStops)?p.requiredStops.filter(x=>x&&typeof x.map==='string'&&typeof x.code==='string').map(x=>({map:str(x.map,'',20),code:str(x.code,'',3)})):[],collectionTarget:str(p.collectionTarget??s.collectionTarget,'',100),plannerGoal:['auto','unlock','level','gil','item','manual','explore'].includes(plannerPreference)?plannerPreference:'auto',enabled:p.enabled===true,rank:int(p.rank,1,maxRank,null),build:/^[1-5]{4}$/.test(p.build||'')?p.build:'',goal:['auto','unlock','level','gil','item','manual','explore'].includes(plannerPreference)?plannerPreference:'auto',modified:Array.from({length:4},(_,j)=>p.modified?.[j]===true)});
   const v=object(Array.isArray(s.voyages)?s.voyages[i]:null),map=maps.find(m=>m.id===v.map);
   out.voyages.push({map:map?.id||'',nodes:map&&Array.isArray(v.nodes)?[...new Set(v.nodes.filter(c=>map.nodes.some(n=>n.code===c)))].slice(0,5):[]});
   const t=object(Array.isArray(s.sailings)?s.sailings[i]:null);
-  out.sailings.push(Number.isFinite(t.returnAt)&&t.returnAt>0&&t.returnAt<8640000000000000?{returnAt:t.returnAt,departAt:Number.isFinite(t.departAt)?t.departAt:null,source:['estimate','remaining','clock'].includes(t.source)?t.source:'clock',snapshot:t.snapshot==null?null:{routeRecorded:object(t.snapshot).routeRecorded===true||(object(t.snapshot).routeRecorded!==false&&Number.isFinite(t.departAt)&&t.departAt>0),rank:int(object(t.snapshot).rank,1,130,null),build:/^[1-5]{4}$/.test(object(t.snapshot).build||'')?object(t.snapshot).build:'',modified:Array.isArray(object(t.snapshot).modified)&&object(t.snapshot).modified.length===4&&object(t.snapshot).modified.every(x=>typeof x==='boolean')?[...object(t.snapshot).modified]:null,map:str(object(t.snapshot).map,'',20),nodes:Array.isArray(object(t.snapshot).nodes)?object(t.snapshot).nodes.filter(n=>typeof n==='string'&&/^[A-Z]{1,2}$/.test(n)).slice(0,5):[]},recordedAt:Number.isFinite(t.recordedAt)?t.recordedAt:null}:null);
+  out.sailings.push(Number.isFinite(t.returnAt)&&t.returnAt>0&&t.returnAt<8640000000000000?{returnAt:t.returnAt,departAt:Number.isFinite(t.departAt)?t.departAt:null,source:['estimate','remaining','clock'].includes(t.source)?t.source:'clock',snapshot:t.snapshot==null?null:{routeRecorded:object(t.snapshot).routeRecorded===true||(object(t.snapshot).routeRecorded!==false&&Number.isFinite(t.departAt)&&t.departAt>0),rank:int(object(t.snapshot).rank,1,maxRank,null),build:/^[1-5]{4}$/.test(object(t.snapshot).build||'')?object(t.snapshot).build:'',modified:Array.isArray(object(t.snapshot).modified)&&object(t.snapshot).modified.length===4&&object(t.snapshot).modified.every(x=>typeof x==='boolean')?[...object(t.snapshot).modified]:null,map:str(object(t.snapshot).map,'',20),nodes:Array.isArray(object(t.snapshot).nodes)?object(t.snapshot).nodes.filter(n=>typeof n==='string'&&/^[A-Z]{1,2}$/.test(n)).slice(0,5):[]},recordedAt:Number.isFinite(t.recordedAt)?t.recordedAt:null}:null);
  }
  return out;
 }

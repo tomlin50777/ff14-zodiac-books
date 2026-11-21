@@ -24,7 +24,7 @@
     const rank = Number(ship.rank), bonus = own(data.ranks,rank) ? data.ranks[rank] : null, build = String(ship.build || '');
     const result = {valid:false,errors:[],cost:0,capacity:bonus?.capacity || 0,parts:[]};
     fields.forEach(k => result[k] = bonus?.[k] || 0);
-    if (!Number.isInteger(rank) || !bonus) result.errors.push('船隻等級需為 1～130。');
+    if (!Number.isInteger(rank) || !bonus) result.errors.push('船隻等級需為 1～'+data.rankCap+'。');
     if (!/^[1-5]{4}$/.test(build)) result.errors.push('零件需四碼，每碼 1～5。');
     if (result.errors.length) return result;
     [...build].forEach((digit,slot) => {
@@ -55,14 +55,14 @@
     if (malformed) result.errors.push('航程資料格式錯誤。');
     if (!ship.enabled) result.errors.push('此船尚未啟用。');
     if (!codes.length) { result.errors.push('尚未安排航程。'); return result; }
-    if (!map) { result.errors.push('此海域不在 7.2 計算範圍。'); return result; }
+    if (!map) { result.errors.push('此海域不在 '+data.version+' 計算範圍。'); return result; }
     if (codes.length>5) result.errors.push('一趟最多 5 個地點。');
     if (new Set(codes).size!==codes.length) result.errors.push('同一趟不能重複地點。');
     let previous=map.start;
     result.seconds=43200;
     for (const code of codes) {
       const node=map.nodes.find(n=>n.code===code);
-      if (!node) { result.errors.push(code+' 不在 7.2 資料中。'); continue; }
+      if (!node) { result.errors.push(code+' 不在 '+data.version+' 資料中。'); continue; }
       if (ship.rank<node.rank) result.errors.push(code+' 需要 Rank '+node.rank+'。');
       if (opened && !(own(opened,mapId) && own(opened[mapId],code) && opened[mapId][code]===true)) result.errors.push(code+' 尚未登記開啟。');
       const item=leg(previous,node,Math.max(1,ability.speed));
@@ -181,7 +181,7 @@
       if(evidenceErrors.length)return {routes:[],alternatives:[],errors:evidenceErrors,warnings:[salvageEvidence.note],checked:0,requiredStops,diagnostics:{reason:'npc_evidence'}};
     }
     const priorityStops=Array.isArray(options.priorityStops)?options.priorityStops.filter(x=>x&&typeof x.map==='string'&&typeof x.code==='string'):[];
-    const sources=Array.isArray(options.collectionSources)?options.collectionSources.filter(x=>x&&typeof x.map==='string'&&typeof x.code==='string'&&x.regionConfirmed===true&&Number.isFinite(x.surveillance)&&x.surveillance>=0&&(x.rank==null||Number.isInteger(x.rank)&&x.rank>=1&&x.rank<=130)):[];
+    const sources=Array.isArray(options.collectionSources)?options.collectionSources.filter(x=>x&&typeof x.map==='string'&&typeof x.code==='string'&&x.regionConfirmed===true&&Number.isFinite(x.surveillance)&&x.surveillance>=0&&(x.rank==null||Number.isInteger(x.rank)&&x.rank>=1&&x.rank<=data.rankCap)):[];
     const limit=Math.max(1,Math.min(6,Number.isInteger(options.limit)?options.limit:3));
     const signature=JSON.stringify([ship,opened,targets,mode,strategy,hours,mapIds,cadenceHours,priorityStops,sources,limit,requiredStops]);
     if(cache.has(signature))return structuredCloneSafe(cache.get(signature));

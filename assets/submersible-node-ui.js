@@ -87,10 +87,109 @@ queueSummaryAlignment();
 
 function makeDialog(id,title){const d=document.createElement('dialog');d.id=id;d.className='fleet-dialog node-utility-dialog';d.setAttribute('aria-labelledby',id+'-title');const h=document.createElement('header');h.className='node-utility-heading';const t=document.createElement('h2');t.id=id+'-title';t.textContent=title;const b=document.createElement('button');b.type='button';b.textContent='×';b.setAttribute('aria-label','關閉'+title);b.onclick=()=>d.close();h.append(t,b);d.append(h);document.body.append(d);d.addEventListener('click',event=>{if(event.target!==d)return;const r=d.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)d.close();});return d;}
 const management=makeDialog('map-progress-dialog','進度管理'),help=makeDialog('map-help-dialog','圖例／說明');
-const managementContext=document.createElement('p');managementContext.className='node-utility-context';management.append(managementContext);
-const chooser=document.createElement('div');chooser.className='node-progress-chooser';chooser.innerHTML='<label>地點 <select id="node-progress-select" aria-label="選擇進度登記地點"></select></label><button type="button" id="node-progress-open">查看登記</button>';management.append(chooser);
-for(const selector of ['#progress-editor','#explored-batch','.chart-actions']){const el=$(selector);if(el)management.append(el);}
-const managementFeedback=document.createElement('p');managementFeedback.className='node-management-feedback';managementFeedback.setAttribute('role','status');management.append(managementFeedback);
+management.classList.add('workshop-progress-dialog');
+const progressHeading=management.querySelector('header'),progressTitle=progressHeading.querySelector('h2');
+const managementContext=document.createElement('span');managementContext.className='node-utility-context';progressTitle.append(managementContext);
+const progressList=document.createElement('section');progressList.className='progress-list';
+progressList.innerHTML='<div class="progress-columns"><span>地點</span><span>已開啟 <b data-progress-count="opened"></b></span><span>已探索 <b data-progress-count="explored"></b></span></div><div class="progress-scroll" role="region" aria-label="航點進度" tabindex="0"><ul class="progress-rows"></ul><p class="progress-empty" hidden>本海圖尚未開放</p></div>';
+const progressRows=progressList.querySelector('.progress-rows'),progressScroll=progressList.querySelector('.progress-scroll');
+const footer=document.createElement('footer');footer.className='progress-footer';
+const reset=$('#reset-map');footer.append(reset);$('.chart-actions').remove();
+const quickButton=document.createElement('button');quickButton.type='button';quickButton.className='save-button';quickButton.id='progress-quick';quickButton.textContent='快速補登';footer.append(quickButton);
+const quick=document.createElement('section');quick.className='progress-inline';quick.hidden=true;quick.innerHTML='<h3>快速補登</h3><p>選擇遊戲中已發現的地點，補登它與必要前置。不會開啟其他支線。</p>';
+const editor=$('#progress-editor'),routeSelect=$('#route-progress-select'),routeApply=$('#complete-route');
+quick.append(routeSelect.closest('label'));
+const quickActions=document.createElement('div');quickActions.className='progress-quick-actions';
+const quickBack=document.createElement('button');quickBack.type='button';quickBack.textContent='返回清單';quickBack.id='progress-quick-back';
+const batch=$('#explored-batch');quickActions.append(quickBack,batch,routeApply);quick.append(quickActions);editor.remove();
+routeApply.classList.add('save-button');
+const progressPane=document.createElement('section');progressPane.className='progress-inline';progressPane.hidden=true;
+const managementFeedback=document.createElement('p');managementFeedback.className='node-management-feedback';managementFeedback.setAttribute('role','status');
+management.append(progressList,quick,progressPane,managementFeedback,footer);
+let progressMode='list',progressReturn=null,quickRouteMap=null,listScroll=0;
+const rowRefs=new Map();
+function selectProgressView(view,focus=null){
+ if(view!=='list'&&progressMode==='list')listScroll=progressScroll.scrollTop;
+ progressMode=view;progressList.hidden=view!=='list';footer.hidden=view!=='list';quick.hidden=view!=='quick';progressPane.hidden=view!=='inline';
+ if(view==='list')progressScroll.scrollTop=listScroll;
+ focus?.focus({preventScroll:true});
+}
+function openQuick(){selectProgressView('quick',routeSelect.disabled?quickBack:routeSelect);}
+const progressHost={
+ element:progressPane,
+ show(){
+  if(progressMode!=='inline')progressReturn={mode:progressMode,focus:document.activeElement};
+  selectProgressView('inline',progressPane.querySelector('[data-explored-dialog="cancel"]'));
+ },
+ hide(){
+  const previous=progressReturn;
+  progressReturn=null;
+  selectProgressView(previous?.mode||'list',management.open?previous?.focus:null);
+  progressPane.replaceChildren();
+ }
+};
+quickButton.onclick=openQuick;
+quickBack.onclick=()=>selectProgressView('list',quickButton);
+routeApply.addEventListener('click',()=>{
+ if(!routeSelect.value)return;
+ selectProgressView('list',quickButton);
+});
+management.addEventListener('cancel',event=>{
+ if(progressMode==='list')return;
+ event.preventDefault();
+ if(progressMode==='inline')window.SubExplored?.cancelInline(progressHost);else selectProgressView('list',quickButton);
+});
+management.addEventListener('close',()=>{
+ if(management.open)return;
+ window.SubExplored?.cancelInline(progressHost);
+ selectProgressView('list');
+});
+function renderProgress(now){
+ managementContext.textContent=' · '+now.item.name+'／'+now.map.name;
+ managementFeedback.textContent=feedback.textContent;
+ if(quickRouteMap!==now.map){
+  quickRouteMap=now.map;
+  rowRefs.clear();progressRows.replaceChildren();
+  listScroll=progressScroll.scrollTop=0;
+  for(const node of now.map.nodes){
+   const row=document.createElement('li');row.className='progress-row';row.dataset.progressNode=node.code;
+   const place=document.createElement('span');place.className='progress-location';
+   const code=document.createElement('b');code.textContent=node.code;
+   const name=document.createElement('span');name.textContent=node.name||node.label||'Rank '+node.rank;
+   place.append(code,name);row.append(place);
+   const boxes={};
+   for(const [kind,label] of [['opened','已開啟'],['explored','已探索']]){
+    const cell=document.createElement('label');cell.className='progress-check';
+    const input=document.createElement('input');input.type='checkbox';input.dataset.progressMark=kind;
+    input.setAttribute('aria-label',node.code+' '+label);
+    cell.append(input);row.append(cell);boxes[kind]=input;
+   }
+   rowRefs.set(node.code,{row,boxes});progressRows.append(row);
+  }
+  progressList.querySelector('.progress-empty').hidden=rowRefs.size>0;
+ }
+ const nodes=now.map.nodes.filter(node=>F.nodeState(now.map,node.code)!=='locked');
+ quickButton.disabled=!nodes.length;
+ reset.disabled=!nodes.length;
+ for(const [code,{row,boxes}] of rowRefs){
+  const locked=F.nodeState(now.map,code)==='locked';
+  row.dataset.locked=String(locked);row.title=locked?'此航點在目前遊戲版本尚未開放':'';
+  boxes.opened.disabled=boxes.explored.disabled=locked;
+  boxes.opened.checked=!locked&&F.isOpened(now.map.id,code);
+  boxes.explored.checked=!locked&&now.item.visited?.[now.map.id]?.[code]===true;
+  for(const [kind,label] of [['opened','已開啟'],['explored','已探索']])boxes[kind].setAttribute('aria-label',code+' '+label+(locked?'，版本尚未開放':''));
+ }
+ progressList.querySelector('[data-progress-count="opened"]').textContent=nodes.filter(n=>F.isOpened(now.map.id,n.code)).length+' / '+nodes.length;
+ progressList.querySelector('[data-progress-count="explored"]').textContent=nodes.filter(n=>now.item.visited?.[now.map.id]?.[n.code]===true).length+' / '+nodes.length;
+}
+progressRows.addEventListener('change',event=>{
+ const input=event.target,code=input.closest('[data-progress-node]')?.dataset.progressNode;
+ const now=snapshot();
+ if(!code||input.disabled||!management.open||!same(utilityContext,now))return;
+ if(input.dataset.progressMark==='opened')F.toggleProgressNode(code,progressHost);
+ else if(input.dataset.progressMark==='explored')window.SubExplored?.toggleVisited(now.map.id,code,progressHost);
+ renderProgress(now);
+});
 // Detailed chart context remains available in the existing help dialog.
 for(const selector of ['.map-context-details','.map-key']){const element=$(selector);if(element)help.append(element);}
 const milestoneLegend=document.createElement('div');milestoneLegend.id='map-milestone-help';help.append(milestoneLegend);
@@ -144,7 +243,7 @@ function renderSummary(){
  const due=!!sailing&&sailing.returnAt<=Date.now();
  const recorded=sailing?window.SubLogbook?.snapshotRoute(sailing):null,departure=sailing?.snapshot;
  const route=sailing?(recorded?{map:recorded.map.id,nodes:recorded.nodes}:null):item.voyages[index];
- const complete=departure&&Number.isInteger(departure.rank)&&departure.rank>=1&&departure.rank<=130&&/^[1-5]{4}$/.test(departure.build)&&Array.isArray(departure.modified)&&departure.modified.length===4&&departure.modified.every(x=>typeof x==='boolean');
+ const complete=departure&&Number.isInteger(departure.rank)&&departure.rank>=1&&departure.rank<=window.SubVoyageData.rankCap&&/^[1-5]{4}$/.test(departure.build)&&Array.isArray(departure.modified)&&departure.modified.length===4&&departure.modified.every(x=>typeof x==='boolean');
  const calc=route&&(!sailing||complete)?E.calculate(sailing?{enabled:true,rank:departure.rank,build:departure.build,modified:departure.modified}:ship,route.map,route.nodes,sailing?undefined:item.opened):null;
  const valid=calc?.valid===true,map=F.maps.find(m=>m.id===route?.map);
  $('#map-plan-ship').textContent=(index+1)+' 號艇';
@@ -200,10 +299,7 @@ setInterval(renderSummary,30000);
 function render(){
  const now=snapshot();if(press&&!same(press.context,now)){blockPress();press=null;}if(openedContext&&!same(openedContext,now))close(false);
  if(utilityContext&&!same(utilityContext,now)){management.close();help.close();utilityContext=null;}
- renderSummary();managementContext.textContent=now.item.name+' · '+now.map.name;managementFeedback.textContent=feedback.textContent;
- const select=$('#node-progress-select'),selected=select.value;
- select.replaceChildren(...now.map.nodes.filter(n=>F.nodeState(now.map,n.code)!=='locked').map(n=>{const option=document.createElement('option');option.value=n.code;option.textContent=n.code;return option;}));if([...select.options].some(o=>o.value===selected))select.value=selected;
- select.disabled=!select.options.length;$('#node-progress-open').disabled=select.disabled;
+ renderSummary();if(management.open)renderProgress(now);
  if(popup.hidden)return;
  if(!now.node||F.nodeState(now.map,now.code)==='locked'){close(false);return;}
  openedContext=now;F.renderInspector();window.SubExplored?.render();
@@ -217,9 +313,14 @@ function render(){
 function show(options={}){const now=snapshot();if(!now.node||F.nodeState(now.map,now.code)==='locked')return;clearTimers();if(management.open)management.close();if(help.open)help.close();openedContext=now;popup.hidden=false;inspector.open=true;render();if(options.focus!==false)$('#node-opened-check').focus({preventScroll:true});}
 function showCode(code,focus){const item=F.workshop();item.selectedNode=code;show({focus});}
 function openUtility(dialog,trigger){close(false);if(management.open)management.close();if(help.open)help.close();utilityContext=snapshot();utilityReturn=trigger||document.activeElement;render();dialog.showModal();}
-function openManagement(options={}){openUtility(management,options.trigger||managementButton);if(options.progress){$('#progress-editor').open=true;$('#route-progress-select').focus({preventScroll:true});}}
+function openManagement(options={}){
+ listScroll=0;
+ selectProgressView('list');
+ renderProgress(snapshot());
+ openUtility(management,options.trigger||managementButton);
+ if(options.progress&&!quickButton.disabled)openQuick();
+}
 for(const dialog of [management,help])dialog.addEventListener('close',()=>{if(dialog.open)return;if(!management.open&&!help.open){utilityContext=null;if(utilityReturn?.isConnected)utilityReturn.focus({preventScroll:true});}});
-$('#node-progress-open').onclick=()=>{const code=$('#node-progress-select').value;management.close();showCode(code,true);};
 $('#node-opened-check').onchange=()=>{$('#node-register').click();render();};
 $('#node-explored-check').onchange=()=>{$('#node-explored').click();render();};
 closeButton.onclick=()=>close();managementButton.onclick=()=>openManagement();helpButton.onclick=()=>openUtility(help,helpButton);
@@ -247,5 +348,5 @@ document.addEventListener('pointerdown',event=>{if(popup.hidden||document.queryS
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!popup.hidden&&!document.querySelector('dialog[open]')){event.preventDefault();close();}});
 document.addEventListener('focusin',event=>{if(!popup.hidden&&!popup.contains(event.target)&&!event.target.contains(popup)&&!event.target.closest('#map-hotspots [data-node],dialog'))scheduleClose();});
 window.addEventListener('resize',place);window.addEventListener('scroll',event=>{if(event.target instanceof Node&&popup.contains(event.target))return;blockPress();clearTimeout(hoverTimer);if(!popup.contains(document.activeElement))close(false);else place();},true);
-window.SubNodeUI={show,close,render,isOpen:()=>!popup.hidden,openManagement};render();
+window.SubNodeUI={show,close,render,isOpen:()=>!popup.hidden,openManagement,progressHost:()=>management.open?progressHost:undefined};render();
 })();

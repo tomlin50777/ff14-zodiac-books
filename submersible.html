@@ -21,17 +21,17 @@
   <link rel="stylesheet" href="assets/submersible-workshops-v65.css?v=70">
   <link rel="stylesheet" href="assets/submersible-map-layout-v70.css?v=70">
   <script src="assets/theme.js?v=51" defer></script>
-  <script src="assets/submersible-data.js?v=49" defer></script>
-  <script src="assets/submersible-engine.js?v=53" defer></script>
-  <script src="assets/submersible-state.js?v=75" defer></script>
+  <script src="assets/submersible-data.js?v=97" defer></script>
+  <script src="assets/submersible-engine.js?v=97" defer></script>
+  <script src="assets/submersible-state.js?v=97" defer></script>
   <script src="assets/submersible-parts.js?v=94" defer></script>
-  <script src="assets/submersible.js?v=94" defer></script>
-  <script src="assets/submersible-collection.js?v=49" defer></script>
-  <script src="assets/submersible-explored.js?v=91" defer></script>
-  <script src="assets/submersible-logbook.js?v=81" defer></script>
-  <script src="assets/submersible-map-ui.js?v=92" defer></script>
-  <script src="assets/submersible-planner.js?v=94" defer></script>
-  <script src="assets/submersible-node-ui.js?v=92" defer></script>
+  <script src="assets/submersible.js?v=97" defer></script>
+  <script src="assets/submersible-collection.js?v=97" defer></script>
+  <script src="assets/submersible-explored.js?v=96" defer></script>
+  <script src="assets/submersible-logbook.js?v=97" defer></script>
+  <script src="assets/submersible-map-ui.js?v=97" defer></script>
+  <script src="assets/submersible-planner.js?v=97" defer></script>
+  <script src="assets/submersible-node-ui.js?v=97" defer></script>
   <link rel="stylesheet" href="assets/site-navigation.css?v=51">
   <script src="assets/site-navigation.js?v=50" defer></script>
   <link rel="stylesheet" href="assets/submersible-viewport-v71.css?v=71">
@@ -58,6 +58,9 @@
   <link rel="stylesheet" href="assets/submersible-fixes-v92.css?v=92">
   <link rel="stylesheet" href="assets/submersible-upgrade-v93.css?v=93">
 <link rel="stylesheet" href="assets/submersible-editor-v94.css">
+  <link rel="stylesheet" href="assets/submersible-tour-v95.css">
+  <script src="assets/submersible-tour-v95.js" defer></script>
+  <link rel="stylesheet" href="assets/submersible-progress-v96.css">
 </head>
 <body class="page-book-submersible submersible-page fleet-tree-page voyage-v47">
   <header class="site-header shared-site-header">
@@ -75,7 +78,7 @@
   <main>
     <noscript><p class="shell">航海室需要啟用 JavaScript 才能讀取本機艦隊與計算；你的原有資料不會因此被更改。</p></noscript>
 
-    <nav class="sub-book-nav section-nav" aria-label="潛水艇攻略分頁"><div class="shell section-nav-inner"><h1 class="workspace-title">艦隊航海室</h1><a class="section-link active" aria-current="page" href="submersible.html">⚓ 艦隊航海室<small>多工房、四船與海圖</small></a><a class="section-link" href="submersible-manual.html">▤ 潛航手冊<small>零件、能力與收益</small></a><span class="workspace-version">台服 7.25｜潛艇 7.2 · R130 · v94</span></div></nav>
+    <nav class="sub-book-nav section-nav" aria-label="潛水艇攻略分頁"><div class="shell section-nav-inner"><h1 class="workspace-title">艦隊航海室</h1><a class="section-link active" aria-current="page" href="submersible.html">⚓ 艦隊航海室<small>多工房、四船與海圖</small></a><a class="section-link" href="submersible-manual.html">▤ 潛航手冊<small>零件、能力與收益</small></a><span class="workspace-version">台服 7.3｜潛艇 7.3 · R135</span></div></nav>
 
     <div class="shell sub-content fleet-layout">
 
@@ -97,7 +100,7 @@
           <div class="map-area"><div class="map-viewport">
             <div class="map-chart-layout">
             <div id="map-tabs" class="map-tabs" role="tablist" aria-label="海域選擇"></div>
-            <div class="map-canvas"><div class="map-frame"><img id="sea-map-image" src="assets/submersible/maps/deep-sea.png" alt="溺沒海航海圖"><svg id="route-overlay" class="route-overlay" aria-hidden="true"></svg><div id="map-hotspots" class="map-hotspots"></div><div id="map-version-lock" class="map-version-lock" hidden><span>台服 7.2</span><strong>此海域尚未開放</strong><small>素材先保留，待台服版本更新後再啟用。</small></div></div></div>
+            <div class="map-canvas"><div class="map-frame"><img id="sea-map-image" src="assets/submersible/maps/deep-sea.png" alt="溺沒海航海圖"><svg id="route-overlay" class="route-overlay" aria-hidden="true"></svg><div id="map-hotspots" class="map-hotspots"></div><div id="map-version-lock" class="map-version-lock" hidden><span>台服 7.3</span><strong>此海域尚未開放</strong><small>素材先保留，待台服版本更新後再啟用。</small></div></div></div>
             <aside class="map-side-info" aria-label="海域進度與航線">
               <div class="chart-progress"><div class="map-opened-label"><span>已開啟</span><b id="map-count">0 / 30</b></div><div id="map-opened-track" class="progress-track" role="progressbar" aria-label="已開啟" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><i id="map-progress"></i></div><div class="map-explored-label"><span>已探索</span><b id="map-explored-count">0 / 30</b></div><div id="map-explored-track" class="progress-track explored-progress-track" role="progressbar" aria-label="已探索" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><i id="map-explored-progress"></i></div><div class="map-context-details"><strong id="map-name">溺沒海</strong><small id="map-range">Rank 1～50</small><p id="available-summary"></p></div></div>
               <section id="map-layer-index" class="map-layer-index" aria-label="海圖里程碑與各船航線"></section>
@@ -160,11 +163,11 @@
       <details class="command-section" data-workshop-detail><summary><span>現在該做什麼</span><small>查看主船建議與配置</small></summary><div class="command-head"><div><span class="command-kicker">FLAGSHIP ORDERS</span><h2 id="command-title">現在該做什麼</h2></div><span id="command-ship" class="command-ship">主工房 · 1 號艇 · Rank 3</span></div><div class="command-body"><div class="command-main"><span>系統推薦</span><h3 id="command-action">維持 1111，先用目前可選地點升級</h3><p id="command-copy">3 級時 C、D 即使顯示在遊戲內，也可能因最低等級不足而無法選取；這不是故障。</p></div><div class="command-build"><span>入門配置參考 · 非目前配裝</span><strong id="command-build">1111</strong><small id="command-build-copy">1=鯊魚；四碼依序為船體、船尾、船首、艦橋</small><button id="apply-build" type="button">填入主船設定（待儲存）</button></div><div class="command-target"><span>最近目標</span><strong id="command-target">Rank 7</strong><small id="command-target-copy">繼續探索溺沒海 B，準備前往 E</small></div></div></details>
 <details class="chart-reference"><summary>版本範圍與資料來源</summary>
       <p class="page-sources-note">海圖進度提醒：已開啟為綠色；✓ 表示探索過，○ 表示未登記，＋ 表示可開啟。J／O／T 登記探索過後開放第 2／3／4 船位，仍須登記實際船隻；新海圖依遊戲結果手動登記。</p>
-      <section class="version-note" data-workshop-detail><strong>為什麼北洋不能點？</strong><p>台服 7.2 的潛水艇上限為 130 級，目前只開放到南蒼茫洋 M。南蒼茫洋 N～T 與北洋先顯示成灰色鎖定狀態。</p><a href="submersible-manual.html#version-72">查看 7.2 版本範圍 →</a></section>
+      <section class="version-note" data-workshop-detail><strong>為什麼北洋不能點？</strong><p>台服 7.3 開放南蒼茫洋 N～T，等級上限為 135。北洋仍未開放。</p><a href="submersible-manual.html#version-73">查看 7.3 版本範圍 →</a></section>
       <section class="page-sources" aria-labelledby="fleet-sources-title">
-        <div class="page-sources-head"><h2 id="fleet-sources-title">資料來源與素材說明</h2><span>最後查核：2026-11-01</span></div>
+        <div class="page-sources-head"><h2 id="fleet-sources-title">資料來源與素材說明</h2><span>潛艇 7.3 資料查核：2026-11-21</span></div>
       <p class="page-sources-note">素材來源標示更新：2026-11-03。來源說明不代表已取得轉載或使用授權。</p>
-        <ul><li>版本範圍：<a href="https://www.ffxiv.com.tw/web/special/patchnote_log/patch_7.2_notes.html" target="_blank" rel="noreferrer">台服官方 7.2 筆記</a>。台服整體 7.25、潛艇 7.2／Rank 130；國際整體 7.57、潛艇 7.5／Rank 145 僅為版本對照，不套用台服計算。</li><li>NPC 飾物均值與性能門檻：<a href="https://docs.google.com/spreadsheets/d/1eiuGRrQTjJ5n4ogybKOBxJRT7EiJLlX93fge-Z8MmD4/edit" target="_blank" rel="noreferrer">Elena／Infi 社群原始表</a>及<a href="https://docs.google.com/spreadsheets/d/1aOhMH-XrWBIV93Veo3Wo0zz38z-tqk6QWO_4xzu5ZMg/edit" target="_blank" rel="noreferrer">Polar 路線比較</a>。非官方保證，非台服抽樣；家具收藏不換算價格。</li><li>計算資料：<a href="https://github.com/xivapi/ffxiv-datamining/tree/70f3e90d13c379b15e6b4f26befa95a62db04379/csv" target="_blank" rel="noreferrer">XIVAPI 7.2 快照</a>（SubmarinePart／Rank／Exploration）；公式交叉核對：<a href="https://github.com/Infiziert90/SubmarineTracker/blob/04c54d770f815cd416bbade1ac5b178b551a32b5/SubmarineTracker/SubExplPretty.cs" target="_blank" rel="noreferrer">SubmarineTracker</a>。</li><li>海域節點、開圖關係與解鎖路線：<a href="https://submarine.girin.dev/en/unlock/" target="_blank" rel="noreferrer">FFXIV Submarine Info－Unlock Map</a></li><li>潛水艇航行、等級與能力機制核對：<a href="https://ffxiv.consolegameswiki.com/wiki/Subaquatic_Voyages" target="_blank" rel="noreferrer">FFXIV Community Wiki－Subaquatic Voyages</a></li><li>七張航海圖底圖：由站長提供，站長確認來源為 <a href="https://ff14.huijiwiki.com/wiki/%E9%83%A8%E9%98%9F%E6%BD%9C%E6%B0%B4%E8%89%87" target="_blank" rel="noreferrer">灰機 Wiki〈部队潜水艇〉</a>。目前未完成各圖原始檔案頁、作者及授權的逐張核對；本工具僅疊加互動節點、路線與船號圖層，不將機制資料來源當作海圖影像來源證明。</li><li>多工房、四船管理、8 種標記與瀏覽器進度：本工具提供的互動功能，與海圖影像來源分開標示。</li><li>第 34 版節點前置與最低等級核對（來源含後續版本，本工具保留台服 7.2 限制）：<a href="https://submarine.girin.dev/en/map/deep-sea-site/" target="_blank" rel="noreferrer">溺沒海</a>、<a href="https://submarine.girin.dev/en/map/sea-of-ash/" target="_blank" rel="noreferrer">灰海</a>、<a href="https://submarine.girin.dev/en/map/sea-of-jade/" target="_blank" rel="noreferrer">翠浪海</a>、<a href="https://submarine.girin.dev/en/map/sirensong-sea/" target="_blank" rel="noreferrer">妖歌海</a>、<a href="https://submarine.girin.dev/en/map/lilac-sea/" target="_blank" rel="noreferrer">紫礁海</a>、<a href="https://submarine.girin.dev/en/map/south-indigo-deep/" target="_blank" rel="noreferrer">南蒼茫洋</a>。</li></ul>
+        <ul><li>版本範圍：<a href="https://www.ffxiv.com.tw/web/special/patchnote_log/patch_7.3_notes.html" target="_blank" rel="noreferrer">台服官方 7.3 筆記</a>。台服潛艇 7.3／Rank 135；不納入國際服後續海域。</li><li>NPC 飾物均值與性能門檻：<a href="https://docs.google.com/spreadsheets/d/1eiuGRrQTjJ5n4ogybKOBxJRT7EiJLlX93fge-Z8MmD4/edit" target="_blank" rel="noreferrer">Elena／Infi 社群原始表</a>及<a href="https://docs.google.com/spreadsheets/d/1aOhMH-XrWBIV93Veo3Wo0zz38z-tqk6QWO_4xzu5ZMg/edit" target="_blank" rel="noreferrer">Polar 路線比較</a>。非官方保證，非台服抽樣；家具收藏不換算價格。</li><li>計算資料：<a href="https://github.com/xivapi/ffxiv-datamining/tree/8ca2104fe270d6e71ad9697261eb960e0edbf076/csv" target="_blank" rel="noreferrer">XIVAPI 7.3 快照</a>（SubmarinePart／Rank／Exploration）；公式交叉核對：<a href="https://github.com/Infiziert90/SubmarineTracker/blob/04c54d770f815cd416bbade1ac5b178b551a32b5/SubmarineTracker/SubExplPretty.cs" target="_blank" rel="noreferrer">SubmarineTracker</a>。</li><li>海域節點、開圖關係與解鎖路線：<a href="https://submarine.girin.dev/en/unlock/" target="_blank" rel="noreferrer">FFXIV Submarine Info－Unlock Map</a></li><li>潛水艇航行、等級與能力機制核對：<a href="https://ffxiv.consolegameswiki.com/wiki/Subaquatic_Voyages" target="_blank" rel="noreferrer">FFXIV Community Wiki－Subaquatic Voyages</a></li><li>七張航海圖底圖：由站長提供，站長確認來源為 <a href="https://ff14.huijiwiki.com/wiki/%E9%83%A8%E9%98%9F%E6%BD%9C%E6%B0%B4%E8%89%87" target="_blank" rel="noreferrer">灰機 Wiki〈部队潜水艇〉</a>。目前未完成各圖原始檔案頁、作者及授權的逐張核對；本工具僅疊加互動節點、路線與船號圖層，不將機制資料來源當作海圖影像來源證明。</li><li>多工房、四船管理、8 種標記與瀏覽器進度：本工具提供的互動功能，與海圖影像來源分開標示。</li><li>第 34 版節點前置與最低等級核對（來源含後續版本，本工具保留台服 7.3 限制）：<a href="https://submarine.girin.dev/en/map/deep-sea-site/" target="_blank" rel="noreferrer">溺沒海</a>、<a href="https://submarine.girin.dev/en/map/sea-of-ash/" target="_blank" rel="noreferrer">灰海</a>、<a href="https://submarine.girin.dev/en/map/sea-of-jade/" target="_blank" rel="noreferrer">翠浪海</a>、<a href="https://submarine.girin.dev/en/map/sirensong-sea/" target="_blank" rel="noreferrer">妖歌海</a>、<a href="https://submarine.girin.dev/en/map/lilac-sea/" target="_blank" rel="noreferrer">紫礁海</a>、<a href="https://submarine.girin.dev/en/map/south-indigo-deep/" target="_blank" rel="noreferrer">南蒼茫洋</a>。</li></ul>
         <p class="page-sources-note">台服版本範圍與中文譯名若有差異，以台服遊戲內顯示為準。</p>
         <p class="page-sources-note">非官方玩家攻略工具；FINAL FANTASY XIV 相關權利屬 SQUARE ENIX CO., LTD.。</p>
       </section>
@@ -195,7 +198,7 @@
       <header class="dialog-heading"><h2 id="ship-dialog-title">船隻設定</h2><button type="button" data-close-dialog="ship-dialog" aria-label="關閉船隻設定">×</button></header>
       <div class="ship-basics">
         <label class="dialog-check"><input id="ship-enabled" type="checkbox">啟用此船</label>
-        <label for="ship-rank">等級 <input id="ship-rank" type="number" min="1" max="130" required></label>
+        <label for="ship-rank">等級 <input id="ship-rank" type="number" min="1" max="135" required></label>
         <label for="ship-goal">目前目標 <select id="ship-goal"><option value="auto">系統推薦</option><option value="unlock">開船位／開圖</option><option value="level">練等</option><option value="gil">NPC 飾物收入</option><option value="item">家具收藏</option><option value="explore">指定地點探索</option><option value="manual">手動排航線</option></select></label>
       </div>
       <section class="ship-parts-editor" aria-labelledby="ship-parts-heading">

@@ -25,59 +25,67 @@ const summary=document.createElement('p');summary.id='map-explored-summary';summ
 const openedLegend=document.querySelector('.legend-node.opened');if(openedLegend)openedLegend.textContent='●';
 const legend=document.createElement('div');legend.className='legend-item';legend.innerHTML='<i class="legend-node explored">✓</i><span><b>探索過</b><small>已確認實際探索</small></span>';document.querySelector('.status-legend').append(legend);
 const dialog=document.createElement('dialog');dialog.id='explored-dialog';dialog.className='fleet-dialog explored-dialog';dialog.setAttribute('aria-labelledby','explored-dialog-title');document.body.append(dialog);
-let draft=null,restoreFocus=null;
+let draft=null,restoreFocus=null,surface=dialog;
 function finish(text,warning=false){F.save();F.notice(warning?text:'');F.renderAll();}
 function signature(item,mapId){return JSON.stringify([item.opened[mapId],item.visited?.[mapId]]);}
-function close(){dialog.close();draft=null;}
-dialog.addEventListener('close',()=>{if(dialog.open)return;draft=null;if(restoreFocus?.isConnected)restoreFocus.focus();});
-function show(item,map,title,body,apply,kind,codes=[]){
- restoreFocus=document.activeElement;
- draft={item,map,kind,codes:[...codes],signature:signature(item,map.id)};
- dialog.innerHTML='<h2 id="explored-dialog-title">'+esc(title)+'</h2><p class="explored-dialog-context">'+esc(item.name+' · '+map.name)+'</p>'+body+'<p class="explored-dialog-error" role="status"></p><div class="explored-dialog-actions"><button type="button" data-explored-dialog="cancel">取消</button><button type="button" class="primary-action" data-explored-dialog="apply">'+esc(apply)+'</button></div>';
- dialog.showModal();
+function close(){
+ const host=draft?.host;
+ draft=null;surface=dialog;
+ if(host)host.hide();else if(dialog.open)dialog.close();
 }
-function addSingle(mapId,code){
+dialog.addEventListener('close',()=>{if(dialog.open||draft?.host)return;draft=null;surface=dialog;if(restoreFocus?.isConnected)restoreFocus.focus();});
+function show(item,map,title,body,apply,kind,codes=[],host=null){
+ if(!host)restoreFocus=document.activeElement;
+ surface=host?.element||dialog;
+ draft={item,map,kind,host,codes:[...codes],signature:signature(item,map.id)};
+ const heading=host?'<h3>'+esc(title)+'</h3>':'<h2 id="explored-dialog-title">'+esc(title)+'</h2><p class="explored-dialog-context">'+esc(item.name+' · '+map.name)+'</p>';
+ surface.innerHTML=heading+body+'<p class="explored-dialog-error" role="status"></p><div class="explored-dialog-actions"><button type="button" data-explored-dialog="cancel">取消</button><button type="button" class="primary-action" data-explored-dialog="apply">'+esc(apply)+'</button></div>';
+ if(host)host.show();else dialog.showModal();
+}
+function cancelInline(host){if(draft?.host===host)close();}
+function addSingle(mapId,code,host){
  const item=F.workshop(),map=mapById(mapId);if(!validCodes(mapId,[code]).length)return;
  if(isOpened(item,mapId,code)){record(item,mapId,[code]);finish(map.name+' '+code+' 已登記為探索過；此紀錄由工房所有船共用。');return;}
- show(item,map,'確認補登探索紀錄','<p>你將把 <b>'+esc(code)+'</b> 登記為「探索過」，並同時登記這個地點為「已開啟（已發現）」。</p><p>只更新 '+esc(code)+'，不補登前置鏈或其他地點。</p>','確認探索過，並登記已開啟','add',[code]);
+ show(item,map,'確認補登探索紀錄','<p>你將把 <b>'+esc(code)+'</b> 登記為「探索過」，並同時登記這個地點為「已開啟（已發現）」。</p><p>只更新 '+esc(code)+'，不補登前置鏈或其他地點。</p>','確認探索過，並登記已開啟','add',[code],host);
 }
-function openBatch(){
+function openBatch(host){
  const item=F.workshop(),map=F.currentMap(),nodes=eligible(map);if(!nodes.length)return;
- show(item,map,'批次探索紀錄','<p>只調整本海圖勾選的地點；先看預覽，再按套用。</p><fieldset class="explored-modes"><legend>要做的變更</legend><label><input type="radio" name="explored-mode" value="add" checked> 登記為探索過</label><label><input type="radio" name="explored-mode" value="remove"> 移除探索紀錄</label></fieldset><div class="explored-selection-actions"><button type="button" data-explored-dialog="all">全選本海圖</button><button type="button" data-explored-dialog="none">取消全選</button></div><fieldset class="explored-grid"><legend>選擇地點（不含版本未開放地點）</legend>'+nodes.map(node=>'<label><input type="checkbox" data-explored-code="'+esc(node.code)+'"><span><b>'+esc(node.code)+'</b><small>'+esc(isVisited(item,map.id,node.code)?'探索過':isOpened(item,map.id,node.code)?'已開啟 · 尚無探索紀錄':'未登記開啟 · 尚無探索紀錄')+'</small></span></label>').join('')+'</fieldset><div id="explored-preview" class="explored-preview" role="status"></div>','套用以上變更','batch');
+ show(item,map,'批次探索紀錄','<p>只調整本海圖勾選的地點；先看預覽，再按套用。</p><fieldset class="explored-modes"><legend>要做的變更</legend><label><input type="radio" name="explored-mode" value="add" checked> 登記為探索過</label><label><input type="radio" name="explored-mode" value="remove"> 移除探索紀錄</label></fieldset><div class="explored-selection-actions"><button type="button" data-explored-dialog="all">全選本海圖</button><button type="button" data-explored-dialog="none">取消全選</button></div><fieldset class="explored-grid"><legend>選擇地點（不含版本未開放地點）</legend>'+nodes.map(node=>'<label><input type="checkbox" data-explored-code="'+esc(node.code)+'"><span><b>'+esc(node.code)+'</b><small>'+esc(isVisited(item,map.id,node.code)?'探索過':isOpened(item,map.id,node.code)?'已開啟 · 尚無探索紀錄':'未登記開啟 · 尚無探索紀錄')+'</small></span></label>').join('')+'</fieldset><div id="explored-preview" class="explored-preview" role="status"></div>','套用以上變更','batch',[],host);
  preview();
 }
-function batchSelection(){return [...dialog.querySelectorAll('[data-explored-code]:checked')].map(input=>input.dataset.exploredCode);}
+function batchSelection(){return [...surface.querySelectorAll('[data-explored-code]:checked')].map(input=>input.dataset.exploredCode);}
 function preview(){
  if(!draft||draft.kind!=='batch')return;
- const {item,map}=draft,codes=batchSelection(),remove=dialog.querySelector('[name="explored-mode"]:checked').value==='remove';
+ const {item,map}=draft,codes=batchSelection(),remove=surface.querySelector('[name="explored-mode"]:checked').value==='remove';
  draft.codes=codes;draft.remove=remove;draft.signature=signature(item,map.id);
  const changes=codes.filter(code=>remove?isVisited(item,map.id,code):!isVisited(item,map.id,code));
  const discovered=remove?[]:codes.filter(code=>!isOpened(item,map.id,code));
  const message=!codes.length?'尚未選取地點。':remove?'將移除探索紀錄 '+changes.length+' 筆：'+(changes.join('、')||'無')+'。所有開啟登記保持不變。':'將新增探索紀錄 '+changes.length+' 筆：'+(changes.join('、')||'無')+'。'+(discovered.length?'同時把 '+discovered.join('、')+' 登記為已開啟（已發現）。':'開啟登記不需變更。')+' 只更新勾選地點，不補登前置鏈。';
- dialog.querySelector('#explored-preview').textContent=message;
- const apply=dialog.querySelector('[data-explored-dialog="apply"]');apply.disabled=!changes.length&&!discovered.length;apply.textContent=discovered.length?'確認探索過並登記已開啟':'套用以上變更';
+ surface.querySelector('#explored-preview').textContent=message;
+ const apply=surface.querySelector('[data-explored-dialog="apply"]');apply.disabled=!changes.length&&!discovered.length;apply.textContent=discovered.length?'確認探索過並登記已開啟':'套用以上變更';
 }
-function removeOpened(mapId,codes){
+function removeOpened(mapId,codes,host){
  const item=F.workshop(),map=mapById(mapId),selected=validCodes(mapId,codes).filter(code=>isOpened(item,mapId,code));if(!selected.length)return;
  const visits=selected.filter(code=>isVisited(item,mapId,code));
- show(item,map,'取消開啟登記','<p>將取消 <b>'+esc(selected.join('、'))+'</b> 的開啟登記。</p><p>'+(visits.length?'為避免「探索過但未開啟」的矛盾，也會一併移除 '+esc(visits.join('、'))+' 的探索紀錄。若要保留探索紀錄，請按取消。':'這些地點尚無探索紀錄。')+'</p><p>其他地點、船隻與航程保持不變。</p>',visits.length?'確認取消開啟及探索紀錄':'確認取消開啟登記','remove-opened',selected);
+ show(item,map,'取消開啟登記','<p>將取消 <b>'+esc(selected.join('、'))+'</b> 的開啟登記。</p><p>'+(visits.length?'為避免「探索過但未開啟」的矛盾，也會一併移除 '+esc(visits.join('、'))+' 的探索紀錄。若要保留探索紀錄，請按取消。':'這些地點尚無探索紀錄。')+'</p><p>其他地點、船隻與航程保持不變。</p>',visits.length?'確認取消開啟及探索紀錄':'確認取消開啟登記','remove-opened',selected,host);
 }
-function resetMap(mapId){
+function resetMap(mapId,host){
  const item=F.workshop(),map=mapById(mapId);if(!map)return;
  const opened=Object.values(item.opened[mapId]||{}).filter(Boolean).length,visited=Object.values(item.visited?.[mapId]||{}).filter(Boolean).length;
- show(item,map,'清除本海圖登記','<p>將清除 '+esc(map.name)+' 的 <b>'+opened+' 筆開啟登記</b>及 <b>'+visited+' 筆探索紀錄</b>。</p><p>探索紀錄也會清除，避免留下「探索過但未開啟」的矛盾。其他海圖、船隻與航程保持不變。</p>','確認清除開啟與探索紀錄','reset');
+ show(item,map,'清除本海圖登記','<p>將清除 '+esc(map.name)+' 的 <b>'+opened+' 筆開啟登記</b>及 <b>'+visited+' 筆探索紀錄</b>。</p><p>探索紀錄也會清除，避免留下「探索過但未開啟」的矛盾。其他海圖、船隻與航程保持不變。</p>','確認清除開啟與探索紀錄','reset',[],host);
 }
-dialog.addEventListener('change',preview);
-dialog.addEventListener('click',event=>{
+document.addEventListener('change',event=>{if(surface.contains(event.target))preview();});
+document.addEventListener('click',event=>{
+ if(!surface.contains(event.target))return;
  const button=event.target.closest('[data-explored-dialog]');if(!button||!draft)return;
  const action=button.dataset.exploredDialog;if(action==='cancel'){close();return;}
- if(action==='all'||action==='none'){dialog.querySelectorAll('[data-explored-code]').forEach(input=>input.checked=action==='all');preview();return;}
+ if(action==='all'||action==='none'){surface.querySelectorAll('[data-explored-code]').forEach(input=>input.checked=action==='all');preview();return;}
  if(action!=='apply'||button.disabled)return;
- const {item,map,kind,codes}=draft;
- if(!F.state.workshops.includes(item)){close();return;}
+ const {item,map,kind,codes,host}=draft;
+ if(!F.state.workshops.includes(item)||(host&&(F.workshop()!==item||F.currentMap()!==map))){close();return;}
  if(draft.signature!==signature(item,map.id)){
-  if(kind==='batch')preview();else if(kind==='reset'){close();resetMap(map.id);return;}else if(kind==='remove-opened'){close();removeOpened(map.id,codes);return;}else draft.signature=signature(item,map.id);
-  dialog.querySelector('.explored-dialog-error').textContent='登記內容剛有變更，請重新核對後再確認。';return;
+  if(kind==='batch')preview();else if(kind==='reset'){if(!host)close();resetMap(map.id,host);return;}else if(kind==='remove-opened'){if(!host)close();removeOpened(map.id,codes,host);return;}else draft.signature=signature(item,map.id);
+  surface.querySelector('.explored-dialog-error').textContent='登記內容剛有變更，請重新核對後再確認。';return;
  }
  let text='';
  if(kind==='add'||(kind==='batch'&&!draft.remove)){record(item,map.id,codes);text='已登記探索過：'+map.name+' '+codes.join('、')+'；只更新選取地點。';}
@@ -86,11 +94,12 @@ dialog.addEventListener('click',event=>{
  if(kind==='reset'){item.opened[map.id]={};item.visited??={};item.visited[map.id]={};item.selectedNode='';text='已清除 '+map.name+' 的開啟與探索紀錄；其他海圖、船隻與航程保持不變。';}
  close();finish(text,kind==='remove-opened');
 });
-document.querySelector('#node-explored').addEventListener('click',()=>{
- const item=F.workshop(),map=F.currentMap(),code=item.selectedNode;if(!validCodes(map.id,[code]).length)return;
- if(isVisited(item,map.id,code)){forget(item,map.id,[code]);finish(map.name+' '+code+' 的探索紀錄已移除；開啟登記保持不變。');}else addSingle(map.id,code);
-});
-document.querySelector('#explored-batch').addEventListener('click',openBatch);
+function toggleVisited(mapId,code,host){
+ const item=F.workshop(),map=F.currentMap();if(map.id!==mapId||!validCodes(mapId,[code]).length)return;
+ if(isVisited(item,mapId,code)){forget(item,mapId,[code]);finish(map.name+' '+code+' 的探索紀錄已移除；開啟登記保持不變。');}else addSingle(mapId,code,host);
+}
+document.querySelector('#node-explored').addEventListener('click',()=>toggleVisited(F.currentMap().id,F.workshop().selectedNode));
+document.querySelector('#explored-batch').addEventListener('click',()=>openBatch(window.SubNodeUI?.progressHost()));
 required.addEventListener('click',()=>{const item=F.workshop(),map=F.currentMap();if(validCodes(map.id,[item.selectedNode]).length)window.SubVoyageUI?.addRequired(map.id,item.selectedNode);});
 function render(){
  const item=F.workshop(),map=F.currentMap(),nodes=eligible(map),code=item.selectedNode,node=nodes.find(n=>n.code===code);
@@ -112,5 +121,5 @@ function render(){
   const original=button.getAttribute('aria-label').replace(/，(?:探索過|尚無探索紀錄)$/,'');button.setAttribute('aria-label',original+'，'+(visited?'探索過':'尚無探索紀錄'));
  });
 }
-window.SubExplored={render,isVisited,record,removeOpened,resetMap};render();
+window.SubExplored={render,isVisited,record,removeOpened,resetMap,toggleVisited,openBatch,cancelInline};render();
 })();

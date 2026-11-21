@@ -5,6 +5,7 @@
   const goals = { auto: "系統推薦", manual: "手動", unlock: "開圖", level: "練等", gil: "NPC收入", item: "家具收藏" };
   const colors = { blue: "#3268a8", green: "#4f8564", purple: "#7755a0", red: "#9a4c59", gold: "#ad7c2d" };
   const calculator = window.SubVoyageEngine;
+  const maxRank = calculator.data.rankCap;
   const px = (code, x, y) => ({ code, x, y });
   const maps = [
     { id: "deep", name: "溺沒海", range: "Rank 1～50", image: "assets/submersible/maps/deep-sea.png", size: [820,801], route: ["B","E","J","N","O","S","T","Y","Z","AA","AB","AD"], nodes: [
@@ -22,10 +23,10 @@
     { id: "lilac", name: "紫礁海", range: "Rank 105～120", image: "assets/submersible/maps/lilac-sea.png", size: [600,600], route: ["A","B","F","J","L","Q","T"], nodes: [
       px("A",111,528),px("B",120,441),px("C",296,462),px("D",59,320),px("E",322,550),px("F",218,333),px("G",440,492),px("H",533,551),px("I",111,252),px("J",317,286),px("K",394,423),px("L",332,200),px("M",480,365),px("N",417,157),px("O",439,281),px("P",42,77),px("Q",208,204),px("R",542,221),px("S",478,45),px("T",295,57)
     ]},
-    { id: "south", name: "南蒼茫洋", range: "Rank 120～130（7.2）", image: "assets/submersible/maps/south-indigo.png", size: [600,600], route: ["A","B","F","I","M"], future: ["N","O","P","Q","R","S","T"], nodes: [
+    { id: "south", name: "南蒼茫洋", range: "Rank 120～135（7.3）", image: "assets/submersible/maps/south-indigo.png", size: [600,600], route: ["A","B","F","I","M","N","R","T"], nodes: [
       px("A",495,107),px("B",405,245),px("C",370,119),px("D",538,297),px("E",272,57),px("F",288,263),px("G",227,155),px("H",182,226),px("I",300,372),px("J",65,67),px("K",60,191),px("L",426,462),px("M",200,403),px("N",130,395),px("O",541,546),px("P",60,308),px("Q",282,492),px("R",126,466),px("S",306,553),px("T",60,547)
     ]},
-    { id: "north", name: "北洋", range: "台服 7.2 尚未開放", image: "assets/submersible/maps/northern-empty.png", size: [600,600], route: [], locked: true, nodes: [] }
+    { id: "north", name: "北洋", range: "台服 7.3 尚未開放", image: "assets/submersible/maps/northern-empty.png", size: [600,600], route: [], locked: true, nodes: [] }
   ];
 
 
@@ -99,7 +100,7 @@
     return isSlotUnlocked(item,index) ? '船位已開 · 待登記船隻' : '待探索 ' + ['','J','O','T'][index] + ' 開船位';
   }
   function colorOf(item) { return colors[item.color] || colors.blue; }
-  function clampRank(value) { return Math.max(1, Math.min(130, parseInt(value, 10) || 1)); }
+  function clampRank(value) { return Math.max(1, Math.min(maxRank, parseInt(value, 10) || 1)); }
   function cleanBuild(value) { return String(value || "").replace(/[^1-5]/g, "").slice(0, 4).padEnd(4, "1"); }
   function recommendedBuild(rank) { if (rank >= 85) return "3124"; if (rank >= 50) return "1123"; if (rank >= 25) return "3113"; if (rank >= 15) return "1121"; return "1111"; }
   function milestone(rank) {
@@ -112,8 +113,9 @@
     if (rank < 90) return ["Rank 90", "翠浪海 T 開啟妖歌海"];
     if (rank < 105) return ["Rank 105", "妖歌海 T 開啟紫礁海"];
     if (rank < 120) return ["Rank 120", "紫礁海 T 開啟南蒼茫洋"];
-    if (rank < 130) return ["Rank 130", "台服 7.2 最後可探索南蒼茫洋 M"];
-    return ["7.2 已達上限", "南蒼茫洋 N～T 與北洋需等待後續版本"];
+    if (rank < 131) return ["Rank 131", "探索南蒼茫洋 M 可發現 N"];
+    if (rank < maxRank) return ["Rank " + maxRank, "南蒼茫洋 S、T 需要 Rank " + maxRank];
+    return ["7.3 已達上限", "北洋尚未開放"];
   }
   function shipAdvice(ship) {
     if (!ship.enabled) return "尚未啟用；先完成對應欄位解鎖";
@@ -395,8 +397,8 @@
   $("#ship-form").addEventListener("submit",event=>{
     event.preventDefault();const item=state.workshops.find(w=>w.id===editorWorkshopId);if(!item)return;
     const rank=Number($("#ship-rank").value),draft=shipPartsEditor.syncFromInput(),build=draft.build;
-    if(!Number.isInteger(rank)||rank<1||rank>130){
-      $("#ship-dialog-message").textContent="等級需為 1～130 的整數。";return;
+    if(!Number.isInteger(rank)||rank<1||rank>maxRank){
+      $("#ship-dialog-message").textContent="等級需為 1～" + maxRank + " 的整數。";return;
     }
     if(!draft.valid){$("#ship-dialog-message").textContent=draft.error;return;}
     const modified=Array.from({length:4},(_,i)=>$("#ship-modified-"+i).checked);
@@ -468,7 +470,7 @@
     $("#route-chips").innerHTML = map.route.map(code => '<span class="route-chip ' + (isOpened(map.id, code) ? "done" : code === next ? "next" : "") + '">' + code + '</span>').join("");
     const available = map.nodes.filter(node => nodeState(map, node.code) === "available").map(node => node.code);
     $("#available-summary").textContent = available.length ? "目前可爭取開啟：" + available.join("、") + "（點選查看前置節點）" : "目前沒有可爭取開啟的節點；請先補登遊戲中已發現的地點。";
-    $("#route-next").textContent = map.locked ? "等待台服後續版本開放。" : next ? "推薦主線下一站：" + next + "；僅供參考，不限制其他航程。" : "本海圖的 7.2 主線已完成。";
+    $("#route-next").textContent = map.locked ? "等待台服後續版本開放。" : next ? "推薦主線下一站：" + next + "；僅供參考，不限制其他航程。" : "本海圖的推薦主線已完成。";
     renderOverlay(map); renderLegend(); renderVoyageEditor(); renderInspector(); renderWorkshopNav(); window.SubVoyageUI?.render(); window.SubLogbook?.render(); window.SubExplored?.render(); window.SubNodeUI?.render();
   }
 
@@ -515,10 +517,10 @@
     if(!canEditVoyage())return false;
     item.voyages[index]={map:"",nodes:[]};notice("");renderMap();save();return true;
   }
-  function toggleProgressNode(code) {
+  function toggleProgressNode(code, host) {
     const item = workshop(); const map = currentMap(); const node = nodeByCode(map, code);
     if (!node || nodeState(map, code) === "locked") return;
-    if (isOpened(map.id, code) && window.SubExplored) { window.SubExplored.removeOpened(map.id, [code]); return; }
+    if (isOpened(map.id, code) && window.SubExplored) { window.SubExplored.removeOpened(map.id, [code], host); return; }
     if (isOpened(map.id, code) && item.visited?.[map.id]?.[code]) { notice("探索紀錄功能尚未載入，請重新整理後再取消開啟登記，避免遺失探索紀錄。"); return; }
     item.opened[map.id] = item.opened[map.id] || {};
     item.opened[map.id][code] = !isOpened(map.id, code);
@@ -538,7 +540,7 @@
     if(!node)return {disabled:true,label:"請先選擇節點",reason:""};
     if(isSailing())return {disabled:true,label:"出航中，航線唯讀",reason:"請先確認收船或取消出航紀錄。"};
     const status=nodeState(map,node.code);
-    if(status!=="opened")return {disabled:true,label:status==="locked"?"此節點尚未開放":"尚未登記開啟",reason:status==="locked"?"台服 7.2 版本限制。":"請依遊戲實況登記已開啟；不會自動加入前置地點。"};
+    if(status!=="opened")return {disabled:true,label:status==="locked"?"此節點尚未開放":"尚未登記開啟",reason:status==="locked"?"台服 7.3 版本限制。":"請依遊戲實況登記已開啟；不會自動加入前置地點。"};
     const ship=item.ships[item.activeVoyageShip],voyage=item.voyages[item.activeVoyageShip];
     const base={targetMap:map,targetNode:node};
     if(voyage.map===map.id&&voyage.nodes.includes(node.code))return {...base,disabled:false,remove:true,label:"從航程移除 "+node.code,reason:"移除後重排其餘站點。"};
@@ -575,7 +577,7 @@
       const parentMap = node.parent && maps.find(m => m.id === node.parent[0]);
       const parentLabel = node.parent ? parentMap.name + " " + node.parent[1] : "";
       $("#node-title").textContent = map.name + " " + node.code + " · Rank " + node.rank;
-      $("#node-copy").textContent = status === "opened" ? "已開啟（已發現）。可安排直接前往此節點；探索紀錄另行登記。" : status === "available" ? "＋ 可開啟：尚未發現。前往 " + parentLabel + " 探索，爭取發現此地點。" : status === "locked" ? "台服 7.2 尚未開放。" : parentLabel ? "未開啟；前置節點 " + parentLabel + " 尚未登記。若遊戲已發現此地點，可直接補登。" : "初始地點；請依遊戲內進度登記。";
+      $("#node-copy").textContent = status === "opened" ? "已開啟（已發現）。可安排直接前往此節點；探索紀錄另行登記。" : status === "available" ? "＋ 可開啟：尚未發現。前往 " + parentLabel + " 探索，爭取發現此地點。" : status === "locked" ? "台服 7.3 尚未開放。" : parentLabel ? "未開啟；前置節點 " + parentLabel + " 尚未登記。若遊戲已發現此地點，可直接補登。" : "初始地點；請依遊戲內進度登記。";
       register.disabled = status === "locked";
       register.textContent = status === "opened" ? "取消 " + node.code + " 的開啟登記" : "我已在遊戲發現 " + node.code + "，登記已開啟";
     }
@@ -586,7 +588,7 @@
   $("#node-register").addEventListener("click", () => toggleProgressNode(workshop().selectedNode));
   $("#node-action").addEventListener("click", toggleVoyageNode);
   $("#reset-map").addEventListener("click", () => {
-    if (window.SubExplored) { window.SubExplored.resetMap(workshop().map); return; }
+    if (window.SubExplored) { window.SubExplored.resetMap(workshop().map, window.SubNodeUI?.progressHost()); return; }
     if (Object.values(workshop().visited?.[workshop().map] || {}).some(Boolean)) { notice("探索紀錄功能尚未載入，請重新整理後再清除，避免遺失探索紀錄。"); return; }
     const item = workshop(); const id = item.id + ":" + item.map;
     if (resetMapArmed !== id) { resetMapArmed = id; $("#reset-map").textContent = "再次點擊確認清除本海圖登記"; return; }
@@ -615,6 +617,6 @@
     const blob=new Blob([JSON.stringify({format:'ff14-submersible-backup-v47',exportedAt:new Date().toISOString(),...state,preserved},null,2)],{type:'application/json'});
     const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download='ff14-submersible-backup-'+new Date().toISOString().slice(0,10)+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   });
-  window.SubFleet={state,maps,recommendedBuild,selectShip,isSailing,isSlotUnlocked,refreshShipStatuses,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor,voyageAction,renderInspector,canEditVoyage,toggleVoyageNode,optimizeCurrentVoyage,clearVoyage};
+  window.SubFleet={state,maps,recommendedBuild,selectShip,isSailing,isSlotUnlocked,refreshShipStatuses,workshop,currentMap,isOpened,nodeState,renderMap,renderAll,save,notice,openShipEditor,voyageAction,renderInspector,canEditVoyage,toggleVoyageNode,optimizeCurrentVoyage,clearVoyage,toggleProgressNode};
   renderAll();
 })();

@@ -33,7 +33,7 @@ root.addEventListener('pagehide',stopClock);
 root.addEventListener('pageshow',startClock);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopClock();else startClock();});
 const palette=['#36e5ff','#ffb347','#d7a0ff','#ff80b5'];
-const milestones={deep:{J:'第 2 船位',O:'第 3 船位',T:'第 4 船位',AD:'通往灰海'},ash:{R:'通往翠浪海'},jade:{T:'通往妖歌海'},siren:{T:'通往紫礁海'},lilac:{T:'通往南蒼茫洋'},south:{M:'7.2 終點'}};
+const milestones={deep:{J:'第 2 船位',O:'第 3 船位',T:'第 4 船位',AD:'通往灰海'},ash:{R:'通往翠浪海'},jade:{T:'通往妖歌海'},siren:{T:'通往紫礁海'},lilac:{T:'通往南蒼茫洋'},south:{T:'7.3 主線終點'}};
 const kindOf=(map,code)=>map==='deep'&&['J','O','T'].includes(code)?'slot':map==='south'?'endpoint':'gateway';
 function progress(fleet,item,map,code){
  if(item.visited?.[map]?.[code]===true)return {symbol:'✓',label:'探索過'};
@@ -91,7 +91,7 @@ function render({fleet,previewRoute=null}){
  }
  if(marks.childElementCount){
   const legend=document.createElement('p');legend.className='map-milestone-legend';
-  legend.innerHTML='<span><i data-milestone-kind="slot" aria-hidden="true"></i>未開 · 紅色 J／O／T 船位</span><span><i data-milestone-kind="gateway" aria-hidden="true"></i>未開 · 青色新圖地點</span>'+(m.id==='south'?'<span><i data-milestone-kind="endpoint" aria-hidden="true"></i>未開 · 金色 7.2 終點</span>':'');
+  legend.innerHTML='<span><i data-milestone-kind="slot" aria-hidden="true"></i>未開 · 紅色 J／O／T 船位</span><span><i data-milestone-kind="gateway" aria-hidden="true"></i>未開 · 青色新圖地點</span>'+(m.id==='south'?'<span><i data-milestone-kind="endpoint" aria-hidden="true"></i>未開 · 金色 7.3 主線終點</span>':'');
   const help=document.querySelector('#map-milestone-help');if(help)help.replaceChildren(legend);
   index.append(marks);
  }

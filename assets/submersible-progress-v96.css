@@ -1,0 +1,55 @@
+/* Progress uses the same flat headers, surfaces and focus treatment as the ship editor. */
+#map-progress-dialog[open]{display:flex;flex-direction:column;gap:0;width:min(760px,calc(100vw - 40px));max-height:min(780px,calc(100dvh - 32px));padding:24px 28px;background:var(--theme-surface);color:var(--theme-ink);overflow:hidden}
+#map-progress-dialog [hidden]{display:none!important}
+#map-progress-dialog .node-utility-heading{flex:none;margin:0;padding:0 0 16px;border-bottom:1px solid var(--theme-line)}
+#map-progress-dialog .node-utility-heading h2{min-width:0;overflow-wrap:anywhere;font-size:24px;font-weight:650;color:var(--theme-ink)}
+#map-progress-dialog .node-utility-context{font-size:.7em;font-weight:500;color:var(--theme-muted)}
+#map-progress-dialog .node-utility-heading>button{width:38px;height:38px;min-height:38px;flex:0 0 38px;padding:0;font-size:28px;line-height:1}
+#map-progress-dialog .progress-list{display:flex;flex-direction:column;min-height:0;margin-top:12px}
+#map-progress-dialog :is(.progress-columns,.progress-row){display:grid;grid-template-columns:minmax(0,1fr) repeat(2,112px);align-items:center;gap:10px;padding:0 12px}
+#map-progress-dialog .progress-columns{flex:none;border-radius:8px 8px 0 0;background:var(--theme-surface-2);color:var(--theme-muted);min-height:42px;font-size:13px;font-weight:650}
+#map-progress-dialog .progress-columns>span:not(:first-child){text-align:center}
+#map-progress-dialog .progress-columns b{display:inline-block;color:var(--theme-ink);white-space:nowrap;font-variant-numeric:tabular-nums;font-size:12px;font-weight:650;margin-left:3px}
+#map-progress-dialog .progress-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+#map-progress-dialog .progress-columns{overflow-y:hidden;scrollbar-gutter:stable}
+#map-progress-dialog .progress-rows{list-style:none;padding:0;margin:0}
+#map-progress-dialog .progress-row{min-height:40px;border-bottom:1px solid var(--theme-line)}
+#map-progress-dialog .progress-row:nth-child(even){background:color-mix(in srgb,var(--theme-surface-2) 44%,var(--theme-surface))}
+#map-progress-dialog .progress-row:focus-within{background:var(--theme-surface-2)}
+#map-progress-dialog .progress-row[data-locked=true]{color:var(--theme-muted)}
+#map-progress-dialog .progress-location{display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden}
+#map-progress-dialog .progress-location>b{min-width:24px;font-size:14px;font-weight:650}
+#map-progress-dialog .progress-location>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--theme-muted);font-size:13px}
+#map-progress-dialog .progress-check{display:grid;place-items:center;margin:0;min-width:36px;min-height:38px;cursor:pointer}
+#map-progress-dialog .progress-check:has(input:disabled){cursor:not-allowed}
+#map-progress-dialog .progress-check input{inline-size:17px;block-size:17px;min-height:0;margin:0;accent-color:var(--theme-accent);cursor:inherit}
+#map-progress-dialog .progress-footer{display:flex;flex:none;justify-content:space-between;align-items:center;gap:12px;padding:14px 0 0;margin:0}
+#map-progress-dialog .progress-footer button{min-height:40px}
+#map-progress-dialog #reset-map:not(:hover){background:transparent}
+#map-progress-dialog #reset-map{font-size:13px;color:var(--theme-muted)}
+#map-progress-dialog .progress-inline{margin-top:16px;min-height:0;overflow:auto;overscroll-behavior:contain}
+#map-progress-dialog .progress-inline h3{margin:0;font-size:18px;font-weight:650}
+#map-progress-dialog .progress-inline p{margin:8px 0;color:var(--theme-muted);line-height:1.6}
+#map-progress-dialog .progress-quick-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0 0}
+#map-progress-dialog .progress-quick-actions :is(#explored-batch,#complete-route){margin:0;width:auto;min-height:40px;font-size:13px}
+#map-progress-dialog .progress-quick-actions #complete-route{margin-inline-start:auto}
+#map-progress-dialog .node-management-feedback{flex:none;margin:0;padding:8px 0 0}
+#map-progress-dialog .progress-empty{margin:0;padding:16px;color:var(--theme-muted)}
+#map-progress-dialog :is(button,input,select,.progress-scroll):focus-visible{outline:3px solid var(--theme-accent);outline-offset:2px}
+#map-progress-dialog .progress-scroll:focus-visible{outline-offset:-3px}
+@media(max-width:600px){
+ #map-progress-dialog[open]{width:calc(100vw - 24px);padding:16px;max-height:calc(100dvh - 24px)}
+ #map-progress-dialog .node-utility-heading h2{font-size:20px}
+ #map-progress-dialog :is(.progress-columns,.progress-row){grid-template-columns:minmax(0,1fr) repeat(2,minmax(52px,72px));gap:4px;padding:0 8px}
+ #map-progress-dialog .progress-columns{padding-block:5px}
+ #map-progress-dialog .progress-columns b{display:block;margin-left:0}
+ #map-progress-dialog .progress-check{min-height:42px}
+ #map-progress-dialog .progress-footer{gap:6px}
+ #map-progress-dialog .progress-footer button{padding-inline:8px}
+}
+#map-progress-dialog .progress-inline fieldset{min-width:0;margin:14px 0;padding:10px 12px;border:1px solid var(--theme-line);border-radius:8px}
+#map-progress-dialog .progress-inline legend{padding:0 5px;color:var(--theme-muted);font-size:13px}
+#map-progress-dialog .progress-inline :is(.explored-modes,.explored-grid) label{margin:0;min-height:36px}
+#map-progress-dialog .progress-inline :is(input[type=checkbox],input[type=radio]){display:inline-block;flex:none;width:17px;min-width:17px;height:17px;min-height:17px;margin:1px 0;padding:0;accent-color:var(--theme-accent)}
+#map-progress-dialog .progress-inline .explored-dialog-actions{justify-content:flex-end;margin-top:14px}
+#map-progress-dialog .progress-inline .explored-dialog-actions button.primary-action{background:#255d91;border-color:#255d91;color:#fff}

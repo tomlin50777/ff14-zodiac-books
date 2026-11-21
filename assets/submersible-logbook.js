@@ -52,7 +52,7 @@ function openDialog(view,expected,source){
 }
 function renderDetails(){
  const {item,ship,voyage,sailing}=selected(),trusted=snapshotRoute(sailing),snap=sailing?.snapshot;
- const complete=snap&&Number.isInteger(snap.rank)&&snap.rank>=1&&snap.rank<=130&&/^[1-5]{4}$/.test(snap.build)&&Array.isArray(snap.modified)&&snap.modified.length===4&&snap.modified.every(x=>typeof x==='boolean');
+ const complete=snap&&Number.isInteger(snap.rank)&&snap.rank>=1&&snap.rank<=window.SubVoyageData.rankCap&&/^[1-5]{4}$/.test(snap.build)&&Array.isArray(snap.modified)&&snap.modified.length===4&&snap.modified.every(x=>typeof x==='boolean');
  const route=sailing?(trusted?{map:trusted.map.id,nodes:trusted.nodes}:null):voyage,subject=sailing?(complete?{...snap,enabled:true}:null):ship;
  const calc=subject&&route?engine.calculate(subject,route.map,route.nodes,sailing?undefined:item.opened):null,a=subject?engine.stats(subject):null,map=fleet.maps.find(m=>m.id===route?.map);
  const missing=sailing?[]:requiredMissing(ship,voyage);
